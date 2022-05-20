@@ -103,6 +103,7 @@ class VideoSnippetMetadata(ABCVideoMetadata):
             self.metadata = metadata
             self.snippet: dict = metadata["snippet"]
             self.id: str = metadata["id"]
+            self.url: str = f'https://www.youtube.com/watch?v={self.id}'
             if self.snippet.get("publishedAt") is None:
                 self.published_at = None
             else:
