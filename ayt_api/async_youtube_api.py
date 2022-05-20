@@ -12,14 +12,15 @@ class AsyncYoutubeAPI:
         self.key = yt_api_key
         self.api_version = api_version
 
-    async def get_playlist_snippet_metadata(self, playlist_id: str):
-        """Fetches a playlist using a playlist id
+    async def get_playlist_snippet_metadata(self, playlist_id: str) -> YoutubePlaylistSnippetMetadata:
+        """Fetches a playlist snippet using a playlist id
         Args:
             playlist_id (str): The id of the playlist to use
         Returns:
             YoutubePlaylistSnippetMetadata: The playlist snippet object containing data of the playlist snippet
         Raises:
-            HTTPException"""
+            HTTPException: Fetching the metadata failed
+            PlaylistNotFound: The playlist does not exist"""
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as playlist_metadata_session:
             async with playlist_metadata_session.get(
                     f'https://www.googleapis.com/youtube/v{self.api_version}/playlists?part=snippet'
@@ -42,7 +43,16 @@ class AsyncYoutubeAPI:
                             message = res_data["error"].get("message")
                     raise HTTPException(playlist_metadata_response, message)
 
-    async def get_videos_from_playlist(self, playlist_id, next_page=None):
+    async def get_videos_from_playlist(self, playlist_id, next_page=None) -> list[PlaylistVideoMetaData]:
+        """Fetches a list of video in a playlist using a playlist id
+        Args:
+            playlist_id (str): The id of the playlist to use
+            next_page: a parameter used by this function to fetch playlists with more than 50 items
+        Returns:
+            list[PlaylistVideoMetadata]: A list containing playlist video objects
+        Raises:
+            HTTPException: Fetching the metadata failed
+            PlaylistNotFound: The playlist does not exist"""
         if len(playlist_id) < 1:
             raise InvalidInput(playlist_id)
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as playlist_videos_session:
@@ -80,7 +90,15 @@ class AsyncYoutubeAPI:
                             message = res_data["error"].get("message")
                     raise HTTPException(playlist_videos_response, message)
 
-    async def get_video_snippet_metadata(self, video_id):
+    async def get_video_snippet_metadata(self, video_id) -> VideoSnippetMetadata:
+        """Fetches a video snippet using a video id
+        Args:
+            video_id (str): The id of the video to use
+        Returns:
+            VideoSnippetMetadata: The video snippet object containing data of the video snippet
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist"""
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as video_duration_session:
             async with video_duration_session.get(
                     f'https://www.googleapis.com/youtube/v{self.api_version}/videos?part=snippet'
@@ -102,17 +120,3 @@ class AsyncYoutubeAPI:
                         if "error" in res_data:
                             message = res_data["error"].get("message")
                     raise HTTPException(video_duration_response, message)
-
-
-def strip_video_id(url: str):
-    """supported urls:
-    https://www.youtube.com/watch?v=ID
-
-    https://www.youtube.com/v/ID
-
-    https://youtu.be/ID"""
-    if url.split('/')[2] == 'youtu.be':
-        return url.split('/')[3].split("?")[0].split('&')[0]
-    else:
-        slash_index = 4 if url.split("/")[3] == "v" or url.split("/")[3] == "embed" else 3
-        return url.split("/")[slash_index].replace("watch?v=", "").split("&")[0].split("?")[0]

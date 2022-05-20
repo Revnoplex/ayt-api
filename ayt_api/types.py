@@ -3,40 +3,55 @@ from .exceptions import MissingDataFromMetadata, VideoNotFound
 
 
 class YoutubeThumbnail:
+    """Data for an individual YouTube thumbnail.
+    Args:
+        data (dict): The raw thumbnail data
+    Attributes:
+        raw_data (dict): The raw thumbnail data
+        url (str): The file url for the thumbnail
+        width: The amount of horizontal pixels in the thumbnail
+        height: The amount of vertical pixels in the thumbnail
+        resolution: The WIDTHxHeight of the thumbnail"""
     def __init__(self, data: dict):
         self.raw_data = data
-        self.url: str = data["url"]
-        self.width: int = data["width"]
-        self.height: int = data["height"]
+        self.url: str = data.get("url")
+        self.width: int = data.get("width")
+        self.height: int = data.get("height")
         self.resolution = "{}x{}".format(self.width, self.height)
 
 
 class YoutubeThumbnailMetadata:
+    """Data for the available thumbnails of a video"""
     def __init__(self, thumbnail_metadata: dict):
         self.raw_metadata = thumbnail_metadata
 
     @property
     def default(self):
+        """The default video thumbnail. Could be None"""
         if self.raw_metadata.get("default") is not None:
             return YoutubeThumbnail(self.raw_metadata["default"])
 
     @property
     def medium(self):
+        """The medium video thumbnail. Could be None"""
         if self.raw_metadata.get("medium") is not None:
             return YoutubeThumbnail(self.raw_metadata["medium"])
 
     @property
     def high(self):
+        """The high video thumbnail. Could be None"""
         if self.raw_metadata.get("high") is not None:
             return YoutubeThumbnail(self.raw_metadata["high"])
 
     @property
     def standard(self):
+        """The standard video thumbnail. Could be None"""
         if self.raw_metadata.get("standard") is not None:
             return YoutubeThumbnail(self.raw_metadata["standard"])
 
     @property
     def maxres(self):
+        """The maximum resolution video thumbnail. Could be None"""
         if self.raw_metadata.get("maxres") is not None:
             return YoutubeThumbnail(self.raw_metadata["maxres"])
 
