@@ -3,17 +3,24 @@ An Asynchronous, Object oriented python library for the YouTube api
 
 You can currently install it with:
 
-Windows:
+## Installation
+
+ayt-api is currently not published on pypi yet, but can be installed directly from here
+
+### Windows:
 ```
 pythom -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 ```
 
-Linux and Mac os
+### Linux and Mac os:
 ```bash
 pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
 ```
 
-Example Code:
+
+## Basic Examples:
+
+### basic video snippet data fetching
 ```python
 import asyncio
 from ayt_api import async_youtube_api
