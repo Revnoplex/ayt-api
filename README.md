@@ -2,8 +2,15 @@
 An Asynchronous, Object oriented python library for the YouTube api
 
 You can currently install it with:
+
+Windows:
 ```
-{pip command} install git+https://github.com/Revnoplex/ayt-api.git
+pythom -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
+```
+
+Linux and Mac os
+```bash
+pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
 ```
 
 Example Code:
