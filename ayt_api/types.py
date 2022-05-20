@@ -76,19 +76,28 @@ class VideoSnippetMetadata(ABCVideoMetadata):
             self.metadata = metadata
             self.snippet: dict = metadata["snippet"]
             self.id: str = metadata["id"]
-            self.published_at = datetime.datetime.strptime(self.snippet["publishedAt"], '%Y-%m-%dT%H:%M:%SZ')
-            self.channel_id: str = self.snippet["channelId"]
-            self.title: str = self.snippet["title"]
-            self.description: str = self.snippet["description"]
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
-            self.channel_title: str = self.snippet["channelTitle"]
-            self.tags: list = self.snippet["tags"]
-            self.category_id: str = self.snippet["categoryId"]
-            self.live_broadcast_content: str = self.snippet["liveBroadcastContent"]
-            self.default_language: str = self.snippet["defaultLanguage"]
+            if self.snippet.get("publishedAt") is None:
+                self.published_at = None
+            else:
+                self.published_at = datetime.datetime.strptime(self.snippet["publishedAt"], '%Y-%m-%dT%H:%M:%SZ')
+            self.channel_id: str = self.snippet.get("channelId")
+            self.title: str = self.snippet.get("title")
+            self.description: str = self.snippet.get("description")
+            if self.snippet.get("thumbnails") is None:
+                self.thumbnails = None
+            else:
+                self.thumbnails = YoutubeThumbnailMetadata(self.snippet.get("thumbnails"))
+            self.channel_title: str = self.snippet.get("channelTitle")
+            self.tags: list = self.snippet.get("tags")
+            self.category_id: str = self.snippet.get("categoryId")
+            self.live_broadcast_content: str = self.snippet.get("liveBroadcastContent")
+            self.default_language: str = self.snippet.get("defaultLanguage")
+            if self.snippet.get("localized") is None:
+                self.localized = None
+                self.localised = None
             self.localized = LocalName(self.snippet["localized"])
             self.localised = LocalName(self.snippet["localized"])
-            self.default_audio_language: str = self.snippet["defaultAudioLanguage"]
+            self.default_audio_language: str = self.snippet.get("defaultAudioLanguage")
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
