@@ -8,7 +8,7 @@ ayt-api is currently not published on pypi yet, but can be installed directly fr
 
 ### Windows:
 ```
-pythom -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
+python -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 ```
 
 ### Linux and Mac os:
