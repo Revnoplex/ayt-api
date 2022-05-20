@@ -1,16 +1,25 @@
 import aiohttp
-import discord
-from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound
+from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException
 from .types import YoutubePlaylistSnippetMetadata, PlaylistVideoMetaData, VideoSnippetMetadata
 
 
 class AsyncYoutubeAPI:
+    """Represents the main class for running all the tools
+    Args:
+        yt_api_key (str): The API key used to access the YouTube API
+        api_version (str): The API version to use. defaults to 3"""
     def __init__(self, yt_api_key: str, api_version: str = '3'):
         self.key = yt_api_key
         self.api_version = api_version
 
     async def get_playlist_snippet_metadata(self, playlist_id: str):
-        """Fetches a playlist using a playlist id"""
+        """Fetches a playlist using a playlist id
+        Args:
+            playlist_id (str): The id of the playlist to use
+        Returns:
+            YoutubePlaylistSnippetMetadata: The playlist snippet object containing data of the playlist snippet
+        Raises:
+            HTTPException"""
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as playlist_metadata_session:
             async with playlist_metadata_session.get(
                     f'https://www.googleapis.com/youtube/v{self.api_version}/playlists?part=snippet'
@@ -18,8 +27,8 @@ class AsyncYoutubeAPI:
                 if playlist_metadata_response.status == 200:
                     res_data = await playlist_metadata_response.json()
                     if "error" in res_data:
-                        raise discord.HTTPException(playlist_metadata_response, f'{res_data["error"].get("code")}:'
-                                                                                f'{res_data["error"].get("message")}')
+                        raise HTTPException(playlist_metadata_response, f'{res_data["error"].get("code")}:'
+                                                                        f'{res_data["error"].get("message")}')
                     if res_data["pageInfo"].get("totalResults") < 1:
                         raise PlaylistNotFound(playlist_id)
                     else:
@@ -31,7 +40,7 @@ class AsyncYoutubeAPI:
                         res_data = await playlist_metadata_response.json()
                         if "error" in res_data:
                             message = res_data["error"].get("message")
-                    raise discord.HTTPException(playlist_metadata_response, message)
+                    raise HTTPException(playlist_metadata_response, message)
 
     async def get_videos_from_playlist(self, playlist_id, next_page=None):
         if len(playlist_id) < 1:
@@ -45,8 +54,8 @@ class AsyncYoutubeAPI:
                 if playlist_videos_response.status == 200:
                     res_data = await playlist_videos_response.json()
                     if "error" in res_data:
-                        raise discord.HTTPException(playlist_videos_response, f'{res_data["error"].get("code")}:'
-                                                                              f'{res_data["error"].get("message")}')
+                        raise HTTPException(playlist_videos_response, f'{res_data["error"].get("code")}:'
+                                                                      f'{res_data["error"].get("message")}')
                     if res_data["pageInfo"].get("totalResults") < 1:
                         raise PlaylistNotFound(playlist_id)
                     else:
@@ -69,7 +78,7 @@ class AsyncYoutubeAPI:
                         res_data = await playlist_videos_response.json()
                         if "error" in res_data:
                             message = res_data["error"].get("message")
-                    raise discord.HTTPException(playlist_videos_response, message)
+                    raise HTTPException(playlist_videos_response, message)
 
     async def get_video_snippet_metadata(self, video_id):
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as video_duration_session:
@@ -79,8 +88,8 @@ class AsyncYoutubeAPI:
                 if video_duration_response.status == 200:
                     res_data = await video_duration_response.json()
                     if "error" in res_data:
-                        raise discord.HTTPException(video_duration_response, f'{res_data["error"].get("code")}:'
-                                                                             f'{res_data["error"].get("message")}')
+                        raise HTTPException(video_duration_response, f'{res_data["error"].get("code")}:'
+                                                                     f'{res_data["error"].get("message")}')
                     if res_data["pageInfo"].get("totalResults") < 1:
                         raise VideoNotFound(video_id)
                     else:
@@ -92,7 +101,7 @@ class AsyncYoutubeAPI:
                         res_data = await video_duration_response.json()
                         if "error" in res_data:
                             message = res_data["error"].get("message")
-                    raise discord.HTTPException(video_duration_response, message)
+                    raise HTTPException(video_duration_response, message)
 
 
 def strip_video_id(url: str):

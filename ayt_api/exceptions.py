@@ -1,3 +1,4 @@
+import aiohttp
 
 
 class YoutubeExceptions(BaseException):
@@ -64,3 +65,15 @@ class InvalidInput(YoutubeExceptions):
         if len(self.input) < 1:
             message = 'No input was provided'
         super().__init__(message)
+
+
+class HTTPException(YoutubeExceptions):
+    """Exception that's raised when an HTTP request operation fails."""
+
+    def __init__(self, response: aiohttp.ClientResponse, message: str = None):
+        self.response: aiohttp.ClientResponse = response
+        self.status: int = response.status  # type: ignore
+        self.text: str
+        self.text = f': {message}' or ""
+
+        super().__init__(f'{self.response.status} {self.response.reason}{self.text}')
