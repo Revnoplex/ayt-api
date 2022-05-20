@@ -128,6 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#pycharm files
+# pycharm files
 .idea
 .idea/
+
+# ignore testing directory
+tests
+test/
