@@ -217,6 +217,12 @@ class VideoSnippetMetadata(ABCVideoMetadata):
             default_audio_language (str): The default audio language the video is set in
         """
     def __init__(self, metadata: dict):
+        """
+        Args:
+            metadata: The snippet metadata of the video in the playlist
+        Raises:
+            MissingDataFromMetaData: There is malformed data in the metadata provided
+        """
         try:
             self.metadata = metadata
             self.snippet: dict = metadata["snippet"]
