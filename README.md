@@ -19,7 +19,7 @@ pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
 
 ## Basic Examples:
 
-### basic video snippet data fetching
+### Basic video snippet data fetching
 ```python
 import asyncio
 from ayt_api import async_youtube_api
