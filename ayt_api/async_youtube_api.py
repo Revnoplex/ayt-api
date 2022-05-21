@@ -1,3 +1,5 @@
+import asyncio
+
 import aiohttp
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException
 from .types import YoutubePlaylistSnippetMetadata, PlaylistVideoMetaData, VideoSnippetMetadata
@@ -20,13 +22,19 @@ class AsyncYoutubeAPI:
 
     async def get_playlist_snippet_metadata(self, playlist_id: str) -> YoutubePlaylistSnippetMetadata:
         """Fetches a playlist snippet using a playlist id
+
+        Playlist snippet metadata is fetched using a GET request which the response is then contracted into a
+        :class:`YoutubePlaylistSnippetMetadata` class
+
         Args:
             playlist_id (str): The id of the playlist to use
         Returns:
             YoutubePlaylistSnippetMetadata: The playlist snippet object containing data of the playlist snippet
         Raises:
             HTTPException: Fetching the metadata failed
-            PlaylistNotFound: The playlist does not exist"""
+            PlaylistNotFound: The playlist does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+        """
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as playlist_metadata_session:
             async with playlist_metadata_session.get(
                     f'https://www.googleapis.com/youtube/v{self.api_version}/playlists?part=snippet'
@@ -51,6 +59,10 @@ class AsyncYoutubeAPI:
 
     async def get_videos_from_playlist(self, playlist_id, next_page=None) -> list[PlaylistVideoMetaData]:
         """Fetches a list of video in a playlist using a playlist id
+
+        Playlist video metadata is fetched using a GET request which the response is then contracted into a list of
+        :class:`PlaylistVideoMetadata` classes
+
         Args:
             playlist_id (str): The id of the playlist to use
             next_page: a parameter used by this function to fetch playlists with more than 50 items
@@ -58,7 +70,9 @@ class AsyncYoutubeAPI:
             list[PlaylistVideoMetadata]: A list containing playlist video objects
         Raises:
             HTTPException: Fetching the metadata failed
-            PlaylistNotFound: The playlist does not exist"""
+            PlaylistNotFound: The playlist does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+        """
         if len(playlist_id) < 1:
             raise InvalidInput(playlist_id)
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as playlist_videos_session:
@@ -98,13 +112,19 @@ class AsyncYoutubeAPI:
 
     async def get_video_snippet_metadata(self, video_id) -> VideoSnippetMetadata:
         """Fetches a video snippet using a video id
+
+        Video snippet metadata is fetched using a GET request which the response is then contracted into a
+        :class:`VideoSnippetMetadata` class
+
         Args:
             video_id (str): The id of the video to use
         Returns:
             VideoSnippetMetadata: The video snippet object containing data of the video snippet
         Raises:
             HTTPException: Fetching the metadata failed
-            VideoNotFound: The video does not exist"""
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+        """
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as video_duration_session:
             async with video_duration_session.get(
                     f'https://www.googleapis.com/youtube/v{self.api_version}/videos?part=snippet'
