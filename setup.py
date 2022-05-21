@@ -14,7 +14,7 @@ setup(
     license="MIT",
     packages=find_packages(exclude=["tests"]),
     install_requires=requirements,
-    setup_requires=["wheel"]
+    setup_requires=["wheel"],
     tests_require=['pytest~=7.1.2'],
     test_suite='tests',
     python_requires=">=3.7.0"
