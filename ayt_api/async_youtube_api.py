@@ -5,10 +5,16 @@ from .types import YoutubePlaylistSnippetMetadata, PlaylistVideoMetaData, VideoS
 
 class AsyncYoutubeAPI:
     """Represents the main class for running all the tools
-    Args:
-        yt_api_key (str): The API key used to access the YouTube API
-        api_version (str): The API version to use. defaults to 3"""
+    Attributes:
+        key (str): The API key used to access the YouTube API
+        api_version (str): The API version to use. defaults to 3
+    """
     def __init__(self, yt_api_key: str, api_version: str = '3'):
+        """
+        Args:
+            yt_api_key (str): The API key used to access the YouTube API
+            api_version (str): The API version to use. defaults to 3
+        """
         self.key = yt_api_key
         self.api_version = api_version
 

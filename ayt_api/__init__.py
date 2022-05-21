@@ -1,1 +1,1 @@
-from async_youtube_api import AsyncYoutubeAPI
+from .async_youtube_api import AsyncYoutubeAPI
