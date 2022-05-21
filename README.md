@@ -7,7 +7,7 @@ An Asynchronous, Object oriented python library for the YouTube api
 ayt-api is currently not published on pypi yet, but can be installed directly from here
 
 ### Windows:
-```
+```powershell
 python -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 ```
 
