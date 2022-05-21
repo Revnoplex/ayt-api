@@ -1,15 +1,19 @@
 from setuptools import setup, find_packages
 
-readme = open("README.md", 'r').read()
+with open("README.md", 'r') as readme_file:
+    readme = readme_file.read()
+    readme_file.close()
 
-requirements = open("requirements.txt", 'r').readlines()
+with open("requirements.txt", 'r') as requirements_file:
+    requirements = requirements_file.readlines()
+    requirements_file.close()
 
 setup(
     name="ayt-api",
     description="An Asynchronous, Object oriented python library for the YouTube api",
     author="Revnoplex",
     author_email="revnoplex.business@protonmail.com",
-    version='0.1.0',
+    version="0.1.0a1",
     url="https://github.com/Revnoplex/ayt-api",
     license="MIT",
     packages=find_packages(exclude=["tests"]),
@@ -17,5 +21,5 @@ setup(
     setup_requires=["wheel"],
     tests_require=['pytest~=7.1.2'],
     test_suite='tests',
-    python_requires=">=3.7.0"
+    python_requires=">=3.7.0",
 )
