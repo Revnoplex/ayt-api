@@ -100,11 +100,12 @@ class YoutubePlaylistSnippetMetadata:
         snippet (str): The raw snippet data used to construct this class
         published_at (datetime.datetime): The date and time the playlist was published
         channel_id (str): The id of the channel that created the playlist
-        channel_url (str): The url of the channel thet created the playlist
+        channel_url (str): The url of the channel that created the playlist
         title (str): The title of the playlist
         description (str): The description of the playlist
         thumbnails (YoutubeThumbnailMetadata): The available thumbnails the playlist has
         channel_title: (str) The name of the channel that created the playlist
+        default_language (str): The default language the video is set in. Can be None
         localised (LocalName): The localised language of the title and description of the video
         localized (LocalName): an alias of localised
     """
@@ -133,6 +134,7 @@ class YoutubePlaylistSnippetMetadata:
             self.description: str = self.snippet.get("description")
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet.get("thumbnails"))
             self.channel_title: str = self.snippet.get("channelTitle")
+            self.default_language: str = self.snippet.get("defaultLanguage")
             if self.snippet.get("localized") is None:
                 self.localized = None
                 self.localised = None
