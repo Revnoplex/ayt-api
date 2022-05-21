@@ -28,12 +28,12 @@ pip3 install -U --force-reinstall git+https://github.com/Revnoplex/ayt-api.git
 ### Basic video snippet data fetching
 ```python
 import asyncio
-from ayt_api import async_youtube_api
+import ayt_api
 
-api = async_youtube_api.AsyncYoutubeAPI("Your API Key")
+api = ayt_api.AsyncYoutubeAPI("Your API Key")
 
 
-async def example():
+async def vid_example():
     video_data = await api.get_video_snippet_metadata("Video ID")
     print(video_data.id)
     print(video_data.channel_id)
@@ -42,5 +42,5 @@ async def example():
     print(video_data.thumbnails.default.url)
 
 loop = asyncio.new_event_loop()
-loop.run_until_complete(example())
+loop.run_until_complete(vid_example())
 ```
