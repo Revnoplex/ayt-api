@@ -16,7 +16,7 @@ ayt-api is currently not published on pypi yet, but can be installed directly fr
 python -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
 ```
 
-###### To update to the latest commit (eg. to fix a major bug) use:
+To update to the latest commit (eg. to fix a major bug) use:
 ```powershell
 python -m pip install -U --force-reinstall "git+https://github.com/Revnoplex/ayt-api.git"
 ```
@@ -29,7 +29,7 @@ pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
 ````
 
 
-###### To update to the latest commit (eg. to fix a major bug) use:
+To update to the latest commit (eg. to fix a major bug) use:
 ```bash
 pip3 install -U --force-reinstall git+https://github.com/Revnoplex/ayt-api.git
 ```
