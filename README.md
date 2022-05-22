@@ -1,6 +1,11 @@
 # ayt-api
 An Asynchronous, Object oriented python library for the YouTube api
 
+## What makes ayt-api different?
+The diffrence with this library and other libraries is that it uses 
+asynchronous api calls and responces are formatted as object oriented data. 
+
+The library is also designed towards being used in discord bots, particularly ones using a discord.py or a fork of it
 
 ## Installation
 
