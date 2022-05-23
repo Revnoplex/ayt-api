@@ -35,7 +35,8 @@ pip3 install -U --force-reinstall git+https://github.com/Revnoplex/ayt-api.git
 ```
 
 
-## Basic Examples:
+## Usage:
+First of all to use this library, you will need an API key. To get one, [see here for instructions](https://developers.google.com/youtube/v3/getting-started)
 
 ### Basic video snippet data fetching
 ```python
