@@ -13,7 +13,7 @@ setup(
     description="An Asynchronous, Object oriented python library for the YouTube api",
     author="Revnoplex",
     author_email="revnoplex.business@protonmail.com",
-    version="0.1.0a1",
+    version="0.1.0a",
     url="https://github.com/Revnoplex/ayt-api",
     license="MIT",
     packages=find_packages(exclude=["tests"]),

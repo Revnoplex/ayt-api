@@ -82,21 +82,49 @@ class InvalidInput(YoutubeExceptions):
         super().__init__(message)
 
 
+class InvalidKey(YoutubeExceptions):
+    """Exception that's raised when an invalid API key is passed"""
+    def __init__(self):
+        super().__init__("API key not valid. Please pass a valid API key.")
+
+
+class APITimeout(YoutubeExceptions):
+    """Exception that's raised when the api does not respond within the timeout set
+    Attributes:
+        timeout_set (int): The timeout that was set
+    """
+    def __init__(self, timeout_set: aiohttp.ClientTimeout):
+        """
+        Args:
+            timeout_set (int): The timeout that was set
+        """
+        self.timeout_set = timeout_set.total
+        super().__init__("The Youtube API is not responding")
+
+
 class HTTPException(YoutubeExceptions):
     """Exception that's raised when an HTTP request operation fails.
     Args:
         response (ClientResponse): The aiohttp response associated with the error
         message (str): The error message associated with the error that the YouTube api gave
+        error_data (dict): The raw error data associated with the error
     Attributes:
         response (ClientResponse): The aiohttp response associated with the error
         message (str): The error message associated with the error that the YouTube api gave
         status (int): The HTTP status code associated with the error
+        error_data (dict): The raw error data associated with the error
         """
-
-    def __init__(self, response: aiohttp.ClientResponse, message: str = None):
+    def __init__(self, response: aiohttp.ClientResponse, message: str = None, error_data: dict = None):
         self.response: aiohttp.ClientResponse = response
+        self.error_data = error_data
+        self.details = error_data.get("details")
+        if self.details is not None:
+            self.reason = self.details[0].get("reason")
+        else:
+            self.reason = error_data["errors"][0].get("reason")
         self.status: int = response.status
         self.message = message
+        if self.reason == "API_KEY_INVALID":
+            raise InvalidKey()
         self.text: str = f': {message}' or ""
-
         super().__init__(f'{self.response.status} {self.response.reason}{self.text}')
