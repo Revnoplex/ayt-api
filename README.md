@@ -7,7 +7,7 @@ asynchronous api calls and responces are formatted as object oriented data.
 
 The library is also designed towards being used in discord bots, particularly ones using the discord.py library and forks of it
 
-## Installation
+## Installation:
 
 ayt-api is currently not published on pypi yet, but can be installed directly from here
 
