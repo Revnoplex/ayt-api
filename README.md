@@ -7,38 +7,36 @@ asynchronous api calls and responces are formatted as object oriented data.
 
 The library is also designed towards being used in discord bots, particularly ones using the discord.py library and forks of it
 
-## Installation:
+## Installation
 
-ayt-api is currently not published on pypi yet, but can be installed directly from here
+### Stable Release:
+The most recent stable release on pypi
+#### Windows:
+```powershell
+python -m pip install -U ayt-api
+```
 
-### Windows:
+#### Linux and Mac os:
+```bash
+pip3 install -U ayt-api
+````
+
+### Latest Commit:
+Installing the latest commit from here
+#### Windows:
 ```powershell
 python -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
 ```
 
-To update to the latest commit (eg. to fix a major bug) use:
-```powershell
-python -m pip install -U --force-reinstall "git+https://github.com/Revnoplex/ayt-api.git"
-```
-
- 
-
-### Linux and Mac os:
+#### Linux and Mac os:
 ```bash
 pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
 ````
 
-
-To update to the latest commit (eg. to fix a major bug) use:
-```bash
-pip3 install -U --force-reinstall git+https://github.com/Revnoplex/ayt-api.git
-```
-
-
-## Usage:
+## Usage
 First of all to use this library, you will need an API key. To get one, [see here for instructions](https://developers.google.com/youtube/v3/getting-started)
 
-### Basic video data fetching
+### Basic video data fetching:
 ```python
 import asyncio
 import ayt_api
@@ -66,7 +64,7 @@ loop = asyncio.new_event_loop()
 loop.run_until_complete(video_example())
 ```
 
-### Basic playlist data fetching
+### Basic playlist data fetching:
 ```python
 import asyncio
 import ayt_api
@@ -91,7 +89,7 @@ loop = asyncio.new_event_loop()
 loop.run_until_complete(playlist_example())
 ```
 
-### Basic playlist video fetching
+### Basic playlist video fetching:
 ```python
 import asyncio
 import ayt_api
