@@ -11,6 +11,7 @@ with open("requirements.txt", 'r') as requirements_file:
 setup(
     name="ayt-api",
     description="An Asynchronous, Object oriented python library for the YouTube api",
+    long_description=readme,
     author="Revnoplex",
     author_email="revnoplex.business@protonmail.com",
     version="0.1.0a",

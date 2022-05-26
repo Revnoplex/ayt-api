@@ -1,5 +1,4 @@
 import asyncio
-
 import aiohttp
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout
 from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata
@@ -29,8 +28,8 @@ class AsyncYoutubeAPI:
     async def get_playlist_metadata(self, playlist_id: str) -> YoutubePlaylistMetadata:
         """Fetches playlist metadata using a playlist id
 
-        Playlist metadata is fetched using a GET request which the response is then contracted into a
-        :class:`YoutubePlaylistMetadata` class
+        Playlist metadata is fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubePlaylistMetadata` object
 
         Args:
             playlist_id (str): The id of the playlist to use
@@ -71,8 +70,8 @@ class AsyncYoutubeAPI:
     async def get_videos_from_playlist(self, playlist_id, next_page=None) -> list[PlaylistVideoMetadata]:
         """Fetches a list of video in a playlist using a playlist id
 
-        Playlist video metadata is fetched using a GET request which the response is then contracted into a list of
-        :class:`PlaylistVideoMetadata` classes
+        Playlist video metadata is fetched using a GET request which the response is then concentrated into a list of
+        :class:`PlaylistVideoMetadata` objects
 
         Args:
             playlist_id (str): The id of the playlist to use
@@ -125,8 +124,8 @@ class AsyncYoutubeAPI:
     async def get_video_metadata(self, video_id) -> YoutubeVideoMetadata:
         """Fetches information on a video using a video id
 
-        Video metadata is fetched using a GET request which the response is then contracted into a
-        :class:`YoutubeVideoMetadata` class
+        Video metadata is fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubeVideoMetadata` object
 
         Args:
             video_id (str): The id of the video to use
