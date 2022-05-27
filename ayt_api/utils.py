@@ -1,3 +1,4 @@
+
 def strip_video_id(url: str) -> str:
     """supported urls:
     https://www.youtube.com/watch?v=ID

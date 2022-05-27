@@ -5,7 +5,7 @@ __title__ = "ayt-api"
 __author__ = "Revnoplex"
 __license__ = "MIT"
 __copyright__ = "Copyright 2022 Revnoplex"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 class VersionInfo(NamedTuple):

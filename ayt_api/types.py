@@ -7,7 +7,8 @@ from .exceptions import MissingDataFromMetadata
 class YoutubeThumbnail:
     """Data for an individual YouTube thumbnail.
     Attributes:
-        data (Optional[dict]): The raw thumbnail data
+        data (Optional[dict]):
+            The raw thumbnail data
         url (Optional[str]): The file url for the thumbnail
         width (Optional[int]): The amount of horizontal pixels in the thumbnail
         height (Optional[int]): The amount of vertical pixels in the thumbnail
