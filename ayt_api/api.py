@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout
 from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata
 
@@ -12,18 +13,23 @@ class AsyncYoutubeAPI:
         api_version (str): The API version to use. defaults to 3
         call_url_prefix (str): The start of the youtube API call url to use
         timeout (ClientTimeout): The timeout if the api does not respond
+        ignore_ssl (bool): whether to ignore any verification errors with the ssl certificate.
+                This is useful for using the api on a restricted network.
     """
-    def __init__(self, yt_api_key: str, api_version: str = '3', timeout: int = 5):
+    def __init__(self, yt_api_key: str, api_version: str = '3', timeout: int = 5, ignore_ssl: bool = False):
         """
         Args:
             yt_api_key (str): The API key used to access the YouTube API
             api_version (str): The API version to use. defaults to 3
             timeout (int): The timeout if the api does not respond
+            ignore_ssl (bool): whether to ignore any verification errors with the ssl certificate.
+                This is useful for using the api on a restricted network.
         """
         self.key = yt_api_key
         self.api_version = api_version
         self.call_url_prefix = f'https://www.googleapis.com/youtube/v{self.api_version}'
         self.timeout = aiohttp.ClientTimeout(total=timeout)
+        self.ignore_ssl = ignore_ssl
 
     async def get_playlist_metadata(self, playlist_id: str) -> YoutubePlaylistMetadata:
         """Fetches playlist metadata using a playlist id
@@ -40,7 +46,8 @@ class AsyncYoutubeAPI:
             PlaylistNotFound: The playlist does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
         """
-        async with aiohttp.ClientSession(timeout=self.timeout) as playlist_metadata_session:
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as playlist_metadata_session:
             call_url = f'{self.call_url_prefix}/playlists?part=snippet&part=status&part=contentDetails&part=player' \
                        f'&part=localizations&id={playlist_id}&key={self.key}'
             try:
@@ -85,7 +92,8 @@ class AsyncYoutubeAPI:
         """
         if len(playlist_id) < 1:
             raise InvalidInput(playlist_id)
-        async with aiohttp.ClientSession(timeout=self.timeout) as playlist_videos_session:
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as playlist_videos_session:
             next_page_query = "" if next_page is None else f'&pageToken={next_page}'
             call_url = f'{self.call_url_prefix}/playlistItems?part=snippet&part=contentDetails&part=status' \
                        f'&playlistId={playlist_id}{next_page_query}&maxResults=500&key={self.key}'
@@ -102,9 +110,8 @@ class AsyncYoutubeAPI:
                             res_json = res_data.get("items")
                             videos_next_page = []
                             if res_data.get("nextPageToken") is not None:
-                                videos_next_page = await self.get_videos_from_playlist(playlist_id,
-                                                                                       next_page=
-                                                                                       res_data["nextPageToken"])
+                                videos_next_page = await self.get_videos_from_playlist(
+                                    playlist_id, next_page=res_data["nextPageToken"])
                             videos = [PlaylistVideoMetadata(vid_item, call_url) for vid_item in res_json]
                             return videos + videos_next_page
                     elif playlist_videos_response.status == 404:
@@ -136,7 +143,8 @@ class AsyncYoutubeAPI:
             VideoNotFound: The video does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
         """
-        async with aiohttp.ClientSession(timeout=self.timeout) as video_duration_session:
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as video_duration_session:
             call_url = f'{self.call_url_prefix}/videos?part=snippet&part=contentDetails&part=status&part=statistics' \
                        f'&part=player&part=topicDetails&part=recordingDetails&part=liveStreamingDetails' \
                        f'&part=localizations&id={video_id}&maxResults=50&key={self.key}'

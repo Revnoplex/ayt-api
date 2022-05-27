@@ -63,7 +63,9 @@ class MissingDataFromMetadata(InvalidMetadata):
     def __init__(self, missing_data: str, metadata: dict, exception: Exception):
         self.raw_exception = exception
         self.missing_data = missing_data
-        message = f'The provided metadata object is missing data for {missing_data}'
+        message = f'The provided metadata object is missing data for {missing_data}. This is most likely be a bug so ' \
+                  f'please report this error on the github (https://github.com/Revnoplex/ayt-api) and make sure to ' \
+                  f'include the id of the video/playlist and the entirety this traceback'
         super().__init__(metadata, message)
 
 

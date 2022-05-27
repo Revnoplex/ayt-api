@@ -1,4 +1,4 @@
-from .async_youtube_api import AsyncYoutubeAPI
+from .api import AsyncYoutubeAPI
 from typing import Literal, NamedTuple
 
 __title__ = "ayt-api"
