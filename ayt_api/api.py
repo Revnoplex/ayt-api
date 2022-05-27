@@ -10,7 +10,8 @@ class AsyncYoutubeAPI:
     Attributes:
         key (str): The API key used to access the YouTube API. To get an API key,
             see instructions here: https://developers.google.com/youtube/v3/getting-started
-        api_version (str): The API version to use. defaults to 3
+        api_version (str):
+            The API version to use. defaults to 3
         call_url_prefix (str): The start of the youtube API call url to use
         timeout (ClientTimeout): The timeout if the api does not respond
         ignore_ssl (bool): whether to ignore any verification errors with the ssl certificate.

@@ -15,7 +15,7 @@ setup(
     long_description=readme,
     author="Revnoplex",
     author_email="revnoplex.business@protonmail.com",
-    version="0.1.0r1",
+    version="0.1.1",
     url="https://github.com/Revnoplex/ayt-api",
     license="MIT",
     packages=find_packages(exclude=["tests"]),

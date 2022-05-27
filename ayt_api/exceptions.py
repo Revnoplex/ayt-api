@@ -53,7 +53,8 @@ class InvalidMetadata(YoutubeExceptions):
 class MissingDataFromMetadata(InvalidMetadata):
     """Raises when the metadata in the response is malformed.
     Args:
-        missing_data (str): The error message to send along with the exception
+        missing_data (str):
+            The error message to send along with the exception
         metadata (dict): The raw payload data that is malformed
         exception (Exception): The original exception raised to trigger this exception
     Attributes:
