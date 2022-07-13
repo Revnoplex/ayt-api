@@ -406,7 +406,7 @@ class YoutubePlaylistMetadata:
             if self.channel_id is None:
                 self.channel_url: Optional[str] = None
             else:
-                self.channel_url: Optional[str] = f'https://www.youtube".com/channel/{self.channel_id}'
+                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
             self.title: str = self.snippet["title"]
             self.description: str = self.snippet["description"]
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
@@ -482,7 +482,7 @@ class PlaylistVideoMetadata(ABCVideoMetadata):
             if self.channel_id is None:
                 self.channel_url: Optional[str] = None
             else:
-                self.channel_url: Optional[str] = f'https://www.youtube".com/channel/{self.channel_id}'
+                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
             self.channel_title: Optional[str] = self.snippet.get("videoOwnerChannelTitle")
             self.playlist_id: str = self.snippet["playlistId"]
             self.playlist_url = f'https://www.youtube.com/playlist?list={self.playlist_id}'
@@ -599,7 +599,7 @@ class YoutubeVideoMetadata(ABCVideoMetadata):
             if self.channel_id is None:
                 self.channel_url: Optional[str] = None
             else:
-                self.channel_url: Optional[str] = f'https://www.youtube".com/channel/{self.channel_id}'
+                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
             self.title: str = self.snippet["title"]
             self.description: str = self.snippet["description"]
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
