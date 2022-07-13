@@ -46,7 +46,10 @@ class AsyncYoutubeAPI:
             HTTPException: Fetching the metadata failed
             PlaylistNotFound: The playlist does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
         """
+        if len(playlist_id) < 1:
+            raise InvalidInput(playlist_id)
         async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
                 as playlist_metadata_session:
             call_url = f'{self.call_url_prefix}/playlists?part=snippet&part=status&part=contentDetails&part=player' \
@@ -90,6 +93,7 @@ class AsyncYoutubeAPI:
             HTTPException: Fetching the metadata failed
             PlaylistNotFound: The playlist does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
         """
         if len(playlist_id) < 1:
             raise InvalidInput(playlist_id)
@@ -143,7 +147,10 @@ class AsyncYoutubeAPI:
             HTTPException: Fetching the metadata failed
             VideoNotFound: The video does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
         """
+        if len(video_id) < 1:
+            raise InvalidInput(video_id)
         async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
                 as video_duration_session:
             call_url = f'{self.call_url_prefix}/videos?part=snippet&part=contentDetails&part=status&part=statistics' \
