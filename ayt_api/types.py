@@ -516,7 +516,7 @@ class YoutubeVideoMetadata(ABCVideoMetadata):
             channel_title: (Optional[str]) The name of the channel that the video belongs to
             channel_id (Optional[str]): The id of the channel that the video belongs to
             channel_url (Optional[str]): The url of the channel that the video belongs to.
-            tags (list[str]): The tags the uploaded has provided to make the video appear in search results relating
+            tags (Optional[list[str]]): The tags the uploaded has provided to make the video appear in search results relating
                 to it
             category_id (int): The id of the category that was set for the video
             live_broadcast_content: (str): Indicates if the video is a livestream and if it is live
@@ -604,7 +604,7 @@ class YoutubeVideoMetadata(ABCVideoMetadata):
             self.description: str = self.snippet["description"]
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
             self.channel_title: Optional[str] = self.snippet.get("channelTitle")
-            self.tags: list[str] = self.snippet["tags"]
+            self.tags: Optional[list[str]] = self.snippet.get("tags")
             self.category_id: int = int(self.snippet["categoryId"])
             self.live_broadcast_content: str = self.snippet["liveBroadcastContent"]
             self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
