@@ -1,4 +1,5 @@
 import datetime
+import sys
 from typing import Union, Optional
 import isodate
 from .exceptions import MissingDataFromMetadata
@@ -454,6 +455,8 @@ class PlaylistVideoMetadata(ABCVideoMetadata):
         playlist_id (str): The ID of the playlist the video is in
         playlist_url (str): The URL of the playlist the video is in
         published_at (datetime.datetime): The date and time the video was published
+        available (bool): whether the video in the playlist is playable hasn't been deleted or made private.
+            This is determined by checking if the video has an upload date.
         note (Optional[str]): A user-generated note for this item.
         visibility (str): The playlist item's privacy status. Can be public, private or unlisted
     """
@@ -475,8 +478,8 @@ class PlaylistVideoMetadata(ABCVideoMetadata):
             self.position: int = self.snippet["position"]
             self.id: str = self.content_details["videoId"]
             self.url: str = f'https://www.youtube.com/watch?v={self.id}'
-            self.title: str = self.snippet["title"]
-            self.description: str = self.snippet['description']
+            self.title: str = self.snippet.get("title")
+            self.description: str = self.snippet.get('description')
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
             self.channel_id: Optional[str] = self.snippet.get("videoOwnerChannelId")
             if self.channel_id is None:
@@ -487,8 +490,10 @@ class PlaylistVideoMetadata(ABCVideoMetadata):
             self.playlist_id: str = self.snippet["playlistId"]
             self.playlist_url = f'https://www.youtube.com/playlist?list={self.playlist_id}'
             self.note: Optional[str] = self.content_details.get("note")
-            self.published_at = isodate.parse_datetime(self.content_details["videoPublishedAt"])
-            self.visibility: str = self.status["privacyStatus"]
+            self.published_at = None if self.content_details.get("videoPublishedAt") is None else \
+                isodate.parse_datetime(self.content_details["videoPublishedAt"])
+            self.available = bool(self.published_at)
+            self.visibility: str = self.status.get("privacyStatus")
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
