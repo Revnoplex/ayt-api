@@ -75,7 +75,7 @@ class InvalidInput(YoutubeExceptions):
     Args:
         invalid_input (Any): The invalid input that was provided
     Attributes:
-        invalid_input (Any): The invalid input that was provided
+        input (Any): The invalid input that was provided
     """
     def __init__(self, invalid_input):
         self.input = invalid_input
