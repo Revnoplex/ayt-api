@@ -12,12 +12,12 @@ The library is also designed towards being used in discord bots, particularly on
 ### Stable Release:
 The most recent stable release on pypi
 #### Windows:
-```sh
+```powershell
 python -m pip install -U ayt-api
 ```
 
 #### Linux and Mac os:
-```bash
+```sh
 python3 -m pip install -U ayt-api
 
 # or
@@ -33,7 +33,7 @@ python -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
 ```
 
 #### Linux and Mac os:
-```bash
+```sh
 python3 -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 
 # or
