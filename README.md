@@ -27,7 +27,7 @@ pip3 -m pip install -U ayt-api
 ````
 
 ### Latest Commit:
-Installing the latest commit from here
+Installing the latest commit from here. You will need git or something simular installed to download the library
 #### Windows:
 ```powershell
 python -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
