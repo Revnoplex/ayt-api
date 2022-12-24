@@ -16,7 +16,7 @@ The latest stable version is available on pypi
 python -m pip install -U ayt-api
 ```
 
-#### Linux and Mac os:
+#### Unix based OSes (Linux, Mac OS, etc.):
 The pip command can vary between diffrent unix based OSes but should be simular to these:
 ```sh
 python3 -m pip install -U ayt-api
@@ -33,7 +33,8 @@ Installing the latest commit from here
 python -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
 ```
 
-#### Linux and Mac os:
+#### Unix based OSes (Linux, Mac OS, etc.):
+The pip command can vary between diffrent unix based OSes but should be simular to these:
 ```sh
 python3 -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 
