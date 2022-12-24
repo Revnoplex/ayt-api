@@ -5,7 +5,7 @@ An Asynchronous, Object oriented python library for the YouTube api
 The difference with this library and other libraries is that it uses 
 asynchronous api calls and responses are formatted as object-oriented data. 
 
-The library is also designed towards being used in discord bots, particularly ones using the discord.py library and forks of it
+The library is also designed towards being used in python based discord bots that use an asynchronous discord api wrapper
 
 ## Installation
 
