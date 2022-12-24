@@ -10,7 +10,7 @@ The library is also designed towards being used in python based discord bots tha
 ## Installation
 
 ### Stable Release:
-The most recent stable release on pypi
+The latest stable version is available on pypi
 #### Windows:
 ```powershell
 python -m pip install -U ayt-api
