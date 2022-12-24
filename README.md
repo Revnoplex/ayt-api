@@ -17,6 +17,7 @@ python -m pip install -U ayt-api
 ```
 
 #### Linux and Mac os:
+The pip command can vary between diffrent unix based OSes but should be simular to these:
 ```sh
 python3 -m pip install -U ayt-api
 
