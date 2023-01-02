@@ -1,8 +1,20 @@
 import asyncio
 import aiohttp
+from typing import Literal, NamedTuple
 from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout
 from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata
+
+
+class VersionInfo(NamedTuple):
+    major: int
+    minor: int
+    micro: int
+    release_level: Literal["alpha", "beta", "candidate", "final"]
+    serial: int
+
+
+version_info = VersionInfo(major=0, minor=1, micro=0, release_level="final", serial=0)
 
 
 class AsyncYoutubeAPI:
@@ -12,7 +24,7 @@ class AsyncYoutubeAPI:
             see instructions here: https://developers.google.com/youtube/v3/getting-started
         api_version (str):
             The API version to use. defaults to 3
-        call_url_prefix (str): The start of the youtube API call url to use
+        call_url_prefix (str): The start of the YouTube API call url to use
         timeout (ClientTimeout): The timeout if the api does not respond
         ignore_ssl (bool): whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
