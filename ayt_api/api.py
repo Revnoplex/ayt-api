@@ -14,7 +14,7 @@ class VersionInfo(NamedTuple):
     serial: int
 
 
-version_info = VersionInfo(major=0, minor=1, micro=0, release_level="final", serial=0)
+version_info = VersionInfo(major=0, minor=1, micro=2, release_level="final", serial=0)
 
 
 class AsyncYoutubeAPI:
