@@ -2,35 +2,45 @@
 An Asynchronous, Object oriented python library for the YouTube api
 
 ## What makes ayt-api different?
-The diffrence with this library and other libraries is that it uses 
-asynchronous api calls and responces are formatted as object oriented data. 
+The difference with this library and other libraries is that it uses 
+asynchronous api calls and responses are formatted as object-oriented data. 
 
-The library is also designed towards being used in discord bots, particularly ones using the discord.py library and forks of it
+The library is also designed towards being used in python based discord bots that use an asynchronous discord api wrapper
 
 ## Installation
 
 ### Stable Release:
-The most recent stable release on pypi
+The latest stable version is available on pypi
 #### Windows:
 ```powershell
 python -m pip install -U ayt-api
 ```
 
-#### Linux and Mac os:
-```bash
-pip3 install -U ayt-api
+#### Unix based OSes (Linux, Mac OS, etc.):
+The pip command can vary between diffrent unix based OSes but should be simular to these:
+```sh
+python3 -m pip install -U ayt-api
+
+# or
+
+pip3 -m pip install -U ayt-api
 ````
 
 ### Latest Commit:
-Installing the latest commit from here
+Installing the latest commit from here. You will need git or something simular installed to download the library
 #### Windows:
 ```powershell
 python -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
 ```
 
-#### Linux and Mac os:
-```bash
-pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
+#### Unix based OSes (Linux, Mac OS, etc.):
+The pip command can vary between diffrent unix based OSes but should be simular to these:
+```sh
+python3 -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
+
+# or
+
+pip3 -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 ````
 
 ## Usage

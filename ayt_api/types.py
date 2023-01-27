@@ -1,5 +1,4 @@
 import datetime
-import sys
 from typing import Union, Optional
 import isodate
 from .exceptions import MissingDataFromMetadata
@@ -249,7 +248,7 @@ class RecordingDetails:
 
 
 class VideoStream:
-    """Metadata about a video stream for a youtube video
+    """Metadata about a video stream for a YouTube video
     Attributes:
         data (dict): The raw video stream data used to construct this class
         width (int): The encoded video content's width in pixels.
@@ -285,7 +284,7 @@ class VideoStream:
 
 
 class AudioStream:
-    """Metadata about an audio stream for a youtube video
+    """Metadata about an audio stream for a YouTube video
     Attributes:
         data (dict): The raw audio stream data used to construct this class
         channel_count (int): The number of audio channels that the stream contains.
@@ -521,8 +520,8 @@ class YoutubeVideoMetadata(ABCVideoMetadata):
             channel_title: (Optional[str]) The name of the channel that the video belongs to
             channel_id (Optional[str]): The id of the channel that the video belongs to
             channel_url (Optional[str]): The url of the channel that the video belongs to.
-            tags (Optional[list[str]]): The tags the uploaded has provided to make the video appear in search results relating
-                to it
+            tags (Optional[list[str]]): The tags the uploaded has provided to make the video appear in search results
+                relating to it
             category_id (int): The id of the category that was set for the video
             live_broadcast_content: (str): Indicates if the video is a livestream and if it is live
             default_language (Optional[str]): The default language the video is set in
