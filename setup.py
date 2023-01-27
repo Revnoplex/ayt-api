@@ -5,7 +5,7 @@ with open("README.md", 'r') as readme_file:
     readme_file.close()
 
 with open("requirements.txt", 'r') as requirements_file:
-    requirements = requirements_file.readlines()
+    requirements = requirements_file.read().splitlines()
     requirements_file.close()
 
 setup(
