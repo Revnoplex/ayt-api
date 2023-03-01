@@ -16,7 +16,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["version", "dependencies"]
+#dynamic = ["version", "dependencies"]
+dynamic = ["dependencies"]
 
 [project.urls]
 "Homepage" = "https://github.com/Revnoplex/ayt-api"
@@ -28,5 +29,6 @@ where = ["ayt_api"]
 exclude = ["tests*"]
 
 [tool.setuptools.dynamic]
-version = {attr = "ayt_api.__version__"}
+# for some reason this doesn't work
+#version = {attr = "ayt_api.__version__"}
 dependencies = {file = "requirements.txt"}
