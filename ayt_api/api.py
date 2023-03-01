@@ -129,7 +129,7 @@ class AsyncYoutubeAPI:
                             if res_data.get("nextPageToken") is not None:
                                 videos_next_page = await self.get_videos_from_playlist(
                                     playlist_id, next_page=res_data["nextPageToken"])
-                            videos = [PlaylistVideoMetadata(vid_item, call_url) for vid_item in res_json]
+                            videos = [PlaylistVideoMetadata(vid_item, call_url, self) for vid_item in res_json]
                             return videos + videos_next_page
                     elif playlist_videos_response.status == 404:
                         raise PlaylistNotFound(playlist_id)

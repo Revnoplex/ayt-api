@@ -129,8 +129,8 @@ class ContentRating:
     """
     def __init__(self, data: dict):
         """
-
-        :param data:
+        Args:
+            data(dict): The raw content rating data
         """
         self.acb: Optional[str] = data.get("acbRating")
         self.agcom: Optional[str] = data.get("agcomRating")
@@ -317,6 +317,7 @@ class ProcessingProgress:
         parts_processed (int): The number of parts of the video that YouTube has already processed.
         time_left (Optional[datetime.timedelta]):
             An estimate of the amount of time, in milliseconds, that YouTube needs to finish processing the video.
+        percentage (int): The percentage of the video that has been processed
     """
     def __init__(self, data: dict):
         """
@@ -331,8 +332,17 @@ class ProcessingProgress:
                 self.time_left: Optional[datetime.timedelta] = None
             else:
                 self.time_left: Optional[datetime.timedelta] = datetime.timedelta(milliseconds=data["timeLeftMs"])
+            self.percentage: int = round(self.parts_processed/self.parts_total*100)
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), data, missing_snippet_data)
+
+    def __str__(self):
+        if self.time_left:
+            return f"Processing {self.parts_processed}/{self.parts_total} " \
+                   f"({round(self.parts_processed/self.parts_total*100)}%) ETA: {self.time_left}"
+        else:
+            return f"Processing {self.parts_processed}/{self.parts_total} " \
+                   f"({round(self.parts_processed / self.parts_total * 100)}%)"
 
 
 class TagSuggestion:
@@ -353,148 +363,15 @@ class TagSuggestion:
         self.tag: str = data["tag"]
         self.category_restricts: Optional[list[str]] = data.get("categoryRestricts")
 
-
-class YoutubePlaylistMetadata:
-    """Data class for YouTube playlists
-    Attributes:
-        metadata (dict): The raw API response used to construct this class
-        call_url (str): The url used to call the API. Intended use is for debugging purposes
-        id (str): The ID of the playlist. Example: "PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp" from the url:
-            "https://www.youtube.com/playlist?list=PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp"
-        url (str): The URL of the playlist
-        snippet (dict): The raw snippet data used to construct this class
-        status (dict): The raw status data used to construct part of this class
-        content_details (dict): The raw content details data used to construct part of this class
-        player (dict): The raw player data used to construct part of this class
-        raw_localisations (Optional[dict]): The raw localisation data used to construct part of this class
-        published_at (datetime.datetime): The date and time the playlist was published
-        channel_id (Optional[str]): The id of the channel that created the playlist
-        channel_url (Optional[str]): The url of the channel that created the playlist
-        title (str): The title of the playlist
-        description (str): The description of the playlist
-        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the playlist has
-        channel_title: (Optional[str]) The name of the channel that created the playlist
-        default_language (Optional[str]): The default language the video is set in. Can be None
-        localised (Optional[LocalName]): The localised language of the title and description of the video
-        localized (Optional[LocalName]): an alias of localised
-        visibility (Optional[str]): The video's privacy status. Can be private, public or unlisted
-        item_count (Optional[int]): The number of items in the playlist
-        embed_html (Optional[str]): An <iframe> tag that embeds a player that plays the video.
-        localisations (Optional[list[LocalName]]): contains translations of the video's metadata.
-        localizations (Optional[list[LocalName]]): an alias of localisations
-    """
-    def __init__(self, metadata: dict, call_url: str):
-        """
-        Args:
-            metadata (dict): The raw API response to provide
-            call_url (str): The url used to call the API. Intended use is for debugging purposes
-        Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
-        """
-        try:
-            self.metadata = metadata
-            self.call_url = call_url
-            self.id: str = metadata["id"]
-            self.url: str = f'https://www.youtube.com/playlist?list={self.id}'
-            self.snippet: dict = metadata["snippet"]
-            self.status: dict = metadata["status"]
-            self.content_details: dict = metadata["contentDetails"]
-            self.player: dict = metadata["player"]
-            self.raw_localisations: Optional[dict] = metadata.get("localizations")
-            self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
-            self.channel_id: Optional[str] = self.snippet.get("channelId")
-            if self.channel_id is None:
-                self.channel_url: Optional[str] = None
-            else:
-                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
-            self.title: str = self.snippet["title"]
-            self.description: str = self.snippet["description"]
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
-            self.channel_title: Optional[str] = self.snippet.get("channelTitle")
-            self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
-            if self.snippet.get("localized") is None:
-                self.localised: Optional[LocalName] = None
-            else:
-                self.localised: Optional[LocalName] = LocalName(self.snippet["localized"])
-                self.localized = self.localised
-            self.visibility: Optional[str] = self.status.get("privacyStatus")
-            self.item_count: Optional[int] = self.content_details.get("itemCount")
-            self.embed_html: Optional[str] = self.player.get("embedHtml")
-            if self.raw_localisations is None:
-                self.localisations: Optional[list[LocalName]] = None
-            else:
-                self.localisations: Optional[list[LocalName]] = []
-                for localisation_name, localisation_value in self.raw_localisations.items():
-                    self.localisations.append(LocalName(localisation_value, localisation_name))
-            self.localizations = self.localisations
-        except KeyError as missing_snippet_data:
-            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+    def __str__(self):
+        if self.category_restricts:
+            return f'Tag Suggestion: "{self.tag}" with restrictions: {",".join(self.category_restricts)}'
+        else:
+            return f'Tag Suggestion: "{self.tag}"'
 
 
 class ABCVideoMetadata:
     pass
-
-
-class PlaylistVideoMetadata(ABCVideoMetadata):
-    """A data class for videos in a playlist
-    Attributes:
-        metadata (dict): The raw metadata from the API call used to construct this class
-        call_url (str): The url used to call the API. Intended use is for debugging purposes
-        id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
-            "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
-        position (int): The position in the playlist the video is in
-        url (str): The URL of the video
-        title (str): The title of the video
-        description (str): The description of the video
-        added_at (datetime.datetime): The date and time the video was added to the playlist
-        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has
-        channel_title: (Optional[str]) The name of the channel that the video belongs to
-        channel_id (Optional[str]): The id of the channel that the video belongs to
-        channel_url (Optional[str]): The url of the channel that the video belongs to
-        playlist_id (str): The ID of the playlist the video is in
-        playlist_url (str): The URL of the playlist the video is in
-        published_at (datetime.datetime): The date and time the video was published
-        available (bool): whether the video in the playlist is playable hasn't been deleted or made private.
-            This is determined by checking if the video has an upload date.
-        note (Optional[str]): A user-generated note for this item.
-        visibility (str): The playlist item's privacy status. Can be public, private or unlisted
-    """
-    def __init__(self, metadata: dict, call_url: str):
-        """
-        Args:
-            metadata: The snippet metadata of the video in the playlist
-            call_url (str): The url used to call the API. Intended use is for debugging purposes
-        Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
-        """
-        try:
-            self.metadata = metadata
-            self.call_url = call_url
-            self.snippet: dict = metadata["snippet"]
-            self.content_details: dict = metadata["contentDetails"]
-            self.status: dict = metadata["status"]
-            self.added_at = isodate.parse_datetime(self.snippet["publishedAt"])
-            self.position: int = self.snippet["position"]
-            self.id: str = self.content_details["videoId"]
-            self.url: str = f'https://www.youtube.com/watch?v={self.id}'
-            self.title: str = self.snippet.get("title")
-            self.description: str = self.snippet.get('description')
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
-            self.channel_id: Optional[str] = self.snippet.get("videoOwnerChannelId")
-            if self.channel_id is None:
-                self.channel_url: Optional[str] = None
-            else:
-                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
-            self.channel_title: Optional[str] = self.snippet.get("videoOwnerChannelTitle")
-            self.playlist_id: str = self.snippet["playlistId"]
-            self.playlist_url = f'https://www.youtube.com/playlist?list={self.playlist_id}'
-            self.note: Optional[str] = self.content_details.get("note")
-            self.published_at = None if self.content_details.get("videoPublishedAt") is None else \
-                isodate.parse_datetime(self.content_details["videoPublishedAt"])
-            self.available = bool(self.published_at)
-            self.visibility: str = self.status.get("privacyStatus")
-        except KeyError as missing_snippet_data:
-            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
 
 class YoutubeVideoMetadata(ABCVideoMetadata):
@@ -704,6 +581,179 @@ class YoutubeVideoMetadata(ABCVideoMetadata):
 
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+
+class PlaylistVideoMetadata(ABCVideoMetadata):
+    """A data class for videos in a playlist
+    Attributes:
+        metadata (dict): The raw metadata from the API call used to construct this class
+        call_url (str): The url used to call the API. Intended use is for debugging purposes
+        id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
+        position (int): The position in the playlist the video is in
+        url (str): The URL of the video
+        title (str): The title of the video
+        description (str): The description of the video
+        added_at (datetime.datetime): The date and time the video was added to the playlist
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has
+        channel_title: (Optional[str]) The name of the channel that the video belongs to
+        channel_id (Optional[str]): The id of the channel that the video belongs to
+        channel_url (Optional[str]): The url of the channel that the video belongs to
+        playlist_id (str): The ID of the playlist the video is in
+        playlist_url (str): The URL of the playlist the video is in
+        published_at (datetime.datetime): The date and time the video was published
+        available (bool): whether the video in the playlist is playable hasn't been deleted or made private.
+            This is determined by checking if the video has an upload date.
+        note (Optional[str]): A user-generated note for this item.
+        visibility (str): The playlist item's privacy status. Can be public, private or unlisted
+    """
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+        Args:
+            metadata: The snippet metadata of the video in the playlist
+            call_url (str): The url used to call the API. Intended use is for debugging purposes
+        Raises:
+            MissingDataFromMetaData: There is malformed data in the metadata provided
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.snippet: dict = metadata["snippet"]
+            self.content_details: dict = metadata["contentDetails"]
+            self.status: dict = metadata["status"]
+            self.added_at = isodate.parse_datetime(self.snippet["publishedAt"])
+            self.position: int = self.snippet["position"]
+            self.id: str = self.content_details["videoId"]
+            self.url: str = f'https://www.youtube.com/watch?v={self.id}'
+            self.title: str = self.snippet.get("title")
+            self.description: str = self.snippet.get('description')
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.channel_id: Optional[str] = self.snippet.get("videoOwnerChannelId")
+            if self.channel_id is None:
+                self.channel_url: Optional[str] = None
+            else:
+                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
+            self.channel_title: Optional[str] = self.snippet.get("videoOwnerChannelTitle")
+            self.playlist_id: str = self.snippet["playlistId"]
+            self.playlist_url = f'https://www.youtube.com/playlist?list={self.playlist_id}'
+            self.note: Optional[str] = self.content_details.get("note")
+            self.published_at = None if self.content_details.get("videoPublishedAt") is None else \
+                isodate.parse_datetime(self.content_details["videoPublishedAt"])
+            self.available = bool(self.published_at)
+            self.visibility: str = self.status.get("privacyStatus")
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+    async def extended_data(self) -> YoutubeVideoMetadata:
+        """Fetches extended information on the video in the playlist
+
+        This ia an api call which then returns a
+        :class:`YoutubeVideoMetadata` object
+
+        Returns:
+            YoutubeVideoMetadata: The video object containing data of the video
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+        """
+        from .api import AsyncYoutubeAPI
+        api: AsyncYoutubeAPI = self._call_data
+        return await api.get_video_metadata(self.id)
+
+
+class YoutubePlaylistMetadata:
+    """Data class for YouTube playlists
+    Attributes:
+        metadata (dict): The raw API response used to construct this class
+        call_url (str): The url used to call the API. Intended use is for debugging purposes
+        id (str): The ID of the playlist. Example: "PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp" from the url:
+            "https://www.youtube.com/playlist?list=PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp"
+        url (str): The URL of the playlist
+        snippet (dict): The raw snippet data used to construct this class
+        status (dict): The raw status data used to construct part of this class
+        content_details (dict): The raw content details data used to construct part of this class
+        player (dict): The raw player data used to construct part of this class
+        raw_localisations (Optional[dict]): The raw localisation data used to construct part of this class
+        published_at (datetime.datetime): The date and time the playlist was published
+        channel_id (Optional[str]): The id of the channel that created the playlist
+        channel_url (Optional[str]): The url of the channel that created the playlist
+        title (str): The title of the playlist
+        description (str): The description of the playlist
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the playlist has
+        channel_title: (Optional[str]) The name of the channel that created the playlist
+        default_language (Optional[str]): The default language the video is set in. Can be None
+        localised (Optional[LocalName]): The localised language of the title and description of the video
+        localized (Optional[LocalName]): an alias of localised
+        visibility (Optional[str]): The video's privacy status. Can be private, public or unlisted
+        item_count (Optional[int]): The number of items in the playlist
+        embed_html (Optional[str]): An <iframe> tag that embeds a player that plays the video.
+        localisations (Optional[list[LocalName]]): contains translations of the video's metadata.
+        localizations (Optional[list[LocalName]]): an alias of localisations
+    """
+    def __init__(self, metadata: dict, call_url: str):
+        """
+        Args:
+            metadata (dict): The raw API response to provide
+            call_url (str): The url used to call the API. Intended use is for debugging purposes
+        Raises:
+            MissingDataFromMetaData: There is malformed data in the metadata provided
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self.id: str = metadata["id"]
+            self.url: str = f'https://www.youtube.com/playlist?list={self.id}'
+            self.snippet: dict = metadata["snippet"]
+            self.status: dict = metadata["status"]
+            self.content_details: dict = metadata["contentDetails"]
+            self.player: dict = metadata["player"]
+            self.raw_localisations: Optional[dict] = metadata.get("localizations")
+            self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
+            self.channel_id: Optional[str] = self.snippet.get("channelId")
+            if self.channel_id is None:
+                self.channel_url: Optional[str] = None
+            else:
+                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
+            self.title: str = self.snippet["title"]
+            self.description: str = self.snippet["description"]
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.channel_title: Optional[str] = self.snippet.get("channelTitle")
+            self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
+            if self.snippet.get("localized") is None:
+                self.localised: Optional[LocalName] = None
+            else:
+                self.localised: Optional[LocalName] = LocalName(self.snippet["localized"])
+                self.localized = self.localised
+            self.visibility: Optional[str] = self.status.get("privacyStatus")
+            self.item_count: Optional[int] = self.content_details.get("itemCount")
+            self.embed_html: Optional[str] = self.player.get("embedHtml")
+            if self.raw_localisations is None:
+                self.localisations: Optional[list[LocalName]] = None
+            else:
+                self.localisations: Optional[list[LocalName]] = []
+                for localisation_name, localisation_value in self.raw_localisations.items():
+                    self.localisations.append(LocalName(localisation_value, localisation_name))
+            self.localizations = self.localisations
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+    async def fetch_videos(self) -> list[PlaylistVideoMetadata]:
+        """
+        Fetches a list of the videos in the playlist
+
+        This is an api call which returns a list of
+        :class:`PlaylistVideoMetadata` objects
+        Returns:
+            list[PlaylistVideoMetadata]: A list containing playlist video objects
+        Raises:
+            HTTPException: Fetching the metadata failed
+            PlaylistNotFound: The playlist does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+        """
 
 
 class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
