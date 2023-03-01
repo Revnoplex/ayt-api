@@ -1,5 +1,5 @@
 # ayt-api
-An Asynchronous, Object oriented python library for the YouTube api
+A Basic Asynchronous, Object oriented python library for the YouTube api
 
 ## What makes ayt-api different?
 The difference with this library and other libraries is that it uses 
