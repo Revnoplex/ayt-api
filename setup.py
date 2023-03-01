@@ -1,4 +1,6 @@
 from setuptools import setup, find_packages
+import codecs
+import os.path
 
 with open("README.md", 'r') as readme_file:
     readme = readme_file.read()
@@ -8,6 +10,22 @@ with open("requirements.txt", 'r') as requirements_file:
     requirements = requirements_file.read().splitlines()
     requirements_file.close()
 
+
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
+
 setup(
     name="ayt-api",
     description="An Asynchronous, Object oriented python library for the YouTube api",
@@ -15,7 +33,7 @@ setup(
     long_description=readme,
     author="Revnoplex",
     author_email="revnoplex.business@protonmail.com",
-    version="0.1.2",
+    version=get_version("ayt_api/__init__.py"),
     url="https://github.com/Revnoplex/ayt-api",
     license="MIT",
     packages=find_packages(exclude=["tests"]),
