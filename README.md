@@ -36,11 +36,11 @@ python -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
 #### Unix based OSes (Linux, Mac OS, etc.):
 The pip command can vary between diffrent unix based OSes but should be simular to these:
 ```sh
-python3 -m pip install -U "git+https://github.com/Revnoplex/ayt-api.git"
+python3 -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 
 # or
 
-pip3 install -U "git+https://github.com/Revnoplex/ayt-api.git"
+pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
 ````
 
 ## Usage
