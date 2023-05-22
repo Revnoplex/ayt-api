@@ -17,8 +17,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["version", "dependencies"]
-#dynamic = ["dependencies"]
+#dynamic = ["version", "dependencies"]
+dynamic = ["dependencies"]
 
 [project.urls]
 "Homepage" = "https://github.com/Revnoplex/ayt-api"
@@ -35,5 +35,5 @@ include-package-data = true
 
 [tool.setuptools.dynamic]
 # for some reason this doesn't work
-version = {attr = "ayt_api.__version__"}
+#version = {attr = "ayt_api.__version__"}
 dependencies = {file = "requirements.txt"}
