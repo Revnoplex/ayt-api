@@ -77,7 +77,7 @@ class AsyncYoutubeAPI:
                             raise PlaylistNotFound(playlist_id)
                         else:
                             res_json = res_data.get("items")[0]
-                            return YoutubePlaylistMetadata(res_json, call_url)
+                            return YoutubePlaylistMetadata(res_json, call_url, self)
                     else:
                         message = f'The youtube API returned the following error code: ' \
                                   f'{playlist_metadata_response.status}'

@@ -693,7 +693,7 @@ class YoutubePlaylistMetadata:
         localisations (Optional[list[LocalName]]): contains translations of the video's metadata.
         localizations (Optional[list[LocalName]]): an alias of localisations
     """
-    def __init__(self, metadata: dict, call_url: str):
+    def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
             metadata (dict): The raw API response to provide
@@ -704,6 +704,7 @@ class YoutubePlaylistMetadata:
         try:
             self.metadata = metadata
             self.call_url = call_url
+            self._call_data = call_data
             self.id: str = metadata["id"]
             self.url: str = f'https://www.youtube.com/playlist?list={self.id}'
             self.snippet: dict = metadata["snippet"]
@@ -754,6 +755,9 @@ class YoutubePlaylistMetadata:
             aiohttp.ClientError: There was a problem sending the request to the api
             InvalidInput: The input is not a playlist id
         """
+        from .api import AsyncYoutubeAPI
+        api: AsyncYoutubeAPI = self._call_data
+        return await api.get_videos_from_playlist(self.id)
 
 
 class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
