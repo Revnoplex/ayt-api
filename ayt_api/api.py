@@ -1,20 +1,8 @@
 import asyncio
 import aiohttp
-from typing import Literal, NamedTuple
 from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout
 from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata
-
-
-class VersionInfo(NamedTuple):
-    major: int
-    minor: int
-    micro: int
-    release_level: Literal["alpha", "beta", "candidate", "final"]
-    serial: int
-
-
-version_info = VersionInfo(major=0, minor=1, micro=2, release_level="final", serial=0)
 
 
 class AsyncYoutubeAPI:

@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ayt-api"
-version = "0.1.2"
 authors = [
   { name="Revnoplex", email="revnoplex.business@protonmail.com" },
 ]
@@ -17,8 +16,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-#dynamic = ["version", "dependencies"]
-dynamic = ["dependencies"]
+dynamic = ["version", "dependencies"]
 
 [project.urls]
 "Homepage" = "https://github.com/Revnoplex/ayt-api"
@@ -29,11 +27,6 @@ dynamic = ["dependencies"]
 packages = ["ayt_api"]
 include-package-data = true
 
-#[tool.setuptools.packages.find]
-#where = ["ayt_api"]
-#exclude = ["tests*"]
-
 [tool.setuptools.dynamic]
-# for some reason this doesn't work
-#version = {attr = "ayt_api.__version__"}
+version = {attr = "ayt_api.__version__"}
 dependencies = {file = "requirements.txt"}
