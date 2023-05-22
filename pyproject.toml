@@ -12,7 +12,18 @@ readme = "README.md"
 requires-python = ">=3.7"
 license = {file = "LICENSE.md"}
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
