@@ -1,7 +1,6 @@
 from .api import AsyncYoutubeAPI
 from typing import NamedTuple as _NamedTuple
 from .exceptions import *
-import utils as utils
 
 __title__ = "ayt-api"
 __author__ = "Revnoplex"
