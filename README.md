@@ -24,7 +24,7 @@ python3 -m pip install -U ayt-api
 # or
 
 pip3 install -U ayt-api
-````
+```
 
 ### Latest Commit:
 Installing the latest commit from here. You will need git or something simular installed to download the library
@@ -41,7 +41,7 @@ python3 -m pip install -U git+https://github.com/Revnoplex/ayt-api.git
 # or
 
 pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
-````
+```
 
 ## Usage
 First of all to use this library, you will need an API key. To get one, [see here for instructions](https://developers.google.com/youtube/v3/getting-started)
