@@ -26,7 +26,7 @@ dynamic = ["dependencies"]
 "Bug Tracker" = "https://github.com/Revnoplex/ayt-api/issues"
 
 [tool.setuptools]
-packages = ["ayt_api", "ayt_api.utils"]
+packages = ["ayt_api"]
 include-package-data = true
 
 #[tool.setuptools.packages.find]
