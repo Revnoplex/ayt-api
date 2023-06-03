@@ -25,6 +25,12 @@ class YoutubeThumbnail:
         self.height: Optional[int] = data.get("height")
         self.resolution = "{}x{}".format(self.width, self.height)
 
+    def __str__(self):
+        return self.url
+
+    def __repr__(self):
+        return f"YoutubeThumbnail({self.url}, {self.width},{self.height})"
+
 
 class YoutubeThumbnailMetadata:
     """Data for the available thumbnails of a video"""
@@ -34,6 +40,13 @@ class YoutubeThumbnailMetadata:
             thumbnail_metadata (dict): the raw thumbnail metadata to provide
         """
         self.metadata = thumbnail_metadata
+
+    def __str__(self):
+        return f"Available Resolutions: {', '.join(self.metadata.keys())}"
+
+    def __repr__(self):
+        return f"YoutubeThumbnailMetadata(default={repr(self.default)},medium={repr(self.medium)}," \
+               f"high={repr(self.high)},standard={repr(self.standard)},maxres={repr(self.maxres)})"
 
     @property
     def default(self) -> Optional[YoutubeThumbnail]:
@@ -74,6 +87,7 @@ class YoutubeThumbnailMetadata:
             Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be None"""
         if self.metadata.get("maxres") is not None:
             return YoutubeThumbnail(self.metadata["maxres"])
+
 
 
 class LocalName:
