@@ -1,3 +1,6 @@
+![PyPI](https://img.shields.io/pypi/v/ayt-api?style=for-the-badge&logo=pypi)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ayt-api?style=for-the-badge&logo=python)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Revnoplex/ayt-api?style=for-the-badge&logo=github)
 # ayt-api
 A Basic Asynchronous, Object oriented python library for the YouTube api
 
