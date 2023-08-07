@@ -599,7 +599,7 @@ class YoutubeVideoMetadata(BaseVideo):
         Returns:
             chapters (list[VideoChapter]): A list of chapters the video has if any otherwise `None`
         """
-        found_chapters = []
+        found_chapters: list[tuple] = []
         for line in reversed(self.description.splitlines()):
             # regex is from https://stackoverflow.com/a/11067610
             parsed = re.search(r'(?:([0-5]?[0-9]):)?([0-5]?[0-9]):([0-5][0-9])', line)
@@ -612,7 +612,7 @@ class YoutubeVideoMetadata(BaseVideo):
                 start = datetime.timedelta(seconds=seconds)
                 end = found_chapters[-1][0] if len(found_chapters) > 0 else self.duration
                 duration = end - start
-                found_chapters.append((start, duration, line.replace(raw_stamp, "", 1).strip()))
+                found_chapters.append((start, duration, line.replace(raw_stamp, "", 1).strip().strip("-").strip()))
         return [VideoChapter(*chapter_data) for chapter_data in reversed(found_chapters)] if found_chapters else None
 
     def current_chapter(self, position: datetime.timedelta) -> Optional[VideoChapter]:
