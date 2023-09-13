@@ -612,7 +612,9 @@ class YoutubeVideoMetadata(BaseVideo):
                 start = datetime.timedelta(seconds=seconds)
                 end = found_chapters[-1][0] if len(found_chapters) > 0 else self.duration
                 duration = end - start
-                found_chapters.append((start, duration, line.replace(raw_stamp, "", 1).strip().strip("-").strip()))
+                line = line.replace(raw_stamp, "", 1).strip(" -\n")
+                line = line[:-2].strip() if line.endswith("()") else line
+                found_chapters.append((start, duration, line))
         return [VideoChapter(*chapter_data) for chapter_data in reversed(found_chapters)] if found_chapters else None
 
     def current_chapter(self, position: datetime.timedelta) -> Optional[VideoChapter]:
