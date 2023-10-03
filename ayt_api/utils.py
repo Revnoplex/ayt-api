@@ -43,3 +43,21 @@ def extract_playlist_id(url: str) -> Optional[str]:
         return queries["list"][0]
     elif encoded_query_matches:
         return extract_playlist_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
+
+
+def id_as_base_10(youtube_id: str):
+    number = 0
+    last_chars = ["-", "_"]
+    for idx, char in enumerate(reversed(youtube_id)):
+        ord_var = ord(char)
+        if 65 <= ord_var <= 90:
+            number += (ord_var - 65) * 64 ** idx
+        elif 97 <= ord_var <= 122:
+            number += (ord_var - 71) * 64 ** idx
+        elif 48 <= ord_var <= 57:
+            number += (ord_var + 4) * 64 ** idx
+        elif char in last_chars:
+            number += (62 + last_chars.index(char)) * 64 ** idx
+        else:
+            raise ValueError
+    return number
