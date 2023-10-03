@@ -47,6 +47,7 @@ class AsyncYoutubeAPI:
             PlaylistNotFound: The playlist does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
             InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
         """
         if len(playlist_id) < 1:
             raise InvalidInput(playlist_id)
@@ -94,6 +95,7 @@ class AsyncYoutubeAPI:
             PlaylistNotFound: The playlist does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
             InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
         """
         if len(playlist_id) < 1:
             raise InvalidInput(playlist_id)
@@ -148,6 +150,7 @@ class AsyncYoutubeAPI:
             VideoNotFound: The video does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
             InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
         """
         if len(video_id) < 1:
             raise InvalidInput(video_id)
