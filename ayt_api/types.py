@@ -614,6 +614,7 @@ class YoutubeVideoMetadata(BaseVideo):
                 duration = end - start
                 line = line.replace(raw_stamp, "", 1).strip(" -\n")
                 line = line[:-2].strip() if line.endswith("()") else line
+                line = line[2:].strip() if line.startswith("()") else line
                 found_chapters.append((start, duration, line))
         return [VideoChapter(*chapter_data) for chapter_data in reversed(found_chapters)] if found_chapters else None
 
