@@ -37,6 +37,19 @@ class VideoNotFound(ResourceNotFound):
         super().__init__(message)
 
 
+class ChannelNotFound(ResourceNotFound):
+    """Raises if the specified channel id or username does not exist on YouTube.
+    Args:
+        channel_id (Optional[str]): channel id that was attempted to be fetched if any
+    Attributes:
+        channel_id (Optional[str]): channel id that was attempted to be fetched if any
+    """
+    def __init__(self, channel_id=None,):
+        self.channel_id = channel_id
+        message = f'The channel with the id {channel_id} did not match any channels on youtube'
+        super().__init__(message)
+
+
 class InvalidMetadata(YoutubeExceptions):
     """Raises when invalid metadata is given.
     Args:

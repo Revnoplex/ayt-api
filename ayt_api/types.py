@@ -1,9 +1,12 @@
 import datetime
 import re
+import shlex
 from dataclasses import dataclass
+from enum import Enum
 from typing import Union, Optional
 import isodate
 from .exceptions import MissingDataFromMetadata
+from .utils import camel_to_snake
 
 
 @dataclass
@@ -31,7 +34,7 @@ class YoutubeThumbnailMetadata:
     def __init__(self, thumbnail_metadata: dict):
         """
         Args:
-            thumbnail_metadata (dict): the raw thumbnail metadata to provide
+            thumbnail_metadata (dict): the raw thumbnail metadata to construct the class
         """
         self.metadata = thumbnail_metadata
 
@@ -90,10 +93,10 @@ class LocalName:
         Attributes:
             language (Optional[str]): The language code
             title (str): The title in a local language
-            description (str): The description in a local language
+            description (Optional[str]): The description in a local language
     """
     title: str
-    description: str
+    description: str = None
     language: str = None
 
 
@@ -112,7 +115,7 @@ class ContentRating:
     """Specifies the ratings that the video received under various rating schemes.
 
         There are many attributes for each rating system, only 1 or 2 (if there is a reason) will be available,
-        the rest will be `None` or all if there is no restrictions set.
+        the rest will be `None` or all if there is no restrictions set. The attributes listed below are non-exhaustive
     Attributes:
         acb (Optional[str]): The video's Australian Classification Board (ACB) or Australian Communications and Media
             Authority (ACMA) rating. ACMA ratings are used to classify children's television programming.
@@ -319,7 +322,7 @@ class ProcessingProgress:
             raise MissingDataFromMetadata(str(missing_snippet_data), data, missing_snippet_data)
 
     def __str__(self):
-        if self.time_left:
+        if self.time_left is not None:
             return f"Processing {self.parts_processed}/{self.parts_total} " \
                    f"({round(self.parts_processed/self.parts_total*100)}%) ETA: {self.time_left}"
         else:
@@ -371,6 +374,22 @@ class VideoChapter:
 
 @dataclass
 class BaseVideo:
+    """
+    The base class that all video related objects are inherited from
+    Attributes:
+        metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
+                         debugging purposes
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                        WARNING: contains API key!
+        id (str): The ID of the video. Example: "dQw4w9WgXcQ" from the url:
+                  "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
+        url (str): The URL of the video
+        title (str): The title of the video
+        description (str): The description of the video
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has
+        visibility (Optional[str]): The video's privacy status. Can be private, public or unlisted
+
+    """
     metadata: dict
     call_url: str
     id: str
@@ -381,11 +400,25 @@ class BaseVideo:
     visibility: Optional[str]
 
 
+class LongUploadsStatus(Enum):
+    """The eligibility status of the channel to upload videos longer than 15 minutes"""
+
+    allowed = "allowed"
+    disallowed = "disallowed"
+    eligible = "eligible"
+    long_uploads_unspecified = "long_uploads_unspecified"
+
+    def __str__(self):
+        return self.value
+
+
 class YoutubeVideoMetadata(BaseVideo):
     """A data class containing video data such as the title, id, description, channel, etc.
         Attributes:
-            metadata (dict): The raw API response used to construct this class
-            call_url (str): The url used to call the API. Intended use is for debugging purposes
+            metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
+                         debugging purposes
+            call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
             id (str): The ID of the video. Example: "dQw4w9WgXcQ" from the url:
                 "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
             snippet (dict): The raw snippet data used to construct part this class
@@ -460,17 +493,20 @@ class YoutubeVideoMetadata(BaseVideo):
             localisations (Optional[list[LocalName]]): contains translations of the video's metadata.
             localizations (Optional[list[LocalName]]): an alias of localisations
         """
-    def __init__(self, metadata: dict, call_url: str):
+    def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata: The snippet metadata of the video in the playlist
-            call_url (str): The url used to call the API. Intended use is for debugging purposes
+            metadata (dict): The raw API response to construct the class
+            call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
+            call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
         """
         try:
             self.metadata = metadata
             self.call_url = call_url
+            self._call_data = call_data
             self.snippet: dict = metadata["snippet"]
             self.content_details: dict = metadata["contentDetails"]
             self.status: dict = metadata["status"]
@@ -499,6 +535,7 @@ class YoutubeVideoMetadata(BaseVideo):
             if self.snippet.get("localized") is None:
                 self.localized: Optional[LocalName] = None
             else:
+                self.snippet["localized"]["language"] = self.default_language
                 self.localised: Optional[LocalName] = LocalName(**self.snippet["localized"])
             self.localized = self.localised
             self.default_audio_language: Optional[str] = self.snippet.get("defaultAudioLanguage")
@@ -593,6 +630,12 @@ class YoutubeVideoMetadata(BaseVideo):
                           f"{str(missing_snippet_data).split('.')[0]}"
             raise MissingDataFromMetadata(missing_str, metadata, missing_snippet_data)
 
+    async def fetch_channel(self):
+        if self.channel_id:
+            from .api import AsyncYoutubeAPI
+            api: AsyncYoutubeAPI = self._call_data
+            return await api.get_channel_metadata(self.channel_id)
+
     @property
     def chapters(self) -> Optional[list[VideoChapter]]:
         """A list of chapters the video has if any otherwise just an empty list
@@ -639,7 +682,8 @@ class PlaylistVideoMetadata(BaseVideo):
     """A data class for videos in a playlist
     Attributes:
         metadata (dict): The raw metadata from the API call used to construct this class
-        call_url (str): The url used to call the API. Intended use is for debugging purposes
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
         id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
         position (int): The position in the playlist the video is in
@@ -662,8 +706,10 @@ class PlaylistVideoMetadata(BaseVideo):
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata: The snippet metadata of the video in the playlist
-            call_url (str): The url used to call the API. Intended use is for debugging purposes
+            metadata (dict): The raw API response to construct the class
+            call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
+            call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
         """
@@ -715,12 +761,24 @@ class PlaylistVideoMetadata(BaseVideo):
         api: AsyncYoutubeAPI = self._call_data
         return await api.get_video_metadata(self.id)
 
+    async def fetch_playlist(self):
+        from .api import AsyncYoutubeAPI
+        api: AsyncYoutubeAPI = self._call_data
+        return await api.get_playlist_metadata(self.playlist_id)
+
+    async def fetch_channel(self):
+        if self.channel_id:
+            from .api import AsyncYoutubeAPI
+            api: AsyncYoutubeAPI = self._call_data
+            return await api.get_channel_metadata(self.channel_id)
+
 
 class YoutubePlaylistMetadata:
     """Data class for YouTube playlists
     Attributes:
         metadata (dict): The raw API response used to construct this class
-        call_url (str): The url used to call the API. Intended use is for debugging purposes
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
         id (str): The ID of the playlist. Example: "PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp" from the url:
             "https://www.youtube.com/playlist?list=PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp"
         url (str): The URL of the playlist
@@ -748,8 +806,10 @@ class YoutubePlaylistMetadata:
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata (dict): The raw API response to provide
-            call_url (str): The url used to call the API. Intended use is for debugging purposes
+            metadata (dict): The raw API response to construct the class
+            call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
+            call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
         """
@@ -778,8 +838,9 @@ class YoutubePlaylistMetadata:
             if self.snippet.get("localized") is None:
                 self.localised: Optional[LocalName] = None
             else:
+                self.snippet["localized"]["language"] = self.default_language
                 self.localised: Optional[LocalName] = LocalName(**self.snippet["localized"])
-                self.localized = self.localised
+            self.localized = self.localised
             self.visibility: Optional[str] = self.status.get("privacyStatus")
             self.item_count: Optional[int] = self.content_details.get("itemCount")
             self.embed_html: Optional[str] = self.player.get("embedHtml")
@@ -810,6 +871,12 @@ class YoutubePlaylistMetadata:
         from .api import AsyncYoutubeAPI
         api: AsyncYoutubeAPI = self._call_data
         return await api.get_videos_from_playlist(self.id)
+
+    async def fetch_channel(self):
+        if self.channel_id:
+            from .api import AsyncYoutubeAPI
+            api: AsyncYoutubeAPI = self._call_data
+            return await api.get_channel_metadata(self.channel_id)
 
 
 class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
@@ -868,15 +935,17 @@ class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
             uploaded video.
 
     """
-    def __init__(self, metadata, call_url):
+    def __init__(self, metadata, call_url, call_data):
         """
         Args:
-            metadata: The snippet metadata of the video in the playlist
-            call_url (str): The url used to call the API. Intended use is for debugging purposes
+            metadata (dict): The raw API response to construct the class
+            call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
+            call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
         """
-        super().__init__(metadata, call_url)
+        super().__init__(metadata, call_url, call_data)
         try:
             self.file_details: dict = metadata["fileDetails"]
             self.processing_details: dict = metadata["processingDetails"]
@@ -930,3 +999,107 @@ class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
             self.editor_suggestions: Optional[str] = self.suggestions.get("editorSuggestions")
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+
+class YoutubeChannelMetadata:
+    """A class representing metadata from a youtube channel"""
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+        Args:
+            metadata (dict): The raw API response to construct the class
+            call_url (str): The url used to call the API. Intended use is for debugging purposes.
+                            WARNING: contains API key!
+            call_data (AsyncYoutubeAPI): call data used for fetch functions
+        Raises:
+            MissingDataFromMetaData: There is malformed data in the metadata provided
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.branding_settings: dict = metadata["brandingSettings"]
+            self.content_details: dict = metadata["contentDetails"]
+            self.content_owner_details: dict = metadata["contentOwnerDetails"]
+            self.id: str = metadata["id"]
+            self.url = f"https://www.youtube.com/channel/{self.id}"
+            self.raw_localisations: Optional[dict] = metadata.get("localizations")
+            self.snippet: dict = metadata["snippet"]
+            self.statistics: dict = metadata["statistics"]
+            self.status: dict = metadata["status"]
+            self.topic_details: Optional[dict] = metadata.get("topicDetails")
+            self.title: str = self.snippet['title']
+            self.description: Optional[str] = self.snippet.get("description")
+            self.custom_url: Optional[str] = self.snippet.get("customUrl")
+            self.username: Optional[str] = self.custom_url
+            self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
+            self.created_at = self.published_at
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
+            if self.snippet.get("localized") is None:
+                self.localised: Optional[LocalName] = None
+            else:
+                self.snippet["localized"]["language"] = self.default_language
+                self.localised: Optional[LocalName] = LocalName(**self.snippet["localized"])
+            self.localized = self.localised
+            self.country: Optional[str] = self.snippet.get("country")
+            self.related_playlists = self.content_details["relatedPlaylists"]
+            self.likes_id: Optional[str] = self.related_playlists.get("likes")
+            self.likes_url = f'https://www.youtube.com/playlist?list={self.likes_id}' if self.likes_id else None
+            self.uploads_id: Optional[str] = self.related_playlists.get("uploads")
+            self.uploads_url = f'https://www.youtube.com/playlist?list={self.uploads_id}' if self.uploads_id else None
+            self.view_count: int = self.statistics["viewCount"]
+            self.subscriber_count: int = self.statistics["subscriberCount"]
+            self.hidden_subscriber_count: bool = self.statistics["hiddenSubscriberCount"]
+            self.video_count: int = self.statistics["videoCount"]
+            if self.topic_details is None:
+                self.topic_categories: Optional[list[str]] = None
+                self.topic_ids: Optional[list[str]] = None
+            else:
+                self.topic_categories: Optional[list[str]] = self.topic_details.get("topicCategories")
+                self.topic_ids: Optional[list[str]] = self.topic_details.get("topicIds")
+            self.visibility: str = self.status["privacyStatus"]
+            self.is_linked: bool = self.status["isLinked"]
+            self.long_upload_status = LongUploadsStatus(camel_to_snake(self.status["longUploadsStatus"]))
+            self.made_for_kids: Optional[bool] = self.status.get("madeForKids")
+            self.self_declared_made_for_kids: Optional[bool] = self.status.get("selfDeclaredMadeForKids")
+            self._branding_channel = self.branding_settings["channel"]
+            self.keywords: Optional[list[str]] = shlex.split(self._branding_channel["keywords"]) \
+                if self._branding_channel.get("keywords") else None
+            self.tracking_analytics_account_id: Optional[str] = self._branding_channel.get("trackingAnalyticsAccountId")
+            self.moderate_comments: Optional[bool] = self._branding_channel.get("moderateComments")
+            self.unsubscribed_trailer_id: Optional[str] = self._branding_channel.get("unsubscribedTrailer")
+            self.unsubscribed_trailer_url: Optional[str] = \
+                f'https://www.youtube.com/watch?v={self.unsubscribed_trailer_id}' \
+                if self.unsubscribed_trailer_id else None
+            self.banner_external_url: Optional[str] = self.branding_settings.get("image").get("bannerExternalUrl") \
+                if self.branding_settings.get("image") else None
+            self.content_owner: Optional[str] = self.content_owner_details.get("contentOwner")
+            self.time_linked = None if self.content_owner_details.get("timeLinked") is None else \
+                isodate.parse_datetime(self.content_owner_details.get("timeLinked"))
+            if self.raw_localisations is None:
+                self.localisations: Optional[list[LocalName]] = None
+            else:
+                self.localisations: Optional[list[LocalName]] = []
+                for localisation_name, localisation_value in self.raw_localisations.items():
+                    self.localisations.append(LocalName(**localisation_value, language=localisation_name))
+            self.localizations = self.localisations
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+    async def fetch_uploads(self) -> Optional[list[PlaylistVideoMetadata]]:
+        if self.uploads_id:
+            from .api import AsyncYoutubeAPI
+            api: AsyncYoutubeAPI = self._call_data
+            return await api.get_videos_from_playlist(self.uploads_id)
+
+    async def fetch_likes(self) -> Optional[list[PlaylistVideoMetadata]]:
+        if self.likes_id:
+            from .api import AsyncYoutubeAPI
+            api: AsyncYoutubeAPI = self._call_data
+            return await api.get_videos_from_playlist(self.likes_id)
+
+    async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideoMetadata]:
+        if self.unsubscribed_trailer_id:
+            from .api import AsyncYoutubeAPI
+            api: AsyncYoutubeAPI = self._call_data
+            return await api.get_video_metadata(self.unsubscribed_trailer_id)

@@ -1,8 +1,8 @@
 import asyncio
 import aiohttp
 from aiohttp import TCPConnector
-from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout
-from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata
+from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound
+from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata, YoutubeChannelMetadata
 
 
 class AsyncYoutubeAPI:
@@ -79,7 +79,7 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_videos_from_playlist(self, playlist_id, next_page=None) -> list[PlaylistVideoMetadata]:
+    async def get_videos_from_playlist(self, playlist_id: str, next_page: str = None) -> list[PlaylistVideoMetadata]:
         """Fetches a list of video in a playlist using a playlist id
 
         Playlist video metadata is fetched using a GET request which the response is then concentrated into a list of
@@ -87,7 +87,7 @@ class AsyncYoutubeAPI:
 
         Args:
             playlist_id (str): The id of the playlist to use
-            next_page: a parameter used by this function to fetch playlists with more than 50 items
+            next_page (str): a parameter used by this function to fetch playlists with more than 50 items
         Returns:
             list[PlaylistVideoMetadata]: A list containing playlist video objects
         Raises:
@@ -135,7 +135,7 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_video_metadata(self, video_id) -> YoutubeVideoMetadata:
+    async def get_video_metadata(self, video_id: str) -> YoutubeVideoMetadata:
         """Fetches information on a video using a video id
 
         Video metadata is fetched using a GET request which the response is then concentrated into a
@@ -170,7 +170,7 @@ class AsyncYoutubeAPI:
                             raise VideoNotFound(video_id)
                         else:
                             res_json = res_data.get("items")[0]
-                            return YoutubeVideoMetadata(res_json, call_url)
+                            return YoutubeVideoMetadata(res_json, call_url, self)
                     else:
                         message = f'The youtube API returned the following error code: {video_response.status}'
                         if video_response.content_type == "application/json":
@@ -178,5 +178,51 @@ class AsyncYoutubeAPI:
                             error_data = res_data["error"]
                             message = error_data.get("message")
                         raise HTTPException(video_response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+
+    async def get_channel_metadata(self, channel_id: str) -> YoutubeChannelMetadata:
+        """Fetches information on a channel using a channel id
+
+        Channel metadata is fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubeChannelMetadata` object
+
+        Args:
+            channel_id (str): The id of the channel to use
+        Returns:
+            YoutubeChannelMetadata: The channel object containing data of the video
+        Raises:
+            HTTPException: Fetching the metadata failed
+            ChannelNotFound: The channel does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        if len(channel_id) < 1:
+            raise InvalidInput(channel_id)
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as channel_session:
+            call_url = f'{self.call_url_prefix}/channels?part=snippet&part=contentDetails&part=status&part=statistics' \
+                       f'&part=topicDetails&part=brandingSettings&part=contentOwnerDetails' \
+                       f'&part=localizations&part=id&id={channel_id}&maxResults=50&key={self.key}'
+            try:
+                async with channel_session.get(call_url) as channel_response:
+                    if channel_response.status == 200:
+                        res_data = await channel_response.json()
+                        if "error" in res_data:
+                            raise HTTPException(channel_response, f'{res_data["error"].get("code")}:'
+                                                                  f'{res_data["error"].get("message")}')
+                        if res_data["pageInfo"].get("totalResults") < 1:
+                            raise ChannelNotFound(channel_id)
+                        else:
+                            res_json = res_data.get("items")[0]
+                            return YoutubeChannelMetadata(res_json, call_url, self)
+                    else:
+                        message = f'The youtube API returned the following error code: {channel_response.status}'
+                        if channel_response.content_type == "application/json":
+                            res_data = await channel_response.json()
+                            error_data = res_data["error"]
+                            message = error_data.get("message")
+                        raise HTTPException(channel_response, message, error_data)
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
