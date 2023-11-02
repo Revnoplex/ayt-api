@@ -497,8 +497,7 @@ class YoutubeVideoMetadata(BaseVideo):
         """
         Args:
             metadata (dict): The raw API response to construct the class
-            call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
+            call_url (str): The url used to call the API.
             call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
@@ -631,6 +630,20 @@ class YoutubeVideoMetadata(BaseVideo):
             raise MissingDataFromMetadata(missing_str, metadata, missing_snippet_data)
 
     async def fetch_channel(self):
+        """Fetches the channel associated with the video
+
+        This ia an api call which then returns a
+        :class:`YoutubeChannelMetadata` object
+
+        Returns:
+            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel
+        Raises:
+            HTTPException: Fetching the metadata failed
+            ChannelNotFound: The channel does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
         if self.channel_id:
             from .api import AsyncYoutubeAPI
             api: AsyncYoutubeAPI = self._call_data
@@ -707,8 +720,7 @@ class PlaylistVideoMetadata(BaseVideo):
         """
         Args:
             metadata (dict): The raw API response to construct the class
-            call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
+            call_url (str): The url used to call the API.
             call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
@@ -756,17 +768,46 @@ class PlaylistVideoMetadata(BaseVideo):
             VideoNotFound: The video does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
             InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
         """
         from .api import AsyncYoutubeAPI
         api: AsyncYoutubeAPI = self._call_data
         return await api.get_video_metadata(self.id)
 
     async def fetch_playlist(self):
+        """Fetches the playlist associated with the video
+
+        This ia an api call which then returns a
+        :class:`YoutubePlaylistMetadata` object
+
+        Returns:
+            YoutubePlaylistMetadata: The playlist object containing data of the playlist
+        Raises:
+            HTTPException: Fetching the metadata failed
+            PlaylistNotFound: The playlist does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
         from .api import AsyncYoutubeAPI
         api: AsyncYoutubeAPI = self._call_data
         return await api.get_playlist_metadata(self.playlist_id)
 
     async def fetch_channel(self):
+        """Fetches the channel associated with the video
+
+        This ia an api call which then returns a
+        :class:`YoutubeChannelMetadata` object
+
+        Returns:
+            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel
+        Raises:
+            HTTPException: Fetching the metadata failed
+            ChannelNotFound: The channel does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
         if self.channel_id:
             from .api import AsyncYoutubeAPI
             api: AsyncYoutubeAPI = self._call_data
@@ -807,8 +848,7 @@ class YoutubePlaylistMetadata:
         """
         Args:
             metadata (dict): The raw API response to construct the class
-            call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
+            call_url (str): The url used to call the API.
             call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
@@ -867,12 +907,27 @@ class YoutubePlaylistMetadata:
             PlaylistNotFound: The playlist does not exist
             aiohttp.ClientError: There was a problem sending the request to the api
             InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
         """
         from .api import AsyncYoutubeAPI
         api: AsyncYoutubeAPI = self._call_data
         return await api.get_videos_from_playlist(self.id)
 
     async def fetch_channel(self):
+        """Fetches the channel associated with the playlist
+
+        This ia an api call which then returns a
+        :class:`YoutubeChannelMetadata` object
+
+        Returns:
+            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel
+        Raises:
+            HTTPException: Fetching the metadata failed
+            ChannelNotFound: The channel does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
         if self.channel_id:
             from .api import AsyncYoutubeAPI
             api: AsyncYoutubeAPI = self._call_data
@@ -883,9 +938,10 @@ class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
     """
     A data class containing owner only information video data such as the file and processing information.
 
-        THis class is used if authorisation is provided that you are the owner of the video. It contains
+        This class is used if authorisation is provided that you are the owner of the video. It contains
         attributes only accessible by the video owner as well as attributes inherited
-        from :class:`YoutubeVideoMetadata`
+        from :class:`YoutubeVideoMetadata`. The ayt-api library currently doesn't support authorisation for this
+        so this class is not used but is here for future implementation
 
     Attributes:
         file_details (dict): The raw file details used to construct this class
@@ -939,8 +995,7 @@ class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
         """
         Args:
             metadata (dict): The raw API response to construct the class
-            call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
+            call_url (str): The url used to call the API.
             call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
@@ -1002,13 +1057,80 @@ class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
 
 
 class YoutubeChannelMetadata:
-    """A class representing metadata from a youtube channel"""
+    """
+    A class representing metadata from a YouTube channel
+
+    Attributes:
+        metadata (dict): The raw API response used to construct this class
+        call_url (str): The url used to call the API. Intended use is for debugging purposes
+                            WARNING: contains API key!
+        branding_settings (dict): encapsulates information about the branding of the channel
+        content_details (dict): encapsulates information about the channel's content
+        content_owner_details (dict): encapsulates channel data that is visible only to the YouTube Partner that has
+                                      linked the channel to their Content Manager
+        id (str): The ID that YouTube uses to uniquely identify the channel
+        url (str): The URL of the channel
+        raw_localisations (Optional[dict]): encapsulates translations of the channel's metadata
+        snippet (dict): contains basic details about the channel, such as its title, description, and thumbnail images
+        statistics (dict): encapsulates statistics for the channel
+        status (dict): encapsulates information about the privacy status of the channel
+        topic_details (Optional[dict]): encapsulates information about topics associated with the channel.
+        title (str): The channel's title.
+        description (Optional[str]): The channel's description. The property's value has a maximum length of 1000
+                                     characters
+        custom_url (Optional[str]): The channel's custom URL
+        username (Optional[str]): Alias for :attr:`custom_url`
+        published_at (datetime.datetime): The date and time that the channel was created
+        created_at (datetime.datetime): Alias for :attr:`published_at`
+        thumbnails (YoutubeThumbnailMetadata): The thumbnail images associated with the channel
+        default_language (Optional[str]): The language of the text in the :class:`YoutubeChannelMetadata` class's
+                                          :attr:`title` and :attr:`description` properties.
+        localised (Optional[LocalName]): The localized title and description for the channel or title and description
+                                         in the :attr:`default_language`
+        localized (Optional[LocalName]): Alias for :attr:`localised`
+        country (Optional[str]): The country with which the channel is associated.
+        related_playlists (dict): The playlists associated with the channel, such as the channel's uploaded videos or
+                                  liked videos.
+        likes_id (Optional[str]): The ID of the playlist that contains the channel's liked videos.
+        likes_url (Optional[str]): The URL of the playlist that contains the channel's liked videos.
+        uploads_id (Optional[str]): The ID of the playlist that contains the channel's uploaded videos.
+        uploads_url (Optional[str]): The URL of the playlist that contains the channel's uploaded videos.
+        view_count (int): The number of times the channel has been viewed.
+        subscriber_count (int): The number of subscribers that the channel has.
+                                This is rounded to 3 significant figures.
+        hidden_subscriber_count (bool): Whether the channel's subscriber count is publicly visible.
+        video_count (int): The number of public videos uploaded to the channel
+        topic_categories (Optional[list[str]]): A list of Wikipedia URLs that describe the channel's content
+        topic_ids (Optional[list[str]]): A list of topic IDs associated with the channel
+        visibility (str): The channel's privacy status. Can be private, public or unlisted
+        is_linked (bool): Whether the channel data identifies a user that is already linked to either a YouTube
+                          username or a Google+ account
+        long_upload_status (LongUploadsStatus): whether the channel is eligible to upload videos that are more than 15
+                                                minutes long.
+        made_for_kids (Optional[bool]): Whether the channel is designated as child-directed, and it contains the
+                                        current "made for kids" status of the channel
+        self_declared_made_for_kids (Optional[bool]): Designates the channel as child-directed.
+        keywords (Optional[list[str]]): Keywords associated with your channel
+        tracking_analytics_account_id (Optional[str]): The ID for a Google Analytics account used to track and measure
+                                                       traffic to the channel
+        moderate_comments (Optional[bool]): Determines whether user-submitted comments left on the channel page need to
+                                            be approved by the channel owner to be publicly visible
+        unsubscribed_trailer_id (Optional[str]): The ID of the video that should play in the featured video module in
+                                                 the channel page's browse view for unsubscribed viewers
+        unsubscribed_trailer_url (Optional[str]): The URL of the video that should play in the featured video module in
+                                                  the channel page's browse view for unsubscribed viewers
+        banner_external_url (Optional[str]): The URL of the banner image that YouTube uses to generate
+                                             the various banner image sizes for a channel
+        content_owner (Optional[str]): The ID of the content owner linked to the channel.
+        time_linked (Optional[datetime.datetime]): The date and time of when the channel was linked to the content owner
+        localisations (Optional[list[LocalName]]): Encapsulates translations of the channel's metadata
+        localizations (Optional[list[LocalName]]): Alias for :attr:`localisations`
+    """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
             metadata (dict): The raw API response to construct the class
-            call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
+            call_url (str): The url used to call the API.
             call_data (AsyncYoutubeAPI): call data used for fetch functions
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided
@@ -1042,7 +1164,7 @@ class YoutubeChannelMetadata:
                 self.localised: Optional[LocalName] = LocalName(**self.snippet["localized"])
             self.localized = self.localised
             self.country: Optional[str] = self.snippet.get("country")
-            self.related_playlists = self.content_details["relatedPlaylists"]
+            self.related_playlists: dict = self.content_details["relatedPlaylists"]
             self.likes_id: Optional[str] = self.related_playlists.get("likes")
             self.likes_url = f'https://www.youtube.com/playlist?list={self.likes_id}' if self.likes_id else None
             self.uploads_id: Optional[str] = self.related_playlists.get("uploads")
@@ -1087,18 +1209,61 @@ class YoutubeChannelMetadata:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
     async def fetch_uploads(self) -> Optional[list[PlaylistVideoMetadata]]:
+        """Fetches the playlist containing all public uploads associated with the channel
+
+        This ia an api call which then returns a
+        :class:`PlaylistVideoMetadata` object
+
+        Returns:
+            Optional[list[PlaylistVideoMetadata]]: A list containing playlist video objects of the channel's public
+                                                   uploads
+        Raises:
+            HTTPException: Fetching the metadata failed
+            PlaylistNotFound: The playlist does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
         if self.uploads_id:
             from .api import AsyncYoutubeAPI
             api: AsyncYoutubeAPI = self._call_data
             return await api.get_videos_from_playlist(self.uploads_id)
 
     async def fetch_likes(self) -> Optional[list[PlaylistVideoMetadata]]:
+        """Fetches the playlist containing all videos the channel has liked if public
+
+        This ia an api call which then returns a
+        :class:`PlaylistVideoMetadata` object if public, otherwise ``None``
+
+        Returns:
+            Optional[list[PlaylistVideoMetadata]]: A list containing playlist video objects of the channel's public
+                                                   likes
+            HTTPException: Fetching the metadata failed
+            PlaylistNotFound: The playlist does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
         if self.likes_id:
             from .api import AsyncYoutubeAPI
             api: AsyncYoutubeAPI = self._call_data
             return await api.get_videos_from_playlist(self.likes_id)
 
     async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideoMetadata]:
+        """Fetches the channel trailer video if any
+
+        This ia an api call which then returns a
+        :class:`YoutubeVideoMetadata` object if the channel has a trailer, otherwise ``None``
+
+        Returns:
+            Optional[YoutubeVideoMetadata]: The video object containing data of the channel trailer
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
         if self.unsubscribed_trailer_id:
             from .api import AsyncYoutubeAPI
             api: AsyncYoutubeAPI = self._call_data

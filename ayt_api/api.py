@@ -190,7 +190,7 @@ class AsyncYoutubeAPI:
         Args:
             channel_id (str): The id of the channel to use
         Returns:
-            YoutubeChannelMetadata: The channel object containing data of the video
+            YoutubeChannelMetadata: The channel object containing data of the channel
         Raises:
             HTTPException: Fetching the metadata failed
             ChannelNotFound: The channel does not exist
