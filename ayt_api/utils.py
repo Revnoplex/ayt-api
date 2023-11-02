@@ -61,3 +61,20 @@ def id_as_base_10(youtube_id: str):
         else:
             raise ValueError
     return number
+
+
+def camel_to_snake(string: str) -> str:
+    snake_string = ""
+    for char in string:
+        if char.isupper():
+            snake_string += "_" + char.lower()
+        else:
+            snake_string += char
+    return snake_string
+
+
+def snake_keys(dictionary: dict) -> dict:
+    snake_dict = {}
+    for key, value in dictionary.items():
+        snake_dict[camel_to_snake(key)] = value
+    return snake_dict
