@@ -48,7 +48,7 @@ def extract_playlist_id(url: str) -> Optional[str]:
 def extract_channel_id(url: str) -> Optional[str]:
     """
     This should work for every url listed here:
-
+    https://github.com/Revnoplex/ayt-api/blob/main/test-channel-urls.txt
     Args:
         url (str): The url to strip the id from
     Returns:
@@ -58,9 +58,27 @@ def extract_channel_id(url: str) -> Optional[str]:
     queries = parse.parse_qs(components.query)
     encoded_query_matches = {'u', 'url'}.intersection(set(queries.keys()))
     if encoded_query_matches:
-        return extract_video_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
+        return extract_channel_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
     else:
         return pathlib.Path(components.path).name
+
+
+def extract_comment_id(url: str) -> Optional[str]:
+    """
+    This should work for every url listed here:
+    https://github.com/Revnoplex/ayt-api/blob/main/test-comment-urls.txt
+    Args:
+        url (str): The url to strip the id from
+    Returns:
+        Optional[str]: The comment id with the rest of the url removed
+    """
+    components = parse.urlparse(url.replace("&", "?", 1) if "?" not in url else url)
+    queries = parse.parse_qs(components.query)
+    encoded_query_matches = {'u', 'url'}.intersection(set(queries.keys()))
+    if 'lc' in queries:
+        return queries["lc"][0]
+    elif encoded_query_matches:
+        return extract_comment_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
 
 
 def id_as_base_10(youtube_id: str):
