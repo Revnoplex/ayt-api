@@ -4,8 +4,8 @@ import aiohttp
 from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
     CommentNotFound
-from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata, YoutubeChannelMetadata, \
-    YoutubeCommentThread, YoutubeComment
+from .types import YoutubePlaylistMetadata, PlaylistVideo, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
+    YoutubeComment
 
 
 class AsyncYoutubeAPI:
@@ -35,7 +35,7 @@ class AsyncYoutubeAPI:
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.ignore_ssl = ignore_ssl
 
-    async def get_playlist_metadata(self, playlist_id: str) -> YoutubePlaylistMetadata:
+    async def fetch_playlist_metadata(self, playlist_id: str) -> YoutubePlaylistMetadata:
         """Fetches playlist metadata using a playlist id
 
         Playlist metadata is fetched using a GET request which the response is then concentrated into a
@@ -82,7 +82,7 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_videos_from_playlist(self, playlist_id: str, next_page: str = None) -> list[PlaylistVideoMetadata]:
+    async def get_videos_from_playlist(self, playlist_id: str, next_page: str = None) -> list[PlaylistVideo]:
         """Fetches a list of video in a playlist using a playlist id
 
         Playlist video metadata is fetched using a GET request which the response is then concentrated into a list of
@@ -122,7 +122,7 @@ class AsyncYoutubeAPI:
                             if res_data.get("nextPageToken") is not None:
                                 videos_next_page = await self.get_videos_from_playlist(
                                     playlist_id, next_page=res_data["nextPageToken"])
-                            videos = [PlaylistVideoMetadata(vid_item, call_url, self) for vid_item in res_json]
+                            videos = [PlaylistVideo(vid_item, call_url, self) for vid_item in res_json]
                             return videos + videos_next_page
                     elif playlist_videos_response.status == 404:
                         raise PlaylistNotFound(playlist_id)
@@ -138,7 +138,7 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_video_metadata(self, video_id: str) -> YoutubeVideoMetadata:
+    async def fetch_video(self, video_id: str) -> YoutubeVideo:
         """Fetches information on a video using a video id
 
         Video metadata is fetched using a GET request which the response is then concentrated into a
@@ -173,7 +173,7 @@ class AsyncYoutubeAPI:
                             raise VideoNotFound(video_id)
                         else:
                             res_json = res_data.get("items")[0]
-                            return YoutubeVideoMetadata(res_json, call_url, self)
+                            return YoutubeVideo(res_json, call_url, self)
                     else:
                         message = f'The youtube API returned the following error code: {video_response.status}'
                         if video_response.content_type == "application/json":
@@ -184,7 +184,7 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_channel_metadata(self, channel_id: str) -> YoutubeChannelMetadata:
+    async def fetch_channel(self, channel_id: str) -> YoutubeChannel:
         """Fetches information on a channel using a channel id
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
@@ -219,7 +219,7 @@ class AsyncYoutubeAPI:
                             raise ChannelNotFound(channel_id)
                         else:
                             res_json = res_data.get("items")[0]
-                            return YoutubeChannelMetadata(res_json, call_url, self)
+                            return YoutubeChannel(res_json, call_url, self)
                     else:
                         message = f'The youtube API returned the following error code: {channel_response.status}'
                         if channel_response.content_type == "application/json":
@@ -230,8 +230,8 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_video_comments(self, video_id: str, max_comments: Optional[int] = 50, next_page: str = None,
-                                 current_count=0) -> list[YoutubeCommentThread]:
+    async def fetch_video_comments(self, video_id: str, max_comments: Optional[int] = 50, next_page: str = None,
+                                   current_count=0) -> list[YoutubeCommentThread]:
         """Fetches comments on a video
 
         A list of comment threads are fetched using a GET request which the response is then concentrated into a
@@ -275,7 +275,7 @@ class AsyncYoutubeAPI:
                         if res_data.get("nextPageToken") is not None:
                             current_count += res_data["pageInfo"].get("totalResults")
                             if not max_comments or current_count < max_comments:
-                                videos_next_page = await self.get_video_comments(
+                                videos_next_page = await self.fetch_video_comments(
                                     video_id, next_page=res_data["nextPageToken"], current_count=current_count,
                                     max_comments=max_comments)
                         videos = [YoutubeCommentThread(item, call_url, self) for item in res_json]
@@ -292,8 +292,8 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_channel_comments(self, channel_id: str, max_comments: Optional[int] = 50, next_page: str = None,
-                                   current_count=0) -> list[YoutubeCommentThread]:
+    async def fetch_channel_comments(self, channel_id: str, max_comments: Optional[int] = 50, next_page: str = None,
+                                     current_count=0) -> list[YoutubeCommentThread]:
         """Fetches comments on an entire channel
 
         A list of comment threads are fetched using a GET request which the response is then concentrated into a
@@ -337,7 +337,7 @@ class AsyncYoutubeAPI:
                         if res_data.get("nextPageToken") is not None:
                             current_count += res_data["pageInfo"].get("totalResults")
                             if not max_comments or current_count < max_comments:
-                                videos_next_page = await self.get_video_comments(
+                                videos_next_page = await self.fetch_channel_comments(
                                     channel_id, next_page=res_data["nextPageToken"], current_count=current_count,
                                     max_comments=max_comments)
                         videos = [YoutubeCommentThread(item, call_url, self) for item in res_json]
@@ -354,7 +354,7 @@ class AsyncYoutubeAPI:
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
-    async def get_comment_metadata(self, comment_id: str) -> YoutubeComment:
+    async def fetch_comment(self, comment_id: str) -> YoutubeComment:
         """Fetches individual comments
 
         comments are fetched using a GET request which the response is then concentrated into a

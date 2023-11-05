@@ -412,7 +412,7 @@ class LongUploadsStatus(Enum):
         return self.value
 
 
-class YoutubeVideoMetadata(BaseVideo):
+class YoutubeVideo(BaseVideo):
     """A data class containing video data such as the title, id, description, channel, etc.
         Attributes:
             metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
@@ -647,7 +647,7 @@ class YoutubeVideoMetadata(BaseVideo):
         if self.channel_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.get_channel_metadata(self.channel_id)
+            return await self._call_data.fetch_channel(self.channel_id)
 
     async def fetch_comments(self, max_comments: Optional[int] = 50):
         """Fetches a list of comments on the video.
@@ -666,7 +666,7 @@ class YoutubeVideoMetadata(BaseVideo):
         """
         from.api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.get_video_comments(self.id, max_comments)
+        return await self._call_data.fetch_video_comments(self.id, max_comments)
 
     @property
     def chapters(self) -> Optional[list[VideoChapter]]:
@@ -710,7 +710,7 @@ class YoutubeVideoMetadata(BaseVideo):
                     return chapter
 
 
-class PlaylistVideoMetadata(BaseVideo):
+class PlaylistVideo(BaseVideo):
     """A data class for videos in a playlist
     Attributes:
         metadata (dict): The raw metadata from the API call used to construct this class
@@ -774,7 +774,7 @@ class PlaylistVideoMetadata(BaseVideo):
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
-    async def extended_data(self) -> YoutubeVideoMetadata:
+    async def extended_data(self) -> YoutubeVideo:
         """Fetches extended information on the video in the playlist
 
         This ia an api call which then returns a
@@ -791,7 +791,7 @@ class PlaylistVideoMetadata(BaseVideo):
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.get_video_metadata(self.id)
+        return await self._call_data.fetch_video(self.id)
 
     async def fetch_playlist(self):
         """Fetches the playlist associated with the video
@@ -810,7 +810,7 @@ class PlaylistVideoMetadata(BaseVideo):
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.get_playlist_metadata(self.playlist_id)
+        return await self._call_data.fetch_playlist_metadata(self.playlist_id)
 
     async def fetch_channel(self):
         """Fetches the channel associated with the video
@@ -830,7 +830,7 @@ class PlaylistVideoMetadata(BaseVideo):
         if self.channel_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.get_channel_metadata(self.channel_id)
+            return await self._call_data.fetch_channel(self.channel_id)
 
     async def fetch_comments(self, max_comments: Optional[int] = 50):
         """Fetches a list of comments on the video.
@@ -849,7 +849,7 @@ class PlaylistVideoMetadata(BaseVideo):
         """
         from.api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.get_video_comments(self.id, max_comments)
+        return await self._call_data.fetch_video_comments(self.id, max_comments)
 
 
 class YoutubePlaylistMetadata:
@@ -932,7 +932,7 @@ class YoutubePlaylistMetadata:
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
-    async def fetch_videos(self) -> list[PlaylistVideoMetadata]:
+    async def fetch_videos(self) -> list[PlaylistVideo]:
         """
         Fetches a list of the videos in the playlist
 
@@ -969,10 +969,10 @@ class YoutubePlaylistMetadata:
         if self.channel_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.get_channel_metadata(self.channel_id)
+            return await self._call_data.fetch_channel(self.channel_id)
 
 
-class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
+class AuthorisedYoutubeVideo(YoutubeVideo):
     """
     A data class containing owner only information video data such as the file and processing information.
 
@@ -1094,7 +1094,7 @@ class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
 
-class YoutubeChannelMetadata:
+class YoutubeChannel:
     """
     A class representing metadata from a YouTube channel
 
@@ -1246,7 +1246,7 @@ class YoutubeChannelMetadata:
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
-    async def fetch_uploads(self) -> Optional[list[PlaylistVideoMetadata]]:
+    async def fetch_uploads(self) -> Optional[list[PlaylistVideo]]:
         """Fetches the playlist containing all public uploads associated with the channel
 
         This ia an api call which then returns a
@@ -1267,7 +1267,7 @@ class YoutubeChannelMetadata:
             self._call_data: AsyncYoutubeAPI
             return await self._call_data.get_videos_from_playlist(self.uploads_id)
 
-    async def fetch_likes(self) -> Optional[list[PlaylistVideoMetadata]]:
+    async def fetch_likes(self) -> Optional[list[PlaylistVideo]]:
         """Fetches the playlist containing all videos the channel has liked if public
 
         This ia an api call which then returns a
@@ -1287,7 +1287,7 @@ class YoutubeChannelMetadata:
             self._call_data: AsyncYoutubeAPI
             return await self._call_data.get_videos_from_playlist(self.likes_id)
 
-    async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideoMetadata]:
+    async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideo]:
         """Fetches the channel trailer video if any
 
         This ia an api call which then returns a
@@ -1305,7 +1305,7 @@ class YoutubeChannelMetadata:
         if self.unsubscribed_trailer_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.get_video_metadata(self.unsubscribed_trailer_id)
+            return await self._call_data.fetch_video(self.unsubscribed_trailer_id)
 
     async def fetch_comments(self, max_comments: Optional[int] = 50):
         """Fetches a list of related to the channel.
@@ -1324,7 +1324,7 @@ class YoutubeChannelMetadata:
         """
         from.api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.get_channel_comments(self.id, max_comments)
+        return await self._call_data.fetch_channel_comments(self.id, max_comments)
 
 
 class YoutubeComment:
