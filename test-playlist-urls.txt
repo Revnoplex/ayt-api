@@ -40,9 +40,9 @@ https://youtu.be/NS8DPG62Fto?list=PLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-
 http://youtu.be/NS8DPG62Fto&list=PLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-
 https://youtu.be/NS8DPG62Fto&list=PLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-
 
-https://www.youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
-https://youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
-https://m.youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
+http://www.youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
+http://youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
+http://m.youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
 https://www.youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
 https://youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json
 https://m.youtube.com/oembed?url=http%3A//www.youtube.com/playlist?list%3DPLwZcI0zn-JheRhv7jIV5Dl6IJQTuHR5e-&format=json

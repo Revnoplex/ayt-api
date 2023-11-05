@@ -1,8 +1,11 @@
 import asyncio
+from typing import Optional
 import aiohttp
 from aiohttp import TCPConnector
-from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound
-from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata, YoutubeChannelMetadata
+from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
+    CommentNotFound
+from .types import YoutubePlaylistMetadata, PlaylistVideoMetadata, YoutubeVideoMetadata, YoutubeChannelMetadata, \
+    YoutubeCommentThread, YoutubeComment
 
 
 class AsyncYoutubeAPI:
@@ -155,12 +158,12 @@ class AsyncYoutubeAPI:
         if len(video_id) < 1:
             raise InvalidInput(video_id)
         async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
-                as video_duration_session:
+                as video_session:
             call_url = f'{self.call_url_prefix}/videos?part=snippet&part=contentDetails&part=status&part=statistics' \
                        f'&part=player&part=topicDetails&part=recordingDetails&part=liveStreamingDetails' \
                        f'&part=localizations&id={video_id}&maxResults=50&key={self.key}'
             try:
-                async with video_duration_session.get(call_url) as video_response:
+                async with video_session.get(call_url) as video_response:
                     if video_response.status == 200:
                         res_data = await video_response.json()
                         if "error" in res_data:
@@ -224,5 +227,232 @@ class AsyncYoutubeAPI:
                             error_data = res_data["error"]
                             message = error_data.get("message")
                         raise HTTPException(channel_response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+
+    async def get_video_comments(self, video_id: str, max_comments: Optional[int] = 50, next_page: str = None,
+                                 current_count=0) -> list[YoutubeCommentThread]:
+        """Fetches comments on a video
+
+        A list of comment threads are fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubeCommentThread` object
+
+        Args:
+            video_id (str): The id of the video to use
+            max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
+                                WARNING! specifying a high number or ``None`` could hammer the api too much causing you
+                                to get rate limited so do this with caution
+            next_page (str): A parameter used by this function to fetch more than 21 comments
+            current_count (int): A parameter used by this function to track how many comments are fetched to satisfy
+                                 the :param:`max_comments` parameter
+        Returns:
+            list[YoutubeCommentThread]: A list of comments as YoutubeCommentThreads
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video to look for comments on does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        if len(video_id) < 1:
+            raise InvalidInput(video_id)
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as thread_session:
+            next_page_query = "" if next_page is None else f'&pageToken={next_page}'
+            call_url = f'{self.call_url_prefix}/commentThreads?part=snippet&part=replies&part=id&videoId={video_id}' \
+                       f'{next_page_query}&maxResults=50&key={self.key}'
+            try:
+                async with thread_session.get(call_url) as thread_response:
+                    if thread_response.status == 200:
+                        res_data = await thread_response.json()
+                        if "error" in res_data:
+                            if 'videoNotFound' in [error.get("reason") for error in res_data["error"]["errors"]]:
+                                raise VideoNotFound(video_id)
+                            raise HTTPException(thread_response, f'{res_data["error"].get("code")}:'
+                                                                 f'{res_data["error"].get("message")}')
+                        res_json = res_data.get("items")
+                        videos_next_page = []
+                        if res_data.get("nextPageToken") is not None:
+                            current_count += res_data["pageInfo"].get("totalResults")
+                            if not max_comments or current_count < max_comments:
+                                videos_next_page = await self.get_video_comments(
+                                    video_id, next_page=res_data["nextPageToken"], current_count=current_count,
+                                    max_comments=max_comments)
+                        videos = [YoutubeCommentThread(item, call_url, self) for item in res_json]
+                        return (videos + videos_next_page)[:max_comments]
+                    else:
+                        message = f'The youtube API returned the following error code: {thread_response.status}'
+                        if thread_response.content_type == "application/json":
+                            res_data = await thread_response.json()
+                            error_data = res_data["error"]
+                            if 'videoNotFound' in [error.get("reason") for error in error_data["errors"]]:
+                                raise VideoNotFound(video_id)
+                            message = error_data.get("message")
+                        raise HTTPException(thread_response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+
+    async def get_channel_comments(self, channel_id: str, max_comments: Optional[int] = 50, next_page: str = None,
+                                   current_count=0) -> list[YoutubeCommentThread]:
+        """Fetches comments on an entire channel
+
+        A list of comment threads are fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubeCommentThread` object
+
+        Args:
+            channel_id (str): The id of the channel to use
+            max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
+                                WARNING! specifying a high number or ``None`` could hammer the api too much causing you
+                                to get rate limited so do this with caution
+            next_page (str): A parameter used by this function to fetch more than 21 comments
+            current_count (int): A parameter used by this function to track how many comments are fetched to satisfy
+                                 the :param:`max_comments` parameter
+        Returns:
+            list[YoutubeCommentThread]: A list of comments as YoutubeCommentThreads
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video to look for comments on does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        if len(channel_id) < 1:
+            raise InvalidInput(channel_id)
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as thread_session:
+            next_page_query = "" if next_page is None else f'&pageToken={next_page}'
+            call_url = f'{self.call_url_prefix}/commentThreads?part=snippet&part=replies&part=id&' \
+                       f'allThreadsRelatedToChannelId={channel_id}{next_page_query}&maxResults=50&key={self.key}'
+            try:
+                async with thread_session.get(call_url) as thread_response:
+                    if thread_response.status == 200:
+                        res_data = await thread_response.json()
+                        if "error" in res_data:
+                            if 'channelNotFound' in [error.get("reason") for error in res_data["error"]["errors"]]:
+                                raise ChannelNotFound(channel_id)
+                            raise HTTPException(thread_response, f'{res_data["error"].get("code")}:'
+                                                                 f'{res_data["error"].get("message")}')
+                        res_json = res_data.get("items")
+                        videos_next_page = []
+                        if res_data.get("nextPageToken") is not None:
+                            current_count += res_data["pageInfo"].get("totalResults")
+                            if not max_comments or current_count < max_comments:
+                                videos_next_page = await self.get_video_comments(
+                                    channel_id, next_page=res_data["nextPageToken"], current_count=current_count,
+                                    max_comments=max_comments)
+                        videos = [YoutubeCommentThread(item, call_url, self) for item in res_json]
+                        return (videos + videos_next_page)[:max_comments]
+                    else:
+                        message = f'The youtube API returned the following error code: {thread_response.status}'
+                        if thread_response.content_type == "application/json":
+                            res_data = await thread_response.json()
+                            error_data = res_data["error"]
+                            if 'channelNotFound' in [error.get("reason") for error in error_data["errors"]]:
+                                raise ChannelNotFound(channel_id)
+                            message = error_data.get("message")
+                        raise HTTPException(thread_response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+
+    async def get_comment_metadata(self, comment_id: str) -> YoutubeComment:
+        """Fetches individual comments
+
+        comments are fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubeComment` object
+
+        Args:
+            comment_id (str): The id of the comment to use
+        Returns:
+            YoutubeComment: The YouTube comment object
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        if len(comment_id) < 1:
+            raise InvalidInput(comment_id)
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as comment_session:
+            call_url = f'{self.call_url_prefix}/comments?part=snippet&part=id&id={comment_id}' \
+                       f'&key={self.key}'
+            print(call_url)
+            try:
+                async with comment_session.get(call_url) as comment_response:
+                    if comment_response.status == 200:
+                        res_data = await comment_response.json()
+                        if "error" in res_data:
+                            raise HTTPException(comment_response, f'{res_data["error"].get("code")}:'
+                                                                  f'{res_data["error"].get("message")}')
+                        if len(res_data.get("items")) < 1:
+                            raise CommentNotFound(comment_id)
+                        else:
+                            res_json = res_data.get("items")[0]
+                            return YoutubeComment(res_json, call_url, self)
+                    else:
+                        message = f'The youtube API returned the following error code: {comment_response.status}'
+                        if comment_response.content_type == "application/json":
+                            res_data = await comment_response.json()
+                            error_data = res_data["error"]
+                            message = error_data.get("message")
+                        raise HTTPException(comment_response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+
+    async def fetch_comment_replies(self, comment_id: str, max_comments: Optional[int] = 50, next_page: str = None,
+                                    current_count=0) -> list[YoutubeComment]:
+        """Fetches a list of replies on a comment
+
+        comments are fetched using a GET request which the response is then concentrated into a
+        :class:`list[YoutubeComment]` object
+
+        Args:
+            comment_id (str): The id of the comment to use
+            max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
+                                WARNING! specifying a high number or ``None`` could hammer the api too much causing you
+                                to get rate limited so do this with caution
+            next_page (str): A parameter used by this function to fetch more than 21 comments
+            current_count (int): A parameter used by this function to track how many comments are fetched to satisfy
+                                 the :param:`max_comments` parameter
+        Returns:
+            list[YoutubeComment]: The replies on the comment
+        Raises:
+            HTTPException: Fetching the metadata failed
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        if len(comment_id) < 1:
+            raise InvalidInput(comment_id)
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as comment_session:
+            next_page_query = "" if next_page is None else f'&pageToken={next_page}'
+            call_url = f'{self.call_url_prefix}/comments?part=snippet&part=id&parentId={comment_id}' \
+                       f'{next_page_query}&key={self.key}'
+            try:
+                async with comment_session.get(call_url) as comment_response:
+                    if comment_response.status == 200:
+                        res_data = await comment_response.json()
+                        if "error" in res_data:
+                            raise HTTPException(comment_response, f'{res_data["error"].get("code")}:'
+                                                                  f'{res_data["error"].get("message")}')
+                        res_json = res_data.get("items")
+                        comments_next_page = []
+                        if res_data.get("nextPageToken") is not None:
+                            current_count += len(res_json)
+                            if not max_comments or current_count < max_comments:
+                                comments_next_page = await self.fetch_comment_replies(
+                                    comment_id, next_page=res_data["nextPageToken"], current_count=current_count,
+                                    max_comments=max_comments)
+                        comments = [YoutubeComment(item, call_url, self) for item in res_json]
+                        return (comments + comments_next_page)[:max_comments]
+                    else:
+                        message = f'The youtube API returned the following error code: {comment_response.status}'
+                        if comment_response.content_type == "application/json":
+                            res_data = await comment_response.json()
+                            error_data = res_data["error"]
+                            message = error_data.get("message")
+                        raise HTTPException(comment_response, message, error_data)
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)

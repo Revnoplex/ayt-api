@@ -7,7 +7,7 @@ def extract_video_id(url: str) -> Optional[str]:
     """
     This should work for every url listed here:
     https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486#file-activeyoutubeurlformats-txt
-    and more.
+    and more such as i.ytimg.com urls.
     Args:
         url (str): The url to strip the id from
     Returns:
@@ -28,8 +28,8 @@ def extract_video_id(url: str) -> Optional[str]:
 
 def extract_playlist_id(url: str) -> Optional[str]:
     """
-    This should work with the following urls
-
+    This should work for every url listed here:
+    https://github.com/Revnoplex/ayt-api/blob/main/test-playlist-urls.txt
     Don't expect this to work on YouTube mixes
     Args:
         url (str): The url to strip the id from
@@ -43,6 +43,24 @@ def extract_playlist_id(url: str) -> Optional[str]:
         return queries["list"][0]
     elif encoded_query_matches:
         return extract_playlist_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
+
+
+def extract_channel_id(url: str) -> Optional[str]:
+    """
+    This should work for every url listed here:
+
+    Args:
+        url (str): The url to strip the id from
+    Returns:
+        Optional[str]: The channel id with the rest of the url removed
+    """
+    components = parse.urlparse(url.replace("&", "?", 1) if "?" not in url else url)
+    queries = parse.parse_qs(components.query)
+    encoded_query_matches = {'u', 'url'}.intersection(set(queries.keys()))
+    if encoded_query_matches:
+        return extract_video_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
+    else:
+        return pathlib.Path(components.path).name
 
 
 def id_as_base_10(youtube_id: str):

@@ -50,6 +50,19 @@ class ChannelNotFound(ResourceNotFound):
         super().__init__(message)
 
 
+class CommentNotFound(ResourceNotFound):
+    """Raises if the specified comment id does not exist on YouTube.
+    Args:
+        comment_id (str): comment id that was attempted to be fetched
+    Attributes:
+        comment_id (str): comment id that was attempted to be fetched
+    """
+    def __init__(self, comment_id):
+        self.comment_id = comment_id
+        message = f'The comment id {comment_id} did not match any visible videos on youtube'
+        super().__init__(message)
+
+
 class InvalidMetadata(YoutubeExceptions):
     """Raises when invalid metadata is given.
     Args:

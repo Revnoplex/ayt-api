@@ -646,8 +646,27 @@ class YoutubeVideoMetadata(BaseVideo):
         """
         if self.channel_id:
             from .api import AsyncYoutubeAPI
-            api: AsyncYoutubeAPI = self._call_data
-            return await api.get_channel_metadata(self.channel_id)
+            self._call_data: AsyncYoutubeAPI
+            return await self._call_data.get_channel_metadata(self.channel_id)
+
+    async def fetch_comments(self, max_comments: Optional[int] = 50):
+        """Fetches a list of comments on the video.
+
+        This ia an api call which then returns a
+        :class:`list[YoutubeCommentThread]` object
+
+        Returns:
+            list[YoutubeCommentThread]: A list of comments on the video
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.get_video_comments(self.id, max_comments)
 
     @property
     def chapters(self) -> Optional[list[VideoChapter]]:
@@ -771,8 +790,8 @@ class PlaylistVideoMetadata(BaseVideo):
             APITimeout: The YouTube api did not respond within the timeout period set
         """
         from .api import AsyncYoutubeAPI
-        api: AsyncYoutubeAPI = self._call_data
-        return await api.get_video_metadata(self.id)
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.get_video_metadata(self.id)
 
     async def fetch_playlist(self):
         """Fetches the playlist associated with the video
@@ -790,8 +809,8 @@ class PlaylistVideoMetadata(BaseVideo):
             APITimeout: The YouTube api did not respond within the timeout period set
         """
         from .api import AsyncYoutubeAPI
-        api: AsyncYoutubeAPI = self._call_data
-        return await api.get_playlist_metadata(self.playlist_id)
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.get_playlist_metadata(self.playlist_id)
 
     async def fetch_channel(self):
         """Fetches the channel associated with the video
@@ -810,8 +829,27 @@ class PlaylistVideoMetadata(BaseVideo):
         """
         if self.channel_id:
             from .api import AsyncYoutubeAPI
-            api: AsyncYoutubeAPI = self._call_data
-            return await api.get_channel_metadata(self.channel_id)
+            self._call_data: AsyncYoutubeAPI
+            return await self._call_data.get_channel_metadata(self.channel_id)
+
+    async def fetch_comments(self, max_comments: Optional[int] = 50):
+        """Fetches a list of comments on the video.
+
+        This ia an api call which then returns a
+        :class:`list[YoutubeCommentThread]` object
+
+        Returns:
+            list[YoutubeCommentThread]: A list of comments on the video
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.get_video_comments(self.id, max_comments)
 
 
 class YoutubePlaylistMetadata:
@@ -910,8 +948,8 @@ class YoutubePlaylistMetadata:
             APITimeout: The YouTube api did not respond within the timeout period set
         """
         from .api import AsyncYoutubeAPI
-        api: AsyncYoutubeAPI = self._call_data
-        return await api.get_videos_from_playlist(self.id)
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.get_videos_from_playlist(self.id)
 
     async def fetch_channel(self):
         """Fetches the channel associated with the playlist
@@ -930,8 +968,8 @@ class YoutubePlaylistMetadata:
         """
         if self.channel_id:
             from .api import AsyncYoutubeAPI
-            api: AsyncYoutubeAPI = self._call_data
-            return await api.get_channel_metadata(self.channel_id)
+            self._call_data: AsyncYoutubeAPI
+            return await self._call_data.get_channel_metadata(self.channel_id)
 
 
 class AuthorisedYoutubeVideoMetadata(YoutubeVideoMetadata):
@@ -1226,8 +1264,8 @@ class YoutubeChannelMetadata:
         """
         if self.uploads_id:
             from .api import AsyncYoutubeAPI
-            api: AsyncYoutubeAPI = self._call_data
-            return await api.get_videos_from_playlist(self.uploads_id)
+            self._call_data: AsyncYoutubeAPI
+            return await self._call_data.get_videos_from_playlist(self.uploads_id)
 
     async def fetch_likes(self) -> Optional[list[PlaylistVideoMetadata]]:
         """Fetches the playlist containing all videos the channel has liked if public
@@ -1246,8 +1284,8 @@ class YoutubeChannelMetadata:
         """
         if self.likes_id:
             from .api import AsyncYoutubeAPI
-            api: AsyncYoutubeAPI = self._call_data
-            return await api.get_videos_from_playlist(self.likes_id)
+            self._call_data: AsyncYoutubeAPI
+            return await self._call_data.get_videos_from_playlist(self.likes_id)
 
     async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideoMetadata]:
         """Fetches the channel trailer video if any
@@ -1266,5 +1304,118 @@ class YoutubeChannelMetadata:
         """
         if self.unsubscribed_trailer_id:
             from .api import AsyncYoutubeAPI
-            api: AsyncYoutubeAPI = self._call_data
-            return await api.get_video_metadata(self.unsubscribed_trailer_id)
+            self._call_data: AsyncYoutubeAPI
+            return await self._call_data.get_video_metadata(self.unsubscribed_trailer_id)
+
+    async def fetch_comments(self, max_comments: Optional[int] = 50):
+        """Fetches a list of related to the channel.
+
+        This ia an api call which then returns a
+        :class:`list[YoutubeCommentThread]` object
+
+        Returns:
+            list[YoutubeCommentThread]: A list of comments related to the channel
+        Raises:
+            HTTPException: Fetching the metadata failed
+            ChannelNotFound: The channel does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.get_channel_comments(self.id, max_comments)
+
+
+class YoutubeComment:
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+        Args:
+            metadata (dict): The raw API response to construct the class
+            call_url (str): The url used to call the API.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions
+        Raises:
+            MissingDataFromMetaData: There is malformed data in the metadata provided
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.snippet: dict = self.metadata['snippet']
+            self.id: str = self.metadata['id']
+            self.author_display_name: str = self.snippet['authorDisplayName']
+            self.author_profile_image_url: str = self.snippet['authorProfileImageUrl']
+            self.author_channel_url: Optional[str] = self.snippet.get("authorChannelUrl")
+            self.author_channel_id: Optional[str] = self.snippet["authorChannelId"]['value'] \
+                if self.snippet.get("authorChannelId") is not None else None
+            self.channel_id: Optional[str] = self.snippet.get('channelId')
+            self.channel_url: Optional[str] = f"https://www.youtube.com/channel/{self.channel_id}" \
+                if self.channel_id else None
+            self.video_id: Optional[str] = self.snippet.get('videoId')
+            self.video_url: Optional[str] = f"https://www.youtube.com/watch?v={self.video_id}" \
+                if self.video_id else None
+            self.highlight_url: Optional[str] = (self.video_url or self.channel_url) + f"&lc={self.id}" \
+                if self.video_url or self.channel_url else None
+            self.text_display: str = self.snippet['textDisplay']
+            self.text_original: Optional[str] = self.snippet.get('textOriginal')
+            self.parent_id: Optional[str] = self.snippet.get('parentId')
+            self.can_rate: bool = self.snippet['canRate']
+            self.viewer_rating: Optional[str] = self.snippet.get('viewerRating')
+            self.like_count: int = self.snippet['likeCount']
+            self.moderation_status: Optional[str] = self.snippet.get('moderationStatus')
+            self.published_at = isodate.parse_datetime(self.snippet['publishedAt'])
+            self.updated_at = isodate.parse_datetime(self.snippet['publishedAt'])
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+    async def fetch_replies(self, max_comments: Optional[int] = 50):
+        """Fetches a list of replies on the comment.
+
+        This ia an api call which then returns a
+        :class:`list[YoutubeComment]` object
+
+        Returns:
+            list[YoutubeComment]: A list of replies on the comment
+        Raises:
+            HTTPException: Fetching the metadata failed
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_comment_replies(self.id, max_comments)
+
+
+class YoutubeCommentThread:
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+        Args:
+            metadata (dict): The raw API response to construct the class
+            call_url (str): The url used to call the API.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions
+        Raises:
+            MissingDataFromMetaData: There is malformed data in the metadata provided
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.snippet: dict = self.metadata['snippet']
+            self.id: str = self.metadata['id']
+            self.channel_id: Optional[str] = self.snippet.get('channelId')
+            self.channel_url: Optional[str] = f"https://www.youtube.com/channel/{self.channel_id}" \
+                if self.channel_id else None
+            self.video_id: Optional[str] = self.snippet.get('videoId')
+            self.video_url: Optional[str] = f"https://www.youtube.com/watch?v={self.video_id}" \
+                if self.video_id else None
+            self.highlight_url: Optional[str] = self.video_url + f"&lc={self.id}" if self.video_url else None
+            self.top_level_comment = YoutubeComment(self.snippet['topLevelComment'], self.call_url, self._call_data)
+            self.can_reply: bool = self.snippet['canReply']
+            self.total_reply_count: Optional[int] = self.snippet.get('totalReplyCount')
+            self.is_public: bool = self.snippet['isPublic']
+            self.replies = [YoutubeComment(comment, self.call_url, self._call_data)
+                            for comment in self.metadata['replies']['comments']] \
+                if self.metadata.get('replies') is not None else None
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
