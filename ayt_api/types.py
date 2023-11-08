@@ -710,7 +710,7 @@ class YoutubeVideo(BaseVideo):
                     return chapter
 
 
-class PlaylistVideo(BaseVideo):
+class PlaylistItem(BaseVideo):
     """A data class for videos in a playlist
     Attributes:
         metadata (dict): The raw metadata from the API call used to construct this class
@@ -797,10 +797,10 @@ class PlaylistVideo(BaseVideo):
         """Fetches the playlist associated with the video
 
         This ia an api call which then returns a
-        :class:`YoutubePlaylistMetadata` object
+        :class:`YoutubePlaylist` object
 
         Returns:
-            YoutubePlaylistMetadata: The playlist object containing data of the playlist
+            YoutubePlaylist: The playlist object containing data of the playlist
         Raises:
             HTTPException: Fetching the metadata failed
             PlaylistNotFound: The playlist does not exist
@@ -810,7 +810,7 @@ class PlaylistVideo(BaseVideo):
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.fetch_playlist_metadata(self.playlist_id)
+        return await self._call_data.fetch_playlist(self.playlist_id)
 
     async def fetch_channel(self):
         """Fetches the channel associated with the video
@@ -852,7 +852,7 @@ class PlaylistVideo(BaseVideo):
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
 
-class YoutubePlaylistMetadata:
+class YoutubePlaylist:
     """Data class for YouTube playlists
     Attributes:
         metadata (dict): The raw API response used to construct this class
@@ -932,14 +932,14 @@ class YoutubePlaylistMetadata:
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
-    async def fetch_videos(self) -> list[PlaylistVideo]:
+    async def fetch_items(self) -> list[PlaylistItem]:
         """
         Fetches a list of the videos in the playlist
 
         This is an api call which returns a list of
-        :class:`PlaylistVideoMetadata` objects
+        :class:`PlaylistItem` objects
         Returns:
-            list[PlaylistVideoMetadata]: A list containing playlist video objects
+            list[PlaylistItem]: A list containing playlist video objects
         Raises:
             HTTPException: Fetching the metadata failed
             PlaylistNotFound: The playlist does not exist
@@ -949,7 +949,26 @@ class YoutubePlaylistMetadata:
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.get_videos_from_playlist(self.id)
+        return await self._call_data.fetch_playlist_items(self.id)
+
+    async def fetch_videos(self) -> list[YoutubeVideo]:
+        """
+        Fetches a list of the videos in the playlist
+
+        This is an api call which returns a list of
+        :class:`PlaylistItem` objects
+        Returns:
+            list[YoutubeVideo]: A list containing videos from the playlist
+        Raises:
+            HTTPException: Fetching the metadata failed
+            PlaylistNotFound: The playlist does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_playlist_videos(self.id)
 
     async def fetch_channel(self):
         """Fetches the channel associated with the playlist
@@ -1246,14 +1265,14 @@ class YoutubeChannel:
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
-    async def fetch_uploads(self) -> Optional[list[PlaylistVideo]]:
+    async def fetch_uploads(self) -> Optional[list[PlaylistItem]]:
         """Fetches the playlist containing all public uploads associated with the channel
 
         This ia an api call which then returns a
-        :class:`PlaylistVideoMetadata` object
+        :class:`PlaylistItem` object
 
         Returns:
-            Optional[list[PlaylistVideoMetadata]]: A list containing playlist video objects of the channel's public
+            Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public
                                                    uploads
         Raises:
             HTTPException: Fetching the metadata failed
@@ -1265,16 +1284,16 @@ class YoutubeChannel:
         if self.uploads_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.get_videos_from_playlist(self.uploads_id)
+            return await self._call_data.fetch_playlist_items(self.uploads_id)
 
-    async def fetch_likes(self) -> Optional[list[PlaylistVideo]]:
+    async def fetch_likes(self) -> Optional[list[PlaylistItem]]:
         """Fetches the playlist containing all videos the channel has liked if public
 
         This ia an api call which then returns a
-        :class:`PlaylistVideoMetadata` object if public, otherwise ``None``
+        :class:`PlaylistItem` object if public, otherwise ``None``
 
         Returns:
-            Optional[list[PlaylistVideoMetadata]]: A list containing playlist video objects of the channel's public
+            Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public
                                                    likes
             HTTPException: Fetching the metadata failed
             PlaylistNotFound: The playlist does not exist
@@ -1285,7 +1304,7 @@ class YoutubeChannel:
         if self.likes_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.get_videos_from_playlist(self.likes_id)
+            return await self._call_data.fetch_playlist_items(self.likes_id)
 
     async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideo]:
         """Fetches the channel trailer video if any
