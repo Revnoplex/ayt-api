@@ -146,11 +146,11 @@ class HTTPException(YoutubeExceptions):
     def __init__(self, response: aiohttp.ClientResponse, message: str = None, error_data: dict = None):
         self.response: aiohttp.ClientResponse = response
         self.error_data = error_data
-        self.details = error_data.get("details")
+        self.details = error_data.get("details") if error_data else None
         if self.details is not None:
             self.reason = self.details[0].get("reason")
         else:
-            self.reason = error_data["errors"][0].get("reason")
+            self.reason = error_data["errors"][0].get("reason") if error_data else None
         self.status: int = response.status
         self.message = message
         if self.reason == "API_KEY_INVALID":
