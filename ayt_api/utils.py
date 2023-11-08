@@ -81,7 +81,7 @@ def extract_comment_id(url: str) -> Optional[str]:
         return extract_comment_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
 
 
-def id_as_base_10(youtube_id: str):
+def id_str_to_int(youtube_id: str) -> int:
     number = 0
     last_chars = ["-", "_"]
     for idx, char in enumerate(reversed(youtube_id)):
