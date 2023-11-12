@@ -114,3 +114,12 @@ def snake_keys(dictionary: dict) -> dict:
     for key, value in dictionary.items():
         snake_dict[camel_to_snake(key)] = value
     return snake_dict
+
+
+def censor_token(call_url: str) -> str:
+    components = parse.urlparse(call_url)
+    queries = parse.parse_qs(components.query)
+    if "key" in queries:
+        queries["key"] = ["API_KEY"]
+    censored_components = components._replace(query=parse.urlencode(queries, doseq=True))
+    return censored_components.geturl()
