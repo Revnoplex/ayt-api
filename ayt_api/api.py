@@ -1,18 +1,19 @@
 import asyncio
 from typing import Optional, Union
+from urllib import parse
+
 import aiohttp
 from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
-    CommentNotFound
+    CommentNotFound, ResourceNotFound
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment
+    YoutubeComment, YoutubeSearchResult
+from .utils import censor_token
 
 
 class AsyncYoutubeAPI:
     """Represents the main class for running all the tools
     Attributes:
-        key (str): The API key used to access the YouTube API. To get an API key,
-            see instructions here: https://developers.google.com/youtube/v3/getting-started
         api_version (str):
             The API version to use. defaults to 3
         call_url_prefix (str): The start of the YouTube API call url to use
@@ -20,19 +21,22 @@ class AsyncYoutubeAPI:
         ignore_ssl (bool): whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
     """
+    URL_PREFIX = "https://www.googleapis.com/youtube/v{version}"
 
     def __init__(self, yt_api_key: str, api_version: str = '3', timeout: int = 5, ignore_ssl: bool = False):
         """
         Args:
-            yt_api_key (str): The API key used to access the YouTube API
+            yt_api_key (str): The API key used to access the YouTube API. to get an API key,
+                              see instructions here: https://developers.google.com/youtube/v3/getting-started
             api_version (str): The API version to use. defaults to 3
             timeout (int): The timeout if the api does not respond
             ignore_ssl (bool): whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
         """
-        self.key = yt_api_key
+        self._key = yt_api_key
         self.api_version = api_version
-        self.call_url_prefix = f'https://www.googleapis.com/youtube/v{self.api_version}'
+        self.call_url_prefix = self.URL_PREFIX.format(version=self.api_version)
+        self._skeleton_url = self.call_url_prefix + "/{kind}?part={parts}{queries}&key=" + self._key
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.ignore_ssl = ignore_ssl
 
@@ -58,9 +62,8 @@ class AsyncYoutubeAPI:
             id_object = ",".join(ids) if multi else ids
             next_page_query = "" if next_page is None else f'&pageToken={next_page}'
             max_results_query = "" if max_results is None else f'&maxResults={max_results}'
-            call_url = f'{self.call_url_prefix}/{call_type}?part={",".join(parts)}&{query}={id_object}' \
-                       f'{next_page_query}{max_results_query}&key={self.key}'
-            print(call_url)
+            call_url = self._skeleton_url.format(kind=call_type, parts=",".join(parts),
+                                                 queries=f"&{query}={id_object}{next_page_query}{max_results_query}")
             try:
                 async with yt_api_session.get(call_url) as yt_api_response:
                     if yt_api_response.status == 200:
@@ -73,17 +76,15 @@ class AsyncYoutubeAPI:
                             raise HTTPException(yt_api_response, f'{res_data["error"].get("code")}: '
                                                                  f'{res_data["error"].get("message")}')
                         items = res_data.get("items") or []
-                        not_found_bool = ((res_data["pageInfo"].get("totalResults") or len(items))
-                                          if res_data.get("pageInfo") else len(items)) < expected_count
-                        if not_found_bool:
-                            found_ids = [item.get("id") for item in items]
-                            raise exception_type(list(set(ids).difference(set(found_ids))))
+                        returned_items = [item.get("id") if isinstance(item.get("id"), str) else None for item in items]
+                        difference = list(set(ids).difference(set(returned_items)))
+                        if (difference and multi) or (not multi_resp and len(items) < 1):
+                            raise exception_type(difference if multi else ids)
                         else:
                             if multi or multi_resp:
                                 items_next_page = []
                                 if res_data.get("nextPageToken") is not None:
-                                    current_count += res_data["pageInfo"].get("totalResults") or \
-                                                     len(res_data.get("items"))
+                                    current_count += len(res_data.get("items"))
                                     if not max_items or current_count < max_items:
                                         items_next_page = await self._call_api(call_type, query, ids, parts,
                                                                                return_type, exception_type, max_results,
@@ -101,12 +102,11 @@ class AsyncYoutubeAPI:
                                 return (items + items_next_page + items_next_list)[:max_items]
                             else:
                                 res_json = res_data.get("items")[0]
-                                return return_type(res_json, call_url, self)
+                                return return_type(res_json, censor_token(call_url), self)
                     else:
                         message = f'The youtube API returned the following error code: ' \
                                   f'{yt_api_response.status}'
                         error_data = None
-                        print(call_url)
                         if yt_api_response.content_type == "application/json":
                             res_data = await yt_api_response.json()
                             if "error" in res_data:
@@ -301,3 +301,7 @@ class AsyncYoutubeAPI:
         return await self._call_api("comments", "parentId", comment_id,
                                     ["snippet", "id"], YoutubeComment,
                                     CommentNotFound, None, max_comments, True)
+
+    async def search(self, query: str, max_results=10) -> list[YoutubeSearchResult]:
+        return await self._call_api("search", "q", parse.quote(query), ["snippet"], YoutubeSearchResult,
+                                    ResourceNotFound, max_results if max_results < 50 else 50, max_results, True)

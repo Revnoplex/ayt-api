@@ -8,6 +8,12 @@ import isodate
 from .exceptions import MissingDataFromMetadata
 from .utils import camel_to_snake
 
+VIDEO_URL = "https://www.youtube.com/watch?v={}"
+PLAYLIST_URL = "https://www.youtube.com/playlist?list={}"
+CHANNEL_URL = "https://www.youtube.com/channel/{}"
+HIGHLIGHT_URL = "{0}&lc={1}"
+HIGHLIGHT_URL_ID = VIDEO_URL.format("{0}") + "&lc={1}"
+
 
 @dataclass
 class YoutubeThumbnail:
@@ -19,8 +25,8 @@ class YoutubeThumbnail:
         resolution (str): The Width x Height of the thumbnail
     """
     url: Optional[str]
-    width: Optional[int]
-    height: Optional[int]
+    width: Optional[int] = None
+    height: Optional[int] = None
 
     def __post_init__(self):
         self.resolution = "{}x{}".format(self.width, self.height)
@@ -37,9 +43,10 @@ class YoutubeThumbnailMetadata:
             thumbnail_metadata (dict): the raw thumbnail metadata to construct the class
         """
         self.metadata = thumbnail_metadata
+        self.available = self.metadata.keys()
 
     def __str__(self):
-        return f"Available Resolutions: {', '.join(self.metadata.keys())}"
+        return f"Available Resolutions: {', '.join(self.available)}"
 
     def __repr__(self):
         return f"YoutubeThumbnailMetadata(default={repr(self.default)},medium={repr(self.medium)}," \
@@ -516,13 +523,13 @@ class YoutubeVideo(BaseVideo):
             self.live_streaming_details: dict = metadata.get("liveStreamingDetails")
             self.raw_localisations: Optional[dict] = metadata.get("localizations")
             self.id: str = metadata["id"]
-            self.url: str = f'https://www.youtube.com/watch?v={self.id}'
+            self.url = VIDEO_URL.format(self.id)
             self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.channel_id: Optional[str] = self.snippet.get("channelId")
             if self.channel_id is None:
                 self.channel_url: Optional[str] = None
             else:
-                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
+                self.channel_url: Optional[str] = CHANNEL_URL.format(self.channel_id)
             self.title: str = self.snippet["title"]
             self.description: str = self.snippet["description"]
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
@@ -754,7 +761,7 @@ class PlaylistItem(BaseVideo):
             self.added_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.position: int = self.snippet["position"]
             self.id: str = self.content_details["videoId"]
-            self.url: str = f'https://www.youtube.com/watch?v={self.id}'
+            self.url = VIDEO_URL.format(self.id)
             self.title: str = self.snippet.get("title")
             self.description: str = self.snippet.get('description')
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
@@ -762,10 +769,10 @@ class PlaylistItem(BaseVideo):
             if self.channel_id is None:
                 self.channel_url: Optional[str] = None
             else:
-                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
+                self.channel_url: Optional[str] = CHANNEL_URL.format(self.channel_id)
             self.channel_title: Optional[str] = self.snippet.get("videoOwnerChannelTitle")
             self.playlist_id: str = self.snippet["playlistId"]
-            self.playlist_url = f'https://www.youtube.com/playlist?list={self.playlist_id}'
+            self.playlist_url = PLAYLIST_URL.format(self.playlist_id)
             self.note: Optional[str] = self.content_details.get("note")
             self.published_at = None if self.content_details.get("videoPublishedAt") is None else \
                 isodate.parse_datetime(self.content_details["videoPublishedAt"])
@@ -774,7 +781,7 @@ class PlaylistItem(BaseVideo):
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
-    async def extended_data(self) -> YoutubeVideo:
+    async def expand(self) -> YoutubeVideo:
         """Fetches extended information on the video in the playlist
 
         This ia an api call which then returns a
@@ -896,7 +903,7 @@ class YoutubePlaylist:
             self.call_url = call_url
             self._call_data = call_data
             self.id: str = metadata["id"]
-            self.url: str = f'https://www.youtube.com/playlist?list={self.id}'
+            self.url = PLAYLIST_URL.format(self.id)
             self.snippet: dict = metadata["snippet"]
             self.status: dict = metadata["status"]
             self.content_details: dict = metadata["contentDetails"]
@@ -907,7 +914,7 @@ class YoutubePlaylist:
             if self.channel_id is None:
                 self.channel_url: Optional[str] = None
             else:
-                self.channel_url: Optional[str] = f'https://www.youtube.com/channel/{self.channel_id}'
+                self.channel_url: Optional[str] = CHANNEL_URL.format(self.channel_id)
             self.title: str = self.snippet["title"]
             self.description: str = self.snippet["description"]
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
@@ -1200,7 +1207,7 @@ class YoutubeChannel:
             self.content_details: dict = metadata["contentDetails"]
             self.content_owner_details: dict = metadata["contentOwnerDetails"]
             self.id: str = metadata["id"]
-            self.url = f"https://www.youtube.com/channel/{self.id}"
+            self.url = CHANNEL_URL.format(self.id)
             self.raw_localisations: Optional[dict] = metadata.get("localizations")
             self.snippet: dict = metadata["snippet"]
             self.statistics: dict = metadata["statistics"]
@@ -1223,9 +1230,9 @@ class YoutubeChannel:
             self.country: Optional[str] = self.snippet.get("country")
             self.related_playlists: dict = self.content_details["relatedPlaylists"]
             self.likes_id: Optional[str] = self.related_playlists.get("likes")
-            self.likes_url = f'https://www.youtube.com/playlist?list={self.likes_id}' if self.likes_id else None
+            self.likes_url = PLAYLIST_URL.format(self.likes_id) if self.likes_id else None
             self.uploads_id: Optional[str] = self.related_playlists.get("uploads")
-            self.uploads_url = f'https://www.youtube.com/playlist?list={self.uploads_id}' if self.uploads_id else None
+            self.uploads_url = PLAYLIST_URL.format(self.uploads_id) if self.uploads_id else None
             self.view_count: int = self.statistics["viewCount"]
             self.subscriber_count: int = self.statistics["subscriberCount"]
             self.hidden_subscriber_count: bool = self.statistics["hiddenSubscriberCount"]
@@ -1247,8 +1254,7 @@ class YoutubeChannel:
             self.tracking_analytics_account_id: Optional[str] = self._branding_channel.get("trackingAnalyticsAccountId")
             self.moderate_comments: Optional[bool] = self._branding_channel.get("moderateComments")
             self.unsubscribed_trailer_id: Optional[str] = self._branding_channel.get("unsubscribedTrailer")
-            self.unsubscribed_trailer_url: Optional[str] = \
-                f'https://www.youtube.com/watch?v={self.unsubscribed_trailer_id}' \
+            self.unsubscribed_trailer_url: Optional[str] = VIDEO_URL.format(self.unsubscribed_trailer_id) \
                 if self.unsubscribed_trailer_id else None
             self.banner_external_url: Optional[str] = self.branding_settings.get("image").get("bannerExternalUrl") \
                 if self.branding_settings.get("image") else None
@@ -1368,13 +1374,11 @@ class YoutubeComment:
             self.author_channel_id: Optional[str] = self.snippet["authorChannelId"]['value'] \
                 if self.snippet.get("authorChannelId") is not None else None
             self.channel_id: Optional[str] = self.snippet.get('channelId')
-            self.channel_url: Optional[str] = f"https://www.youtube.com/channel/{self.channel_id}" \
-                if self.channel_id else None
+            self.channel_url: Optional[str] = CHANNEL_URL.format(self.channel_id) if self.channel_id else None
             self.video_id: Optional[str] = self.snippet.get('videoId')
-            self.video_url: Optional[str] = f"https://www.youtube.com/watch?v={self.video_id}" \
-                if self.video_id else None
-            self.highlight_url: Optional[str] = (self.video_url or self.channel_url) + f"&lc={self.id}" \
-                if self.video_url or self.channel_url else None
+            self.video_url: Optional[str] = VIDEO_URL.format(self.video_id) if self.video_id else None
+            self.highlight_url: Optional[str] = HIGHLIGHT_URL.format(self.video_url, self.id) \
+                if self.video_url else None
             self.text_display: str = self.snippet['textDisplay']
             self.text_original: Optional[str] = self.snippet.get('textOriginal')
             self.parent_id: Optional[str] = self.snippet.get('parentId')
@@ -1423,12 +1427,11 @@ class YoutubeCommentThread:
             self.snippet: dict = self.metadata['snippet']
             self.id: str = self.metadata['id']
             self.channel_id: Optional[str] = self.snippet.get('channelId')
-            self.channel_url: Optional[str] = f"https://www.youtube.com/channel/{self.channel_id}" \
-                if self.channel_id else None
+            self.channel_url: Optional[str] = CHANNEL_URL.format(self.channel_id) if self.channel_id else None
             self.video_id: Optional[str] = self.snippet.get('videoId')
-            self.video_url: Optional[str] = f"https://www.youtube.com/watch?v={self.video_id}" \
-                if self.video_id else None
-            self.highlight_url: Optional[str] = self.video_url + f"&lc={self.id}" if self.video_url else None
+            self.video_url: Optional[str] = VIDEO_URL.format(self.video_id) if self.video_id else None
+            self.highlight_url: Optional[str] = HIGHLIGHT_URL.format(self.video_url, self.id) \
+                if self.video_url else None
             self.top_level_comment = YoutubeComment(self.snippet['topLevelComment'], self.call_url, self._call_data)
             self.can_reply: bool = self.snippet['canReply']
             self.total_reply_count: Optional[int] = self.snippet.get('totalReplyCount')
@@ -1438,3 +1441,30 @@ class YoutubeCommentThread:
                 if self.metadata.get('replies') is not None else None
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+
+class YoutubeSearchResult:
+    def __init__(self, data: dict, call_url: str, call_data):
+        self.data = data
+        self.call_url = call_url
+        self._call_data = call_data
+        self.kind_id: str = data["id"]["kind"]
+        self._str_kind: str = self.kind_id.split('#')[1]
+        self._reference_table = {"video": [VIDEO_URL, YoutubeVideo],
+                                 "channel": [CHANNEL_URL, YoutubeChannel],
+                                 "playlist": [PLAYLIST_URL, YoutubePlaylist]}
+        self.kind = self._reference_table[self._str_kind][1]
+        self.id = self.data["id"][f"{self._str_kind}Id"]
+        self.url = self._reference_table[self._str_kind][0].format(self.id)
+        self.snippet = self.data["snippet"]
+        self.title: str = self.snippet["title"]
+        self.description: str = self.snippet["description"]
+        self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+        self.channel_title: Optional[str] = self.snippet.get("channelTitle")
+        self.live_broadcast_content: str = self.snippet["liveBroadcastContent"]
+
+    async def expand(self) -> Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]:
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        fetch_item = getattr(self._call_data, f"fetch_{self._str_kind}")
+        return await fetch_item(self.id)
