@@ -1,6 +1,7 @@
 from .api import AsyncYoutubeAPI
 from typing import NamedTuple as _NamedTuple
 from .exceptions import *
+from .types import SearchFilter
 from . import utils
 
 __title__ = "ayt-api"

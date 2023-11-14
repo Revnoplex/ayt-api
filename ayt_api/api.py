@@ -1,5 +1,6 @@
 import asyncio
-from typing import Optional, Union
+import datetime
+from typing import Optional, Union, Any
 from urllib import parse
 
 import aiohttp
@@ -7,8 +8,8 @@ from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
     CommentNotFound, ResourceNotFound
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult
-from .utils import censor_token
+    YoutubeComment, YoutubeSearchResult, SearchFilter
+from .utils import censor_token, snake_to_camel
 
 
 class AsyncYoutubeAPI:
@@ -44,7 +45,7 @@ class AsyncYoutubeAPI:
                         return_type: type, exception_type: type[BaseException], max_results: int = None,
                         max_items: Optional[int] = None, multi_resp=False, next_page: str = None,
                         next_list: list[str] = None,
-                        current_count=0, expected_count=1):
+                        current_count=0, expected_count=1, other_queries: str = None):
         if len(ids) < 1:
             raise InvalidInput(ids)
         if isinstance(ids, str):
@@ -62,8 +63,10 @@ class AsyncYoutubeAPI:
             id_object = ",".join(ids) if multi else ids
             next_page_query = "" if next_page is None else f'&pageToken={next_page}'
             max_results_query = "" if max_results is None else f'&maxResults={max_results}'
+            x_queries = "" if other_queries is None else other_queries
             call_url = self._skeleton_url.format(kind=call_type, parts=",".join(parts),
-                                                 queries=f"&{query}={id_object}{next_page_query}{max_results_query}")
+                                                 queries=f"&{query}={id_object}{x_queries}"
+                                                         f"{next_page_query}{max_results_query}")
             try:
                 async with yt_api_session.get(call_url) as yt_api_response:
                     if yt_api_response.status == 200:
@@ -302,6 +305,14 @@ class AsyncYoutubeAPI:
                                     ["snippet", "id"], YoutubeComment,
                                     CommentNotFound, None, max_comments, True)
 
-    async def search(self, query: str, max_results=10) -> list[YoutubeSearchResult]:
+    async def search(self, query: str, max_results=10, search_filter: SearchFilter = None) -> list[YoutubeSearchResult]:
+        def dt_check(obj: Any):
+            return obj.strftime("%Y-%m-%dT%H:%M:%SZ") if isinstance(obj, datetime.datetime) else obj
+        active_filters = None
+        if search_filter is not None:
+            datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+            active_filters = [f"{snake_to_camel(key)}={dt_check(value)}" for key, value in
+                              search_filter.__dict__.items() if value is not None]
         return await self._call_api("search", "q", parse.quote(query), ["snippet"], YoutubeSearchResult,
-                                    ResourceNotFound, max_results if max_results < 50 else 50, max_results, True)
+                                    ResourceNotFound, max_results if max_results < 50 else 50, max_results, True,
+                                    other_queries="&"+("&".join(active_filters)))

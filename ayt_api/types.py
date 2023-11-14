@@ -419,6 +419,17 @@ class LongUploadsStatus(Enum):
         return self.value
 
 
+@dataclass
+class SearchFilter:
+    channel_id: str = None
+    published_after: datetime.datetime = None
+    published_before: datetime.datetime = None
+    region_code: str = None
+    relevance_language: str = None
+    topic_id: str = None
+    video_category_id: str = None
+
+
 class YoutubeVideo(BaseVideo):
     """A data class containing video data such as the title, id, description, channel, etc.
         Attributes:
