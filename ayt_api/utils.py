@@ -109,6 +109,19 @@ def camel_to_snake(string: str) -> str:
     return snake_string
 
 
+def snake_to_camel(string: str) -> str:
+    camel_string = ""
+    capitalise = False
+    for char in string:
+        if char == "_":
+            capitalise = True
+        elif capitalise:
+            camel_string += char.upper()
+            capitalise = False
+        else:
+            camel_string += char
+    return camel_string
+
 def snake_keys(dictionary: dict) -> dict:
     snake_dict = {}
     for key, value in dictionary.items():
