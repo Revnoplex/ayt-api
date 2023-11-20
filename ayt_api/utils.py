@@ -82,6 +82,7 @@ def extract_comment_id(url: str) -> Optional[str]:
 
 
 def id_str_to_int(youtube_id: str) -> int:
+    """to be documented..."""
     number = 0
     last_chars = ["-", "_"]
     for idx, char in enumerate(reversed(youtube_id)):
@@ -100,6 +101,7 @@ def id_str_to_int(youtube_id: str) -> int:
 
 
 def camel_to_snake(string: str) -> str:
+    """to be documented..."""
     snake_string = ""
     for char in string:
         if char.isupper():
@@ -110,6 +112,7 @@ def camel_to_snake(string: str) -> str:
 
 
 def snake_to_camel(string: str) -> str:
+    """to be documented..."""
     camel_string = ""
     capitalise = False
     for char in string:
@@ -124,6 +127,7 @@ def snake_to_camel(string: str) -> str:
 
 
 def snake_keys(dictionary: dict) -> dict:
+    """to be documented..."""
     snake_dict = {}
     for key, value in dictionary.items():
         snake_dict[camel_to_snake(key)] = value
@@ -131,6 +135,7 @@ def snake_keys(dictionary: dict) -> dict:
 
 
 def censor_token(call_url: str) -> str:
+    """to be documented..."""
     components = parse.urlparse(call_url)
     queries = parse.parse_qs(components.query)
     if "key" in queries:
