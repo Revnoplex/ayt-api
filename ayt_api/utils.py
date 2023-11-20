@@ -120,7 +120,8 @@ def snake_to_camel(string: str) -> str:
             capitalise = False
         else:
             camel_string += char
-    return camel_string
+    return camel_string[0].lower() + camel_string[1:]
+
 
 def snake_keys(dictionary: dict) -> dict:
     snake_dict = {}
