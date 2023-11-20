@@ -6,7 +6,7 @@ from typing import Union
 from .types import YoutubeVideo, YoutubeChannel, YoutubePlaylist
 
 
-class ChannelType(Enum):
+class ChannelTypeFilter(Enum):
     show = "show"
     any = "any"
 
@@ -14,7 +14,7 @@ class ChannelType(Enum):
         return self.value
 
 
-class EventType(Enum):
+class EventTypeFilter(Enum):
     completed = "completed"
     live = "live"
     upcoming = "upcoming"
@@ -23,7 +23,7 @@ class EventType(Enum):
         return self.value
 
 
-class Order(Enum):
+class OrderFilter(Enum):
     date = "date"
     rating = "rating"
     relevance = "relevance"
@@ -35,7 +35,7 @@ class Order(Enum):
         return self.value
 
 
-class SafeSearch(Enum):
+class SafeSearchFilter(Enum):
     moderate = "moderate"
     none = "none"
     strict = "strict"
@@ -44,7 +44,7 @@ class SafeSearch(Enum):
         return self.value
 
 
-class VideoCaption(Enum):
+class VideoCaptionFilter(Enum):
     closed_caption = "closed_caption"
     none = "none"
     any = "any"
@@ -53,7 +53,7 @@ class VideoCaption(Enum):
         return self.value
 
 
-class VideoDimension(Enum):
+class VideoDimensionFilter(Enum):
     _2d = "2d"
     _3d = "3d"
     any = "any"
@@ -62,7 +62,7 @@ class VideoDimension(Enum):
         return self.value
 
 
-class VideoDuration(Enum):
+class VideoDurationFilter(Enum):
     long = "long"
     medium = "medium"
     short = "short"
@@ -72,7 +72,7 @@ class VideoDuration(Enum):
         return self.value
 
 
-class VideoEmbeddable(Enum):
+class VideoEmbeddableFilter(Enum):
     true = "true"
     any = "any"
 
@@ -80,7 +80,7 @@ class VideoEmbeddable(Enum):
         return self.value
 
 
-class VideoPaidProductPlacement(Enum):
+class VideoPaidProductPlacementFilter(Enum):
     true = "true"
     any = "any"
 
@@ -88,7 +88,7 @@ class VideoPaidProductPlacement(Enum):
         return self.value
 
 
-class VideoSyndicated(Enum):
+class VideoSyndicatedFilter(Enum):
     true = "true"
     any = "any"
 
@@ -96,7 +96,7 @@ class VideoSyndicated(Enum):
         return self.value
 
 
-class VideoType(Enum):
+class VideoTypeFilter(Enum):
     episode = "episode"
     movie = "movie"
     any = "any"
@@ -105,7 +105,7 @@ class VideoType(Enum):
         return self.value
 
 
-class VideoLicense(Enum):
+class VideoLicenseFilter(Enum):
     creative_common = "creative_common"
     youtube = "youtube"
     any = "any"
@@ -114,7 +114,7 @@ class VideoLicense(Enum):
         return self.value
 
 
-class VideoDefinition(Enum):
+class VideoDefinitionFilter(Enum):
     high = "high"
     standard = "standard"
     any = "any"
@@ -132,17 +132,17 @@ class SearchFilter:
     relevance_language: str = None
     topic_id: str = None
     video_category_id: str = None
-    channel_type: Union[ChannelType, str] = None
-    event_type: Union[str, EventType] = None
-    order: Union[str, Order] = None
-    safe_search: Union[str, SafeSearch] = None
+    channel_type: Union[ChannelTypeFilter, str] = None
+    event_type: Union[str, EventTypeFilter] = None
+    order: Union[str, OrderFilter] = None
+    safe_search: Union[str, SafeSearchFilter] = None
     _type: Union[str, type[Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]]] = None
-    video_caption: Union[str, VideoCaption] = None
-    video_definition: Union[str, VideoDefinition] = None
-    video_dimension: Union[str, VideoDimension] = None
-    video_duration: Union[str, VideoDuration] = None
-    video_embeddable: Union[str, VideoEmbeddable] = None
-    video_license: Union[str, VideoLicense] = None
-    video_paid_product_placement: Union[str, VideoPaidProductPlacement] = None
-    video_syndicated: Union[str, VideoSyndicated] = None
-    video_type: Union[str, VideoType] = None
+    video_caption: Union[str, VideoCaptionFilter] = None
+    video_definition: Union[str, VideoDefinitionFilter] = None
+    video_dimension: Union[str, VideoDimensionFilter] = None
+    video_duration: Union[str, VideoDurationFilter] = None
+    video_embeddable: Union[str, VideoEmbeddableFilter] = None
+    video_license: Union[str, VideoLicenseFilter] = None
+    video_paid_product_placement: Union[str, VideoPaidProductPlacementFilter] = None
+    video_syndicated: Union[str, VideoSyndicatedFilter] = None
+    video_type: Union[str, VideoTypeFilter] = None

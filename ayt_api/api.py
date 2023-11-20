@@ -8,7 +8,7 @@ from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
     CommentNotFound, ResourceNotFound
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, DummyObject, VideoCaption
 from .filters import SearchFilter
 from .utils import censor_token, snake_to_camel
 
@@ -324,3 +324,24 @@ class AsyncYoutubeApi:
         return await self._call_api("search", "q", parse.quote(query), ["snippet"], YoutubeSearchResult,
                                     ResourceNotFound, max_results if max_results < 50 else 50, max_results, True,
                                     other_queries="&"+("&".join(active_filters)))
+
+    async def fetch_video_captions(self, video_id: str) -> list[VideoCaption]:
+        """Fetches comments on a video
+
+        A list of comment threads are fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubeCommentThread` object
+
+        Args:
+            video_id (str): The id of the video to use
+        Returns:
+            list[VideoCaption]: A list of comments as YoutubeCommentThreads
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video to look for comments on does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        return await self._call_api("captions", "videoId", video_id,
+                                    ["snippet", "id"], VideoCaption,
+                                    VideoNotFound, None, None, True)

@@ -107,3 +107,40 @@ class License(Enum):
 
     def __str__(self):
         return self.value
+
+
+class CaptionStatus(Enum):
+    failed = "failed"
+    serving = "serving"
+    syncing = "syncing"
+
+    def __str__(self):
+        return self.value
+
+
+class CaptionFailureReason(Enum):
+    processing_failed = "processing_failed"
+    unknown_format = "unknown_format"
+    unsupported_format = "unsupported_format"
+
+    def __str__(self):
+        return self.value
+
+
+class AudioTrackType(Enum):
+    commentary = "commentary"
+    descriptive = "descriptive"
+    primary = "primary"
+    unknown = "unknown"
+
+    def __str__(self):
+        return self.value
+
+
+class CaptionTrackKind(Enum):
+    asr = "asr"
+    forced = "forced"
+    standard = "standard"
+
+    def __str__(self):
+        return self.value

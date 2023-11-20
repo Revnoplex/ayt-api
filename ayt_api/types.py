@@ -14,6 +14,8 @@ CHANNEL_URL = "https://www.youtube.com/channel/{}"
 HIGHLIGHT_URL = "{0}&lc={1}"
 HIGHLIGHT_URL_ID = VIDEO_URL.format("{0}") + "&lc={1}"
 
+# todo: document undocumented functions and classes
+
 
 @dataclass
 class YoutubeThumbnail:
@@ -407,6 +409,14 @@ class BaseVideo:
     visibility: PrivacyStatus
 
 
+class DummyObject:
+    """This is used for debugging only"""
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        self.metadata = metadata
+        self.call_url = call_url
+        self.call_data = call_data
+
+
 class YoutubeVideo(BaseVideo):
     """A data class containing video data such as the title, id, description, channel, etc.
         Attributes:
@@ -671,6 +681,25 @@ class YoutubeVideo(BaseVideo):
         self._call_data: AsyncYoutubeApi
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
+    async def fetch_captions(self):
+        """Fetches a list of comments on the video.
+
+        This ia an api call which then returns a
+        :class:`list[VideoCaptions]` object
+
+        Returns:
+            list[VideoCaptions]: A list of comments on the video
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        from.api import AsyncYoutubeApi
+        self._call_data: AsyncYoutubeApi
+        return await self._call_data.fetch_video_captions(self.id)
+
     @property
     def chapters(self) -> Optional[list[VideoChapter]]:
         """A list of chapters the video has if any otherwise just an empty list
@@ -854,6 +883,25 @@ class PlaylistItem(BaseVideo):
         from.api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
         return await self._call_data.fetch_video_comments(self.id, max_comments)
+
+    async def fetch_captions(self):
+        """Fetches a list of comments on the video.
+
+        This ia an api call which then returns a
+        :class:`list[VideoCaptions]` object
+
+        Returns:
+            list[VideoCaptions]: A list of comments on the video
+        Raises:
+            HTTPException: Fetching the metadata failed
+            VideoNotFound: The video does not exist
+            aiohttp.ClientError: There was a problem sending the request to the api
+            InvalidInput: The input is not a playlist id
+            APITimeout: The YouTube api did not respond within the timeout period set
+        """
+        from.api import AsyncYoutubeApi
+        self._call_data: AsyncYoutubeApi
+        return await self._call_data.fetch_video_captions(self.id)
 
 
 class YoutubePlaylist:
@@ -1447,25 +1495,56 @@ class YoutubeCommentThread:
 
 
 class YoutubeSearchResult:
+    """to be documented..."""
     def __init__(self, data: dict, call_url: str, call_data):
-        self.data = data
-        self.call_url = call_url
-        self._call_data = call_data
-        self.kind_id: str = data["id"]["kind"]
-        self._str_kind: str = self.kind_id.split('#')[1]
-        self.kind = REFERENCE_TABLE[self._str_kind][1]
-        self.id = self.data["id"][f"{self._str_kind}Id"]
-        self.url = REFERENCE_TABLE[self._str_kind][0].format(self.id)
-        self.snippet = self.data["snippet"]
-        self.title: str = self.snippet["title"]
-        self.description: str = self.snippet["description"]
-        self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
-        self.channel_title: Optional[str] = self.snippet.get("channelTitle")
-        self.live_broadcast_content: LiveBroadcastContent = \
-            LiveBroadcastContent(self.snippet["liveBroadcastContent"])
+        try:
+            self.data = data
+            self.call_url = call_url
+            self._call_data = call_data
+            self.kind_id: str = data["id"]["kind"]
+            self._str_kind: str = self.kind_id.split('#')[1]
+            self.kind = REFERENCE_TABLE[self._str_kind][1]
+            self.id = self.data["id"][f"{self._str_kind}Id"]
+            self.url = REFERENCE_TABLE[self._str_kind][0].format(self.id)
+            self.snippet = self.data["snippet"]
+            self.title: str = self.snippet["title"]
+            self.description: str = self.snippet["description"]
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.channel_title: Optional[str] = self.snippet.get("channelTitle")
+            self.live_broadcast_content: LiveBroadcastContent = \
+                LiveBroadcastContent(self.snippet["liveBroadcastContent"])
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), data, missing_snippet_data)
 
     async def expand(self) -> Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]:
         from .api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
         fetch_item = getattr(self._call_data, f"fetch_{self._str_kind}")
         return await fetch_item(self.id)
+
+
+class VideoCaption:
+    """to be documented..."""
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.id: str = self.metadata["id"]
+            self.snippet: dict = self.metadata["snippet"]
+            self.video_id: str = self.snippet["videoId"]
+            self.last_updated = isodate.parse_datetime(self.snippet["lastUpdated"])
+            self.track_kind = CaptionTrackKind(self.snippet["trackKind"].lower())
+            self.language: str = self.snippet.get("language")
+            self.name: str = self.snippet.get("name")
+            self.audio_track_type = AudioTrackType(self.snippet["audioTrackType"])
+            self.is_cc: bool = self.snippet["isCC"]
+            self.is_large: bool = self.snippet["isLarge"]
+            self.is_easy_reader: bool = self.snippet["isEasyReader"]
+            self.is_draft: bool = self.snippet["isDraft"]
+            self.is_auto_synced: bool = self.snippet["isAutoSynced"]
+            self.status = CaptionStatus(self.snippet["status"]) if self.snippet.get("status") else None
+            self.failure_reason = CaptionFailureReason(camel_to_snake(self.snippet["failureReason"])) \
+                if self.snippet.get("failureReason") else None
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
