@@ -8,11 +8,12 @@ from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
     CommentNotFound, ResourceNotFound
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, SearchFilter
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE
+from .filters import SearchFilter
 from .utils import censor_token, snake_to_camel
 
 
-class AsyncYoutubeAPI:
+class AsyncYoutubeApi:
     """Represents the main class for running all the tools
     Attributes:
         api_version (str):
@@ -306,12 +307,19 @@ class AsyncYoutubeAPI:
                                     CommentNotFound, None, max_comments, True)
 
     async def search(self, query: str, max_results=10, search_filter: SearchFilter = None) -> list[YoutubeSearchResult]:
-        def dt_check(obj: Any):
-            return obj.strftime("%Y-%m-%dT%H:%M:%SZ") if isinstance(obj, datetime.datetime) else obj
+        def process_filters(obj: Any):
+            if isinstance(obj, datetime.datetime):
+                return obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+            elif isinstance(obj, int):
+                return datetime.datetime.fromtimestamp(obj).strftime("%Y-%m-%dT%H:%M:%SZ")
+            elif obj in [value[1] for value in REFERENCE_TABLE.values()]:
+                return [key for key, value in REFERENCE_TABLE.items() if value[1] == obj][0]
+            else:
+                return snake_to_camel(str(obj))
         active_filters = None
         if search_filter is not None:
             datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-            active_filters = [f"{snake_to_camel(key)}={dt_check(value)}" for key, value in
+            active_filters = [f"{snake_to_camel(key)}={process_filters(value)}" for key, value in
                               search_filter.__dict__.items() if value is not None]
         return await self._call_api("search", "q", parse.quote(query), ["snippet"], YoutubeSearchResult,
                                     ResourceNotFound, max_results if max_results < 50 else 50, max_results, True,

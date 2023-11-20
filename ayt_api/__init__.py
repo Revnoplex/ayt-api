@@ -1,8 +1,10 @@
-from .api import AsyncYoutubeAPI
+from .api import AsyncYoutubeApi
 from typing import NamedTuple as _NamedTuple
 from .exceptions import *
-from .types import SearchFilter
+from .filters import SearchFilter
 from . import utils
+from . import filters
+from .enums import *
 
 __title__ = "ayt-api"
 __author__ = "Revnoplex"
