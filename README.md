@@ -4,11 +4,7 @@
 # ayt-api
 A Basic Asynchronous, Object oriented python library for the YouTube api
 
-## What makes ayt-api different?
-The difference with this library and other libraries is that it uses 
-asynchronous api calls and responses are formatted as object-oriented data. 
-
-The library is also designed towards being used in python based discord bots that use an asynchronous discord api wrapper
+The library is designed towards being used in python based discord bots that use an asynchronous discord api wrapper
 
 ## Installation
 
@@ -20,7 +16,7 @@ python -m pip install -U ayt-api
 ```
 
 #### Unix based OSes (Linux, Mac OS, etc.):
-The pip command can vary between diffrent unix based OSes but should be simular to these:
+The pip command can vary between different unix based OSes but should be simular to these:
 ```sh
 python3 -m pip install -U ayt-api
 
@@ -54,11 +50,11 @@ First of all to use this library, you will need an API key. To get one, [see her
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeAPI("Your API Key")
+api = ayt_api.AsyncYoutubeApi("Your API Key")
 
 
 async def video_example():
-    video_data = await api.get_video_metadata("Video ID")
+    video_data = await api.fetch_video("Video ID")
     print(video_data.id)
     print(video_data.channel_id)
     print(video_data.url)
@@ -82,11 +78,11 @@ loop.run_until_complete(video_example())
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeAPI("Your API Key")
+api = ayt_api.AsyncYoutubeApi("Your API Key")
 
 
 async def playlist_example():
-    playlist_data = await api.get_playlist_metadata("Playlist ID")
+    playlist_data = await api.fetch_playlist("Playlist ID")
     print(playlist_data.id)
     print(playlist_data.channel_id)
     print(playlist_data.url)
@@ -107,23 +103,24 @@ loop.run_until_complete(playlist_example())
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeAPI("Your API Key")
+api = ayt_api.AsyncYoutubeApi("Your API Key")
 
 
 async def playlist_video_example():
-    playlist_videos = await api.get_videos_from_playlist("Playlist ID")
-    video_data = playlist_videos[0]
-    print(video_data.id)
-    print(video_data.channel_id)
-    print(video_data.url)
-    print(video_data.title)
-    print(video_data.thumbnails.default.url)
-    print(video_data.visibility)
-    print(video_data.published_at)
-    print(video_data.description)
-    print(video_data.playlist_url)
-    print(video_data.added_at)
+    playlist_videos = await api.fetch_playlist_videos("Playlist ID")
+    video = playlist_videos[0]
+    print(video.id)
+    print(video.channel_id)
+    print(video.url)
+    print(video.title)
+    print(video.thumbnails.default.url)
+    print(video.visibility)
+    print(video.published_at)
+    print(video.description)
+    print(video.duration)
 
 loop = asyncio.new_event_loop()
 loop.run_until_complete(playlist_video_example())
 ```
+
+More examples are listed [here](https://github.com/Revnoplex/ayt-api/tree/main/examples)
