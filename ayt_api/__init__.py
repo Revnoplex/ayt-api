@@ -1,4 +1,4 @@
-from .api import AsyncYoutubeApi
+from .api import AsyncYoutubeAPI
 from typing import NamedTuple as _NamedTuple
 from .exceptions import *
 from .filters import SearchFilter

@@ -1,7 +1,7 @@
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeApi("Your API Key")
+api = ayt_api.AsyncYoutubeAPI("Your API Key")
 
 
 async def playlist_video_example():

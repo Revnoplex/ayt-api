@@ -530,7 +530,7 @@ class YoutubeVideo(BaseVideo):
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): Call data used for fetch functions.
+            call_data (AsyncYoutubeAPI): Call data used for fetch functions.
 
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -685,8 +685,8 @@ class YoutubeVideo(BaseVideo):
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.channel_id:
-            from .api import AsyncYoutubeApi
-            self._call_data: AsyncYoutubeApi
+            from .api import AsyncYoutubeAPI
+            self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_channel(self.channel_id)
 
     async def fetch_comments(self, max_comments: Optional[int] = 50):
@@ -705,8 +705,8 @@ class YoutubeVideo(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
     async def fetch_captions(self):
@@ -725,8 +725,8 @@ class YoutubeVideo(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_captions(self.id)
 
     @property
@@ -805,7 +805,7 @@ class PlaylistItem(BaseVideo):
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions.
 
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -857,8 +857,8 @@ class PlaylistItem(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from .api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video(self.id)
 
     async def fetch_playlist(self):
@@ -877,8 +877,8 @@ class PlaylistItem(BaseVideo):
             InvalidInput: The input is not a playlist id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from .api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist(self.playlist_id)
 
     async def fetch_channel(self):
@@ -898,8 +898,8 @@ class PlaylistItem(BaseVideo):
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.channel_id:
-            from .api import AsyncYoutubeApi
-            self._call_data: AsyncYoutubeApi
+            from .api import AsyncYoutubeAPI
+            self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_channel(self.channel_id)
 
     async def fetch_comments(self, max_comments: Optional[int] = 50):
@@ -918,8 +918,8 @@ class PlaylistItem(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
     async def fetch_captions(self):
@@ -938,8 +938,8 @@ class PlaylistItem(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_captions(self.id)
 
 
@@ -979,7 +979,7 @@ class YoutubePlaylist:
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions.
 
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -1043,8 +1043,8 @@ class YoutubePlaylist:
             InvalidInput: The input is not a playlist id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from .api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist_items(self.id)
 
     async def fetch_videos(self) -> list[YoutubeVideo]:
@@ -1064,8 +1064,8 @@ class YoutubePlaylist:
             InvalidInput: The input is not a playlist id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from .api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist_videos(self.id)
 
     async def fetch_channel(self):
@@ -1085,8 +1085,8 @@ class YoutubePlaylist:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.channel_id:
-            from .api import AsyncYoutubeApi
-            self._call_data: AsyncYoutubeApi
+            from .api import AsyncYoutubeAPI
+            self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_channel(self.channel_id)
 
 
@@ -1152,7 +1152,7 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions.
 
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -1289,7 +1289,7 @@ class YoutubeChannel:
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions.
 
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -1383,8 +1383,8 @@ class YoutubeChannel:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.uploads_id:
-            from .api import AsyncYoutubeApi
-            self._call_data: AsyncYoutubeApi
+            from .api import AsyncYoutubeAPI
+            self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_playlist_items(self.uploads_id)
 
     async def fetch_likes(self) -> Optional[list[PlaylistItem]]:
@@ -1404,8 +1404,8 @@ class YoutubeChannel:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.likes_id:
-            from .api import AsyncYoutubeApi
-            self._call_data: AsyncYoutubeApi
+            from .api import AsyncYoutubeAPI
+            self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_playlist_items(self.likes_id)
 
     async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideo]:
@@ -1425,8 +1425,8 @@ class YoutubeChannel:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.unsubscribed_trailer_id:
-            from .api import AsyncYoutubeApi
-            self._call_data: AsyncYoutubeApi
+            from .api import AsyncYoutubeAPI
+            self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_video(self.unsubscribed_trailer_id)
 
     async def fetch_comments(self, max_comments: Optional[int] = 50):
@@ -1445,8 +1445,8 @@ class YoutubeChannel:
             InvalidInput: The input is not a channel id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_channel_comments(self.id, max_comments)
 
 
@@ -1487,7 +1487,7 @@ class YoutubeComment:
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions.
 
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -1537,8 +1537,8 @@ class YoutubeComment:
             InvalidInput: The input is not a comment id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from.api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_comment_replies(self.id, max_comments)
 
 
@@ -1568,7 +1568,7 @@ class YoutubeCommentThread:
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions.
+            call_data (AsyncYoutubeAPI): call data used for fetch functions.
 
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -1619,7 +1619,7 @@ class YoutubeSearchResult:
             Args:
                 data (dict): The raw API response to construct the class.
                 call_url (str): The url used to call the API.
-                call_data (AsyncYoutubeApi): Call data used for fetch functions.
+                call_data (AsyncYoutubeAPI): Call data used for fetch functions.
 
             Raises:
                 MissingDataFromMetaData: There is malformed data in the metadata provided.
@@ -1656,8 +1656,8 @@ class YoutubeSearchResult:
             InvalidInput: The input is not a YouTube ID.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from .api import AsyncYoutubeApi
-        self._call_data: AsyncYoutubeApi
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
         fetch_item = getattr(self._call_data, f"fetch_{self._str_kind}")
         return await fetch_item(self.id)
 
@@ -1688,7 +1688,7 @@ class VideoCaption:
             Args:
                 metadata (dict): The raw API response to construct the class.
                 call_url (str): The url used to call the API.
-                call_data (AsyncYoutubeApi): Call data used for fetch functions.
+                call_data (AsyncYoutubeAPI): Call data used for fetch functions.
 
             Raises:
                 MissingDataFromMetaData: There is malformed data in the metadata provided.

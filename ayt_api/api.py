@@ -13,7 +13,7 @@ from .filters import SearchFilter
 from .utils import censor_token, snake_to_camel
 
 
-class AsyncYoutubeApi:
+class AsyncYoutubeAPI:
     """Represents the main class for running all the tools.
 
     Attributes:

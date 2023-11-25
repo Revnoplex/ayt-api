@@ -50,7 +50,7 @@ First of all to use this library, you will need an API key. To get one, [see her
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeApi("Your API Key")
+api = ayt_api.AsyncYoutubeAPI("Your API Key")
 
 
 async def video_example():
@@ -78,7 +78,7 @@ loop.run_until_complete(video_example())
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeApi("Your API Key")
+api = ayt_api.AsyncYoutubeAPI("Your API Key")
 
 
 async def playlist_example():
@@ -103,7 +103,7 @@ loop.run_until_complete(playlist_example())
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeApi("Your API Key")
+api = ayt_api.AsyncYoutubeAPI("Your API Key")
 
 
 async def playlist_video_example():
