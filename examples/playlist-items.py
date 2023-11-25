@@ -4,21 +4,19 @@ import ayt_api
 api = ayt_api.AsyncYoutubeApi("Your API Key")
 
 
-async def video_example():
-    video_data = await api.fetch_video("Video ID")
+async def playlist_video_example():
+    playlist_videos = await api.fetch_playlist_items("Playlist ID")
+    video_data = playlist_videos[0]
     print(video_data.id)
     print(video_data.channel_id)
     print(video_data.url)
     print(video_data.title)
     print(video_data.thumbnails.default.url)
     print(video_data.visibility)
-    print(video_data.duration)
-    print(video_data.view_count)
-    print(video_data.like_count)
-    print(video_data.embed_html)
     print(video_data.published_at)
     print(video_data.description)
-    print(video_data.age_restricted)
+    print(video_data.playlist_url)
+    print(video_data.added_at)
 
 loop = asyncio.new_event_loop()
-loop.run_until_complete(video_example())
+loop.run_until_complete(playlist_video_example())

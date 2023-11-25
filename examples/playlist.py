@@ -1,11 +1,11 @@
 import asyncio
 import ayt_api
 
-api = ayt_api.AsyncYoutubeAPI("Your API Key")
+api = ayt_api.AsyncYoutubeApi("Your API Key")
 
 
 async def playlist_example():
-    playlist_data = await api.get_playlist_metadata("Playlist ID")
+    playlist_data = await api.fetch_playlist("Playlist ID")
     print(playlist_data.id)
     print(playlist_data.channel_id)
     print(playlist_data.url)
