@@ -8,10 +8,12 @@ def extract_video_id(url: str) -> Optional[str]:
     This should work for every url listed here:
     https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486#file-activeyoutubeurlformats-txt
     and more such as i.ytimg.com urls.
+
     Args:
-        url (str): The url to strip the id from
+        url (str): The url to strip the id from.
+
     Returns:
-        Optional[str]: The video id with the rest of the url removed
+        Optional[str]: The video id with the rest of the url removed.
     """
     components = parse.urlparse(url.replace("&", "?", 1) if "?" not in url else url)
     queries = parse.parse_qs(components.query)
@@ -30,11 +32,13 @@ def extract_playlist_id(url: str) -> Optional[str]:
     """
     This should work for every url listed here:
     https://github.com/Revnoplex/ayt-api/blob/main/test-playlist-urls.txt
-    Don't expect this to work on YouTube mixes
+    Don't expect this to work on YouTube mixes.
+
     Args:
-        url (str): The url to strip the id from
+        url (str): The url to strip the id from.
+
     Returns:
-        Optional[str]: The playlist id with the rest of the url removed
+        Optional[str]: The playlist id with the rest of the url remove.
     """
     components = parse.urlparse(url.replace("&", "?", 1) if "?" not in url else url)
     queries = parse.parse_qs(components.query)
@@ -49,10 +53,12 @@ def extract_channel_id(url: str) -> Optional[str]:
     """
     This should work for every url listed here:
     https://github.com/Revnoplex/ayt-api/blob/main/test-channel-urls.txt
+
     Args:
-        url (str): The url to strip the id from
+        url (str): The url to strip the id from.
+
     Returns:
-        Optional[str]: The channel id with the rest of the url removed
+        Optional[str]: The channel id with the rest of the url removed.
     """
     components = parse.urlparse(url.replace("&", "?", 1) if "?" not in url else url)
     queries = parse.parse_qs(components.query)
@@ -67,10 +73,12 @@ def extract_comment_id(url: str) -> Optional[str]:
     """
     This should work for every url listed here:
     https://github.com/Revnoplex/ayt-api/blob/main/test-comment-urls.txt
+
     Args:
-        url (str): The url to strip the id from
+        url (str): The url to strip the id from.
+
     Returns:
-        Optional[str]: The comment id with the rest of the url removed
+        Optional[str]: The comment id with the rest of the url removed.
     """
     components = parse.urlparse(url.replace("&", "?", 1) if "?" not in url else url)
     queries = parse.parse_qs(components.query)
@@ -82,7 +90,17 @@ def extract_comment_id(url: str) -> Optional[str]:
 
 
 def id_str_to_int(youtube_id: str) -> int:
-    """to be documented..."""
+    """Converts a base 64 YouTube ID string into an integer.
+
+    Args:
+        youtube_id (str): The YouTube ID as a base 64 string.
+
+    Returns:
+        int: The YouTube ID as an integer.
+
+    Raises:
+        ValueError: There were invalid characters in the YouTube ID.
+    """
     number = 0
     last_chars = ["-", "_"]
     for idx, char in enumerate(reversed(youtube_id)):
@@ -96,12 +114,21 @@ def id_str_to_int(youtube_id: str) -> int:
         elif char in last_chars:
             number += (62 + last_chars.index(char)) * 64 ** idx
         else:
-            raise ValueError
+            raise ValueError(f"Invalid YouTube ID character: {char}")
     return number
 
 
 def camel_to_snake(string: str) -> str:
-    """to be documented..."""
+    """Converts words in the camel case convention to the snake case convention.
+
+    e.g. Converts ``fooBar`` to ``foo_bar``.
+
+    Args:
+        string (str): The words in the camel case convention.
+
+    Returns:
+        str: The words in the snake case convention.
+    """
     snake_string = ""
     for char in string:
         if char.isupper():
@@ -112,7 +139,16 @@ def camel_to_snake(string: str) -> str:
 
 
 def snake_to_camel(string: str) -> str:
-    """to be documented..."""
+    """Converts words in the snake case convention to the camel case convention.
+
+    e.g. Converts ``foo_bar`` to ``fooBar``.
+
+    Args:
+        string (str): The words in the snake case convention.
+
+    Returns:
+        str: The words in the camel case convention.
+    """
     camel_string = ""
     capitalise = False
     for char in string:
@@ -127,7 +163,14 @@ def snake_to_camel(string: str) -> str:
 
 
 def snake_keys(dictionary: dict) -> dict:
-    """to be documented..."""
+    """Converts keys in a dictionary from camel case to snake case.
+
+    Args:
+        dictionary (dict): The dictionary with keys using the camel case convention.
+
+    Returns:
+        dict: The dictionary with keys using the snake case convention.
+    """
     snake_dict = {}
     for key, value in dictionary.items():
         snake_dict[camel_to_snake(key)] = value
@@ -135,7 +178,14 @@ def snake_keys(dictionary: dict) -> dict:
 
 
 def censor_token(call_url: str) -> str:
-    """to be documented..."""
+    """Censors the api key in an api call url.
+
+    Args:
+        call_url (str): The api call url containing the uncensored api key.
+
+    Returns:
+        str: The url with the api key censored.
+    """
     components = parse.urlparse(call_url)
     queries = parse.parse_qs(components.query)
     if "key" in queries:

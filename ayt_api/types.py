@@ -14,17 +14,16 @@ CHANNEL_URL = "https://www.youtube.com/channel/{}"
 HIGHLIGHT_URL = "{0}&lc={1}"
 HIGHLIGHT_URL_ID = VIDEO_URL.format("{0}") + "&lc={1}"
 
-# todo: document undocumented functions and classes
-
 
 @dataclass
 class YoutubeThumbnail:
     """Data for an individual YouTube thumbnail.
+
     Attributes:
-        url (Optional[str]): The file url for the thumbnail
-        width (Optional[int]): The amount of horizontal pixels in the thumbnail
-        height (Optional[int]): The amount of vertical pixels in the thumbnail
-        resolution (str): The Width x Height of the thumbnail
+        url (Optional[str]): The file url for the thumbnail.
+        width (Optional[int]): The amount of horizontal pixels in the thumbnail.
+        height (Optional[int]): The amount of vertical pixels in the thumbnail.
+        resolution (str): The Width x Height of the thumbnail.
     """
     url: Optional[str]
     width: Optional[int] = None
@@ -38,11 +37,11 @@ class YoutubeThumbnail:
 
 
 class YoutubeThumbnailMetadata:
-    """Data for the available thumbnails of a video"""
+    """Data for the available thumbnails of a video."""
     def __init__(self, thumbnail_metadata: dict):
         """
         Args:
-            thumbnail_metadata (dict): the raw thumbnail metadata to construct the class
+            thumbnail_metadata (dict): The raw thumbnail metadata to construct the class.
         """
         self.metadata = thumbnail_metadata
         self.available = self.metadata.keys()
@@ -56,53 +55,65 @@ class YoutubeThumbnailMetadata:
 
     @property
     def default(self) -> Optional[YoutubeThumbnail]:
-        """The default video thumbnail. The value is not guaranteed and could be `None`.
-        This is the most guaranteed to actually return a thumbnail
+        """The default video thumbnail. The value is not guaranteed and could be ``None``.
+
+        This is the most guaranteed to actually return a thumbnail.
+
         Returns:
-            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be `None`"""
+            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
+        """
         if self.metadata.get("default") is not None:
             return YoutubeThumbnail(**self.metadata["default"])
 
     @property
     def medium(self) -> Optional[YoutubeThumbnail]:
-        """The medium video thumbnail. The value is not guaranteed and could be `None`.
+        """The medium video thumbnail. The value is not guaranteed and could be ``None``.
+
         Returns:
-            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be `None`"""
+            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
+        """
         if self.metadata.get("medium") is not None:
             return YoutubeThumbnail(**self.metadata["medium"])
 
     @property
     def high(self) -> Optional[YoutubeThumbnail]:
-        """The high video thumbnail. The value is not guaranteed and could be `None`.
+        """The high video thumbnail. The value is not guaranteed and could be ``None``.
+
         Returns:
-            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be `None`"""
+            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
+        """
         if self.metadata.get("high") is not None:
             return YoutubeThumbnail(**self.metadata["high"])
 
     @property
     def standard(self) -> Optional[YoutubeThumbnail]:
-        """The standard video thumbnail. The value is not guaranteed and could be `None`.
+        """The standard video thumbnail. The value is not guaranteed and could be ``None``.
+
         Returns:
-            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be `None`"""
+            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
+        """
         if self.metadata.get("standard") is not None:
             return YoutubeThumbnail(**self.metadata["standard"])
 
     @property
     def maxres(self) -> Optional[YoutubeThumbnail]:
-        """The maximum resolution video thumbnail. The value is not guaranteed and could be `None`.
+        """The maximum resolution video thumbnail. The value is not guaranteed and could be ``None``.
+
         Returns:
-            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be `None`"""
+            Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
+        """
         if self.metadata.get("maxres") is not None:
             return YoutubeThumbnail(**self.metadata["maxres"])
 
 
 @dataclass
 class LocalName:
-    """Represents the video title and description in a local language if available
-        Attributes:
-            language (Optional[str]): The language code
-            title (str): The title in a local language
-            description (Optional[str]): The description in a local language
+    """Represents the video title and description in a local language if available.
+
+    Attributes:
+        language (Optional[str]): The language code.
+        title (str): The title in a local language.
+        description (Optional[str]): The description in a local language.
     """
     title: str
     description: str = None
@@ -112,9 +123,10 @@ class LocalName:
 @dataclass
 class RegionRestrictions:
     """Represents information about the countries where a video is (or is not) viewable.
+
     Attributes:
-        allowed (Optional[list[str]]): The countries that are allowed to view the video. Could be `None`
-        blocked (Optional[list[str]]): The countries that are blocked from viewing the video. Could be `None`
+        allowed (Optional[list[str]]): The countries that are allowed to view the video. Could be ``None``.
+        blocked (Optional[list[str]]): The countries that are blocked from viewing the video. Could be ``None``.
     """
     allowed: list[str] = None
     blocked: list[str] = None
@@ -124,7 +136,9 @@ class ContentRating:
     """Specifies the ratings that the video received under various rating schemes.
 
         There are many attributes for each rating system, only 1 or 2 (if there is a reason) will be available,
-        the rest will be `None` or all if there is no restrictions set. The attributes listed below are non-exhaustive
+        the rest will be ``None`` or all if there is no restrictions set. The attributes documented below are
+        non-exhaustive.
+
     Attributes:
         acb (Optional[AcbRating]): The video's Australian Classification Board (ACB) or Australian Communications and
             Media Authority (ACMA) rating. ACMA ratings are used to classify children's television programming.
@@ -133,7 +147,7 @@ class ContentRating:
     def __init__(self, data: dict):
         """
         Args:
-            data(dict): The raw content rating data
+            data(dict): The raw content rating data.
         """
         self.acb: Optional[AcbRating] = AcbRating(camel_to_snake(data["acbRating"])) if data.get("acbRating") else None
         self.agcom: Optional[str] = data.get("agcomRating")
@@ -205,7 +219,8 @@ class ContentRating:
 
 @dataclass
 class RecordingLocation:
-    """The geolocation information associated with the video. if specified by the video uploader
+    """The geolocation information associated with the video. if specified by the video uploader.
+
     Attributes:
         latitude (float): Latitude in degrees.
         longitude (float): Longitude in degrees.
@@ -218,6 +233,7 @@ class RecordingLocation:
 
 class RecordingDetails:
     """Contains details of the location and date of the video recording if specified by the video uploader.
+
     Attributes:
         data (dict): The raw information about the location, date and address where the video was recorded.
         description (Optional[str]): The text description of the location where the video was recorded.
@@ -227,7 +243,7 @@ class RecordingDetails:
     def __init__(self, data: dict):
         """
         Args:
-            data (dict): The raw recording details used to construct this class
+            data (dict): The raw recording details used to construct this class.
         """
         self.data = data
         self.description: Optional[str] = data.get("locationDescription")
@@ -242,25 +258,26 @@ class RecordingDetails:
 
 
 class VideoStream:
-    """Metadata about a video stream for a YouTube video
+    """Metadata about a video stream for a YouTube video.
+
     Attributes:
-        data (dict): The raw video stream data used to construct this class
+        data (dict): The raw video stream data used to construct this class.
         width (int): The encoded video content's width in pixels.
         height (int): The encoded video content's height in pixels.
-        resolution (str): width x height
+        resolution (str): width x height.
         frame_rate (float): The video stream's frame rate, in frames per second.
-        aspect_ratio (float): The video content's display aspect ratio
+        aspect_ratio (float): The video content's display aspect ratio.
         codec (string): The video codec that the stream uses.
         bitrate (int): The video stream's bitrate, in bits per second.
-        rotation (string):
-            The amount that YouTube needs to rotate the original source content to properly display the video.
-        vendor (string):
-            A value that uniquely identifies a video vendor. Typically, the value is a four-letter vendor code.
+        rotation (string): The amount that YouTube needs to rotate the original source content to properly display the
+            video.
+        vendor (string): A value that uniquely identifies a video vendor. Typically, the value is a four-letter vendor
+            code.
     """
     def __init__(self, data: dict):
         """
         Args:
-            data (dict): The raw video stream data
+            data (dict): The raw video stream data.
         """
         try:
             self.data = data
@@ -278,20 +295,21 @@ class VideoStream:
 
 
 class AudioStream:
-    """Metadata about an audio stream for a YouTube video
+    """Metadata about an audio stream for a YouTube video.
+
     Attributes:
-        data (dict): The raw audio stream data used to construct this class
+        data (dict): The raw audio stream data used to construct this class.
         channel_count (int): The number of audio channels that the stream contains.
         codec (string): The audio codec that the stream uses.
         bitrate (int): The audio stream's bitrate, in bits per second.
-        vendor (string):
-            A value that uniquely identifies a video vendor. Typically, the value is a four-letter vendor code.
+        vendor (string): A value that uniquely identifies a video vendor. Typically, the value is a four-letter
+            vendor code.
 
     """
     def __init__(self, data: dict):
         """
         Args:
-            data (dict): The raw audio stream data
+            data (dict): The raw audio stream data.
         """
         try:
             self.data = data
@@ -305,18 +323,19 @@ class AudioStream:
 
 class ProcessingProgress:
     """Contains information about the progress YouTube has made in processing the video.
+
     Attributes:
-        data (dict): The raw processing progress data used to construct this class
+        data (dict): The raw processing progress data used to construct this class.
         parts_total (int): An estimate of the total number of parts that need to be processed for the video.
         parts_processed (int): The number of parts of the video that YouTube has already processed.
-        time_left (Optional[datetime.timedelta]):
-            An estimate of the amount of time, in milliseconds, that YouTube needs to finish processing the video.
-        percentage (int): The percentage of the video that has been processed
+        time_left (Optional[datetime.timedelta]): An estimate of the amount of time, in milliseconds, that YouTube
+            needs to finish processing the video.
+        percentage (int): The percentage of the video that has been processed.
     """
     def __init__(self, data: dict):
         """
         Args:
-            data (dict): Raw processing progress
+            data (dict): Raw processing progress.
         """
         self.data = data
         try:
@@ -343,15 +362,16 @@ class TagSuggestion:
     """
     A list of keyword tags that could be added to the video's metadata to increase the likelihood that users will
         locate your video when searching or browsing on YouTube.
+
     Attributes:
-        data (dict): The raw tag suggestions data used to construct this class
+        data (dict): The raw tag suggestions data used to construct this class.
         tag (str): The keyword tag suggested for the video.
         category_restricts (Optional[list[str]]): A set of video categories for which the tag is relevant.
     """
     def __init__(self, data: dict):
         """
         Args:
-            data (dict): The raw tag suggestions data
+            data (dict): The raw tag suggestions data.
         """
         self.data = data
         self.tag: str = data["tag"]
@@ -367,11 +387,12 @@ class TagSuggestion:
 @dataclass
 class VideoChapter:
     """
-    The start time, duration and name of a YouTube video chapter
+    The start time, duration and name of a YouTube video chapter.
+
     Attributes:
-        start (int): the start time of the chapter in seconds
-        duration: (int): the length of the chapter in seconds
-        name (str): The name of the chapter
+        start (int): The start time of the chapter in seconds.
+        duration: (int): The length of the chapter in seconds.
+        name (str): The name of the chapter.
     """
     start: datetime.timedelta
     duration: datetime.timedelta
@@ -384,19 +405,20 @@ class VideoChapter:
 @dataclass
 class BaseVideo:
     """
-    The base class that all video related objects are inherited from
+    The base class that all video related objects are inherited from.
+
     Attributes:
         metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
-                         debugging purposes
+                         debugging purposes.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                        WARNING: contains API key!
         id (str): The ID of the video. Example: "dQw4w9WgXcQ" from the url:
                   "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
-        url (str): The URL of the video
-        title (str): The title of the video
-        description (str): The description of the video
-        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has
-        visibility (PrivacyStatus): The video's privacy status. Can be private, public or unlisted
+        url (str): The URL of the video.
+        title (str): The title of the video.
+        description (str): The description of the video.
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has.
+        visibility (PrivacyStatus): The video's privacy status. Can be :attr:`PrivacyStatus.private`,
+            :attr:`PrivacyStatus.public` or :attr:`PrivacyStatus.unlisted`.
 
     """
     metadata: dict
@@ -410,7 +432,7 @@ class BaseVideo:
 
 
 class DummyObject:
-    """This is used for debugging only"""
+    """This is used for debugging only."""
     def __init__(self, metadata: dict, call_url: str, call_data):
         self.metadata = metadata
         self.call_url = call_url
@@ -419,95 +441,99 @@ class DummyObject:
 
 class YoutubeVideo(BaseVideo):
     """A data class containing video data such as the title, id, description, channel, etc.
-        Attributes:
-            metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
-                         debugging purposes
-            call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
-            id (str): The ID of the video. Example: "dQw4w9WgXcQ" from the url:
-                "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
-            snippet (dict): The raw snippet data used to construct part this class
-            content_details (dict): The raw content details data used to construct part of this class
-            status (dict): The raw status data used to construct part of this class
-            statistics (dict): The raw statistics data used to construct part of this class
-            player (dict): The raw player data used to construct part of this class
-            topic_details (Optional[dict]): The raw topic details used to construct part of this class
-            raw_recording_details (dict): The raw recording details used to construct part of this class
-            raw_localisations (Optional[dict]): The raw localisation data used to construct part of this class
-            url (str): The URL of the video
-            title (str): The title of the video
-            description (str): The description of the video
-            published_at (datetime.datetime): The date and time the video was published
-            thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has
-            channel_title: (Optional[str]) The name of the channel that the video belongs to
-            channel_id (Optional[str]): The id of the channel that the video belongs to
-            channel_url (Optional[str]): The url of the channel that the video belongs to.
-            tags (Optional[list[str]]): The tags the uploaded has provided to make the video appear in search results
-                relating to it
-            category_id (int): The id of the category that was set for the video
-            live_broadcast_content: (LiveBroadcastContent): Indicates if the video is a livestream and if it is live
-            default_language (Optional[str]): The default language the video is set in
-            localised (Optional[LocalName]): The localised language of the title and description of the video
-            localized (Optional[LocalName]): an alias of localised
-            default_audio_language (Optional[str]): The default audio language the video is set in
-            duration (Union[isodate.Duration, datetime.timedelta, _NotImplementedType]): The length of the video
-            dimension (str): Indicates whether the video is available in 3D or in 2D
-            definition (VideoDefinition): Indicates whether the video is available in high definition (HD) or only in
-                standard definition.
-            has_captions (bool): Indicates whether captions are available for the video.
-            licensed_content (bool): Indicates whether the video represents licensed content, which means that the
-                content was uploaded to a channel linked to a YouTube content partner and then claimed by that partner.
-            region_restrictions (Optional[RegionRestrictions]): contains information about the countries where a video
-                is (or is not) viewable. Can be `None`
-            content_rating (ContentRating): Specifies the ratings that the video received under various rating schemes.
-            age_restricted (bool): Whether the video is age restricted or not.
-            projection (Optional[VideoProjection]): Specifies the projection format of the video.
-                (example: 360 or rectangular)
-            upload_status (Optional[UploadStatus]): The status of the uploaded video.
-            failure_reason (Optional[UploadFailureReason]): Explains why a video failed to upload.
-                This attribute is only present if the upload_status attribute is set to :class:`UploadStatus.failed`.
-            rejection_reason (Optional[UploadRejectionReason]): Explains why YouTube rejected an uploaded video.
-                This attribute is only present if the upload_status attribute is set to :class:`UploadStatus.rejected`.
-            visibility (PrivacyStatus): The video's privacy status. Can be private, public or unlisted
-            publish_set_at (Optional[datetime.datetime]): The date and time when the video is scheduled to publish if
-                any.
-            license (Optional[License]): The video's license. valid values for this attribute is
-                :class:`License.creative_common` and :class:`License.youtube`
-            embeddable (bool): Indicates whether the video can be embedded on another website.
-            public_stats_viewable (bool): Indicates whether the extended video statistics on the video's watch page are
-                publicly viewable.
-            made_for_kids (bool): Indicates whether the video is designated as child-directed, and it contains the
-                current "made for kids" status of the video.
-            view_count (int): The number of times the video has been viewed.
-            like_count (Optional[int]): The number of users who have indicated that they liked the video.
-            comment_count (Optional[int]): The number of comments on the video. This attribute is `None` if disabled
-            embed_html (Optional[str]): An <iframe> tag that embeds a player that plays the video.
-            embed_height (Optional[str]): The height of the embedded player returned to the embed_html attribute.
-                Is `None` unless the height and aspect ratio is known
-            embed_width (Optional[str]): The width of the embedded player returned to the embed_html attribute.
-                Is `None` unless the width and aspect ratio is known
-            topic_categories (Optional[list[str]]): A list of Wikipedia URLs that provide a high-level description of
-                the video's content.
-            recording_details (RecordingDetails): Encapsulates information about the location, date and address where
-                the video was recorded.
-            stream_actual_start_time (Optional[datetime.datetime]): The time that the broadcast actually started.
-            stream_scheduled_start_time (Optional[datetime.datetime]): The time that the broadcast is scheduled to
-                begin.
-            stream_actual_end_time (Optional[datetime.datetime]): The time that the broadcast actually ended.
-            stream_scheduled_end_time (Optional[datetime.datetime]): The time that the broadcast is scheduled to end.
-            stream_concurrent_viewers (Optional[int]): The number of viewers currently watching the broadcast.
-            stream_active_live_chat_id (Optional[str]): The ID of the currently active live chat attached to this video.
-            localisations (Optional[list[LocalName]]): contains translations of the video's metadata.
-            localizations (Optional[list[LocalName]]): an alias of localisations
+
+    Attributes:
+        metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
+                     debugging purposes.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        id (str): The ID of the video. Example: "dQw4w9WgXcQ" from the url:
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
+        snippet (dict): The raw snippet data used to construct part this class.
+        content_details (dict): The raw content details data used to construct part of this class.
+        status (dict): The raw status data used to construct part of this class.
+        statistics (dict): The raw statistics data used to construct part of this class.
+        player (dict): The raw player data used to construct part of this class.
+        topic_details (Optional[dict]): The raw topic details used to construct part of this class.
+        raw_recording_details (dict): The raw recording details used to construct part of this class.
+        raw_localisations (Optional[dict]): The raw localisation data used to construct part of this class.
+        url (str): The URL of the video.
+        title (str): The title of the video.
+        description (str): The description of the video.
+        published_at (datetime.datetime): The date and time the video was published.
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has.
+        channel_title: (Optional[str]) The name of the channel that the video belongs to.
+        channel_id (Optional[str]): The id of the channel that the video belongs to.
+        channel_url (Optional[str]): The url of the channel that the video belongs to.
+        tags (Optional[list[str]]): The tags the uploaded has provided to make the video appear in search results
+            relating to it.
+        category_id (int): The id of the category that was set for the video.
+        live_broadcast_content: (LiveBroadcastContent): Indicates if the video is a livestream and if it is live.
+        default_language (Optional[str]): The default language the video is set in.
+            The value is a BCP-47 language code.
+        localised (Optional[LocalName]): The localised language of the title and description of the video.
+        localized (Optional[LocalName]): an alias of :attr:`localised`.
+        default_audio_language (Optional[str]): The default audio language the video is set in.
+            The value is a BCP-47 language code.
+        duration (Union[isodate.Duration, datetime.timedelta, _NotImplementedType]): The length of the video.
+        dimension (str): Indicates whether the video is available in 3D or in 2D.
+        definition (VideoDefinition): Indicates whether the video is available in high definition (HD) or only in
+            standard definition.
+        has_captions (bool): Indicates whether captions are available for the video.
+        licensed_content (bool): Indicates whether the video represents licensed content, which means that the
+            content was uploaded to a channel linked to a YouTube content partner and then claimed by that partner.
+        region_restrictions (Optional[RegionRestrictions]): contains information about the countries where a video
+            is (or is not) viewable. Can be ``None``.
+        content_rating (ContentRating): Specifies the ratings that the video received under various rating schemes.
+        age_restricted (bool): Whether the video is age restricted or not.
+        projection (Optional[VideoProjection]): Specifies the projection format of the video
+            (example: 360 or rectangular).
+        upload_status (Optional[UploadStatus]): The status of the uploaded video.
+        failure_reason (Optional[UploadFailureReason]): Explains why a video failed to upload.
+            This attribute is only present if the upload_status attribute is set to :class:`UploadStatus.failed`.
+        rejection_reason (Optional[UploadRejectionReason]): Explains why YouTube rejected an uploaded video.
+            This attribute is only present if the upload_status attribute is set to :class:`UploadStatus.rejected`.
+        visibility (PrivacyStatus): The video's privacy status. Can be :attr:`PrivacyStatus.private`,
+            :attr:`PrivacyStatus.public` or :attr:`PrivacyStatus.unlisted`.
+        publish_set_at (Optional[datetime.datetime]): The date and time when the video is scheduled to publish if
+            any.
+        license (Optional[License]): The video's license. valid values for this attribute is
+            :class:`License.creative_common` and :class:`License.youtube`.
+        embeddable (bool): Indicates whether the video can be embedded on another website.
+        public_stats_viewable (bool): Indicates whether the extended video statistics on the video's watch page are
+            publicly viewable.
+        made_for_kids (bool): Indicates whether the video is designated as child-directed, and it contains the
+            current "made for kids" status of the video.
+        view_count (int): The number of times the video has been viewed.
+        like_count (Optional[int]): The number of users who have indicated that they liked the video.
+        comment_count (Optional[int]): The number of comments on the video. This attribute is ``None`` if disabled
+        embed_html (Optional[str]): An <iframe> tag that embeds a player that plays the video.
+        embed_height (Optional[str]): The height of the embedded player returned to the embed_html attribute.
+            Is ``None`` unless the height and aspect ratio is known.
+        embed_width (Optional[str]): The width of the embedded player returned to the embed_html attribute.
+            Is ``None`` unless the width and aspect ratio is known.
+        topic_categories (Optional[list[str]]): A list of Wikipedia URLs that provide a high-level description of
+            the video's content.
+        recording_details (RecordingDetails): Encapsulates information about the location, date and address where
+            the video was recorded.
+        stream_actual_start_time (Optional[datetime.datetime]): The time that the broadcast actually started.
+        stream_scheduled_start_time (Optional[datetime.datetime]): The time that the broadcast is scheduled to
+            begin.
+        stream_actual_end_time (Optional[datetime.datetime]): The time that the broadcast actually ended.
+        stream_scheduled_end_time (Optional[datetime.datetime]): The time that the broadcast is scheduled to end.
+        stream_concurrent_viewers (Optional[int]): The number of viewers currently watching the broadcast.
+        stream_active_live_chat_id (Optional[str]): The ID of the currently active live chat attached to this video.
+        localisations (Optional[list[LocalName]]): Contains translations of the video's metadata.
+        localizations (Optional[list[LocalName]]): An alias of localisations.
         """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata (dict): The raw API response to construct the class
+            metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions
+            call_data (AsyncYoutubeApi): Call data used for fetch functions.
+
         Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
         try:
             self.metadata = metadata
@@ -643,19 +669,20 @@ class YoutubeVideo(BaseVideo):
             raise MissingDataFromMetadata(missing_str, metadata, missing_snippet_data)
 
     async def fetch_channel(self):
-        """Fetches the channel associated with the video
+        """Fetches the channel associated with the video.
 
         This ia an api call which then returns a
-        :class:`YoutubeChannelMetadata` object
+        :class:`YoutubeChannelMetadata` object.
 
         Returns:
-            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel
+            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            ChannelNotFound: The channel does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.channel_id:
             from .api import AsyncYoutubeApi
@@ -666,35 +693,37 @@ class YoutubeVideo(BaseVideo):
         """Fetches a list of comments on the video.
 
         This ia an api call which then returns a
-        :class:`list[YoutubeCommentThread]` object
+        :class:`list[YoutubeCommentThread]` object.
 
         Returns:
-            list[YoutubeCommentThread]: A list of comments on the video
+            list[YoutubeCommentThread]: A list of comments on the video.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            VideoNotFound: The video does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from.api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
     async def fetch_captions(self):
-        """Fetches a list of comments on the video.
+        """Fetches a list of captions on the video.
 
         This ia an api call which then returns a
-        :class:`list[VideoCaptions]` object
+        :class:`list[VideoCaptions]` object.
 
         Returns:
-            list[VideoCaptions]: A list of comments on the video
+            list[VideoCaptions]: A list of captions on the video.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            VideoNotFound: The video does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from.api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
@@ -702,9 +731,10 @@ class YoutubeVideo(BaseVideo):
 
     @property
     def chapters(self) -> Optional[list[VideoChapter]]:
-        """A list of chapters the video has if any otherwise just an empty list
+        """A list of chapters the video has if any otherwise just an empty list.
+
         Returns:
-            chapters (list[VideoChapter]): A list of chapters the video has if any otherwise `None`
+            chapters (list[VideoChapter]): A list of chapters the video has if any otherwise ``None``.
         """
         found_chapters: list[tuple] = []
         for line in reversed(self.description.splitlines()):
@@ -727,13 +757,15 @@ class YoutubeVideo(BaseVideo):
 
     def current_chapter(self, position: datetime.timedelta) -> Optional[VideoChapter]:
         """
-        Gets the current chapter based on the position provided
+        Gets the current chapter based on the position provided.
+
         Args:
-            position (datetime.timedelta): The position of the video to get the current chapter from
+            position (datetime.timedelta): The position of the video to get the current chapter from.
+
         Returns:
-            Optional[VideoChapter]: The current video chapter at that position of the video. Returns `None` if either
-                                    the video doesn't have any chapters or the position is greater than the duration of
-                                    the video or is negative
+            Optional[VideoChapter]: The current video chapter at that position of the video. Returns ``None`` if either
+                the video doesn't have any chapters or the position is greater than the duration of the video or is
+                negative.
         """
         if self.chapters:
             for idx, chapter in enumerate(self.chapters):
@@ -743,38 +775,40 @@ class YoutubeVideo(BaseVideo):
 
 
 class PlaylistItem(BaseVideo):
-    """A data class for videos in a playlist
+    """A data class for videos in a playlist.
+
     Attributes:
-        metadata (dict): The raw metadata from the API call used to construct this class
+        metadata (dict): The raw metadata from the API call used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
         id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
-        position (int): The position in the playlist the video is in
-        url (str): The URL of the video
-        title (str): The title of the video
-        description (str): The description of the video
-        added_at (datetime.datetime): The date and time the video was added to the playlist
-        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has
-        channel_title: (Optional[str]) The name of the channel that the video belongs to
-        channel_id (Optional[str]): The id of the channel that the video belongs to
-        channel_url (Optional[str]): The url of the channel that the video belongs to
-        playlist_id (str): The ID of the playlist the video is in
-        playlist_url (str): The URL of the playlist the video is in
-        published_at (datetime.datetime): The date and time the video was published
-        available (bool): whether the video in the playlist is playable hasn't been deleted or made private.
+        position (int): The position in the playlist the video is in.
+        url (str): The URL of the video.
+        title (str): The title of the video.
+        description (str): The description of the video.
+        added_at (datetime.datetime): The date and time the video was added to the playlist.
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has.
+        channel_title: (Optional[str]) The name of the channel that the video belongs to.
+        channel_id (Optional[str]): The id of the channel that the video belongs to.
+        channel_url (Optional[str]): The url of the channel that the video belongs to.
+        playlist_id (str): The ID of the playlist the video is in.
+        playlist_url (str): The URL of the playlist the video is in.
+        published_at (datetime.datetime): The date and time the video was published.
+        available (bool): Whether the video in the playlist is playable hasn't been deleted or made private.
             This is determined by checking if the video has an upload date.
         note (Optional[str]): A user-generated note for this item.
-        visibility (PrivacyStatus): The playlist item's privacy status. Can be public, private or unlisted
+        visibility (PrivacyStatus): The playlist item's privacy status. Can be :attr:`PrivacyStatus.private`,
+            :attr:`PrivacyStatus.public` or :attr:`PrivacyStatus.unlisted`.
     """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata (dict): The raw API response to construct the class
+            metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions
+            call_data (AsyncYoutubeApi): call data used for fetch functions.
+
         Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
         try:
             self.metadata = metadata
@@ -808,57 +842,60 @@ class PlaylistItem(BaseVideo):
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
     async def expand(self) -> YoutubeVideo:
-        """Fetches extended information on the video in the playlist
+        """Fetches extended information on the video in the playlist.
 
         This ia an api call which then returns a
-        :class:`YoutubeVideoMetadata` object
+        :class:`YoutubeVideoMetadata` object.
 
         Returns:
-            YoutubeVideoMetadata: The video object containing data of the video
+            YoutubeVideoMetadata: The video object containing data of the video.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            VideoNotFound: The video does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from .api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
         return await self._call_data.fetch_video(self.id)
 
     async def fetch_playlist(self):
-        """Fetches the playlist associated with the video
+        """Fetches the playlist associated with the video.
 
         This ia an api call which then returns a
-        :class:`YoutubePlaylist` object
+        :class:`YoutubePlaylist` object.
 
         Returns:
-            YoutubePlaylist: The playlist object containing data of the playlist
+            YoutubePlaylist: The playlist object containing data of the playlist.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            PlaylistNotFound: The playlist does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from .api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
         return await self._call_data.fetch_playlist(self.playlist_id)
 
     async def fetch_channel(self):
-        """Fetches the channel associated with the video
+        """Fetches the channel associated with the video.
 
         This ia an api call which then returns a
-        :class:`YoutubeChannelMetadata` object
+        :class:`YoutubeChannelMetadata` object.
 
         Returns:
-            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel
+            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            ChannelNotFound: The channel does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.channel_id:
             from .api import AsyncYoutubeApi
@@ -869,16 +906,17 @@ class PlaylistItem(BaseVideo):
         """Fetches a list of comments on the video.
 
         This ia an api call which then returns a
-        :class:`list[YoutubeCommentThread]` object
+        :class:`list[YoutubeCommentThread]` object.
 
         Returns:
-            list[YoutubeCommentThread]: A list of comments on the video
+            list[YoutubeCommentThread]: A list of comments on the video.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            VideoNotFound: The video does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from.api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
@@ -888,16 +926,17 @@ class PlaylistItem(BaseVideo):
         """Fetches a list of comments on the video.
 
         This ia an api call which then returns a
-        :class:`list[VideoCaptions]` object
+        :class:`list[VideoCaptions]` object.
 
         Returns:
-            list[VideoCaptions]: A list of comments on the video
+            list[VideoCaptions]: A list of comments on the video.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            VideoNotFound: The video does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from.api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
@@ -905,43 +944,45 @@ class PlaylistItem(BaseVideo):
 
 
 class YoutubePlaylist:
-    """Data class for YouTube playlists
+    """Data class for YouTube playlists.
+
     Attributes:
-        metadata (dict): The raw API response used to construct this class
+        metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
-                            WARNING: contains API key!
         id (str): The ID of the playlist. Example: "PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp" from the url:
-            "https://www.youtube.com/playlist?list=PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp"
-        url (str): The URL of the playlist
-        snippet (dict): The raw snippet data used to construct this class
-        status (dict): The raw status data used to construct part of this class
-        content_details (dict): The raw content details data used to construct part of this class
-        player (dict): The raw player data used to construct part of this class
-        raw_localisations (Optional[dict]): The raw localisation data used to construct part of this class
-        published_at (datetime.datetime): The date and time the playlist was published
-        channel_id (Optional[str]): The id of the channel that created the playlist
-        channel_url (Optional[str]): The url of the channel that created the playlist
-        title (str): The title of the playlist
-        description (str): The description of the playlist
-        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the playlist has
-        channel_title: (Optional[str]) The name of the channel that created the playlist
-        default_language (Optional[str]): The default language the video is set in. Can be `None`
-        localised (Optional[LocalName]): The localised language of the title and description of the video
-        localized (Optional[LocalName]): an alias of localised
-        visibility (Optional[PrivacyStatus]): The video's privacy status. Can be private, public or unlisted
-        item_count (Optional[int]): The number of items in the playlist
+            "https://www.youtube.com/playlist?list=PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp".
+        url (str): The URL of the playlist.
+        snippet (dict): The raw snippet data used to construct this class.
+        status (dict): The raw status data used to construct part of this class.
+        content_details (dict): The raw content details data used to construct part of this class.
+        player (dict): The raw player data used to construct part of this class.
+        raw_localisations (Optional[dict]): The raw localisation data used to construct part of this class.
+        published_at (datetime.datetime): The date and time the playlist was published.
+        channel_id (Optional[str]): The id of the channel that created the playlist.
+        channel_url (Optional[str]): The url of the channel that created the playlist.
+        title (str): The title of the playlist.
+        description (str): The description of the playlist.
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the playlist has.
+        channel_title: (Optional[str]) The name of the channel that created the playlist.
+        default_language (Optional[str]): The default language the video is set in. Can be ``None``.
+        localised (Optional[LocalName]): The localised language of the title and description of the video.
+        localized (Optional[LocalName]): an alias of :attr:`localised`.
+        visibility (Optional[PrivacyStatus]): The video's privacy status. Can be :attr:`PrivacyStatus.private`,
+            :attr:`PrivacyStatus.public` or :attr:`PrivacyStatus.unlisted`.
+        item_count (Optional[int]): The number of items in the playlist.
         embed_html (Optional[str]): An <iframe> tag that embeds a player that plays the video.
         localisations (Optional[list[LocalName]]): contains translations of the video's metadata.
-        localizations (Optional[list[LocalName]]): an alias of localisations
+        localizations (Optional[list[LocalName]]): an alias of localisations.
     """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata (dict): The raw API response to construct the class
+            metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions
+            call_data (AsyncYoutubeApi): call data used for fetch functions.
+
         Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
         try:
             self.metadata = metadata
@@ -987,18 +1028,20 @@ class YoutubePlaylist:
 
     async def fetch_items(self) -> list[PlaylistItem]:
         """
-        Fetches a list of the videos in the playlist
+        Fetches a list of the videos in the playlist.
 
         This is an api call which returns a list of
-        :class:`PlaylistItem` objects
+        :class:`PlaylistItem` objects.
+
         Returns:
-            list[PlaylistItem]: A list containing playlist video objects
+            list[PlaylistItem]: A list containing playlist video objects.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            PlaylistNotFound: The playlist does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from .api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
@@ -1006,37 +1049,40 @@ class YoutubePlaylist:
 
     async def fetch_videos(self) -> list[YoutubeVideo]:
         """
-        Fetches a list of the videos in the playlist
+        Fetches a list of the videos in the playlist.
 
         This is an api call which returns a list of
-        :class:`PlaylistItem` objects
+        :class:`PlaylistItem` objects.
+
         Returns:
-            list[YoutubeVideo]: A list containing videos from the playlist
+            list[YoutubeVideo]: A list containing videos from the playlist.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            PlaylistNotFound: The playlist does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from .api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
         return await self._call_data.fetch_playlist_videos(self.id)
 
     async def fetch_channel(self):
-        """Fetches the channel associated with the playlist
+        """Fetches the channel associated with the playlist.
 
         This ia an api call which then returns a
-        :class:`YoutubeChannelMetadata` object
+        :class:`YoutubeChannelMetadata` object.
 
         Returns:
-            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel
+            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            ChannelNotFound: The channel does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.channel_id:
             from .api import AsyncYoutubeApi
@@ -1051,14 +1097,14 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
         This class is used if authorisation is provided that you are the owner of the video. It contains
         attributes only accessible by the video owner as well as attributes inherited
         from :class:`YoutubeVideoMetadata`. The ayt-api library currently doesn't support authorisation for this
-        so this class is not used but is here for future implementation
+        so this class is not used but is here for future implementation.
 
     Attributes:
-        file_details (dict): The raw file details used to construct this class
+        file_details (dict): The raw file details used to construct this class.
         has_custom_thumbnail (bool): Indicates whether the video uploader has provided a custom thumbnail image for
             the video.
         self_declared_made_for_kids (bool): This Attribute allows the channel owner to designate the video as being
-                child-directed.Optional[
+                child-directed.
         dislike_count (Optional[int]): The number of users who have indicated that they disliked the video.
         file_name (str): The uploaded file's name.
         file_size (int): The uploaded file's size in bytes.
@@ -1104,11 +1150,12 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
     def __init__(self, metadata, call_url, call_data):
         """
         Args:
-            metadata (dict): The raw API response to construct the class
+            metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions
+            call_data (AsyncYoutubeApi): call data used for fetch functions.
+
         Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
         super().__init__(metadata, call_url, call_data)
         try:
@@ -1168,82 +1215,84 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
 
 class YoutubeChannel:
     """
-    A class representing metadata from a YouTube channel
+    A class representing metadata from a YouTube channel.
 
     Attributes:
-        metadata (dict): The raw API response used to construct this class
-        call_url (str): The url used to call the API. Intended use is for debugging purposes
-                            WARNING: contains API key!
-        branding_settings (dict): encapsulates information about the branding of the channel
-        content_details (dict): encapsulates information about the channel's content
+        metadata (dict): The raw API response used to construct this class.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        branding_settings (dict): encapsulates information about the branding of the channel.
+        content_details (dict): encapsulates information about the channel's content.
         content_owner_details (dict): encapsulates channel data that is visible only to the YouTube Partner that has
-                                      linked the channel to their Content Manager
-        id (str): The ID that YouTube uses to uniquely identify the channel
-        url (str): The URL of the channel
-        raw_localisations (Optional[dict]): encapsulates translations of the channel's metadata
-        snippet (dict): contains basic details about the channel, such as its title, description, and thumbnail images
-        statistics (dict): encapsulates statistics for the channel
-        status (dict): encapsulates information about the privacy status of the channel
+            linked the channel to their Content Manager.
+        id (str): The ID that YouTube uses to uniquely identify the channel.
+        url (str): The URL of the channel.
+        raw_localisations (Optional[dict]): encapsulates translations of the channel's metadata.
+        snippet (dict): contains basic details about the channel, such as its title, description, and thumbnail images.
+        statistics (dict): encapsulates statistics for the channel.
+        status (dict): encapsulates information about the privacy status of the channel.
         topic_details (Optional[dict]): encapsulates information about topics associated with the channel.
         title (str): The channel's title.
         description (Optional[str]): The channel's description. The property's value has a maximum length of 1000
-                                     characters
-        custom_url (Optional[str]): The channel's custom URL
-        username (Optional[str]): Alias for :attr:`custom_url`
-        published_at (datetime.datetime): The date and time that the channel was created
-        created_at (datetime.datetime): Alias for :attr:`published_at`
-        thumbnails (YoutubeThumbnailMetadata): The thumbnail images associated with the channel
+            characters.
+        custom_url (Optional[str]): The channel's custom URL.
+        username (Optional[str]): Alias for :attr:`custom_url`.
+        published_at (datetime.datetime): The date and time that the channel was created.
+        created_at (datetime.datetime): Alias for :attr:`published_at`.
+        thumbnails (YoutubeThumbnailMetadata): The thumbnail images associated with the channel.
         default_language (Optional[str]): The language of the text in the :class:`YoutubeChannelMetadata` class's
-                                          :attr:`title` and :attr:`description` properties.
+            :attr:`title` and :attr:`description` properties.
         localised (Optional[LocalName]): The localized title and description for the channel or title and description
-                                         in the :attr:`default_language`
-        localized (Optional[LocalName]): Alias for :attr:`localised`
+            in the :attr:`default_language`.
+        localized (Optional[LocalName]): Alias for :attr:`localised`.
         country (Optional[str]): The country with which the channel is associated.
         related_playlists (dict): The playlists associated with the channel, such as the channel's uploaded videos or
-                                  liked videos.
+            liked videos.
         likes_id (Optional[str]): The ID of the playlist that contains the channel's liked videos.
         likes_url (Optional[str]): The URL of the playlist that contains the channel's liked videos.
         uploads_id (Optional[str]): The ID of the playlist that contains the channel's uploaded videos.
         uploads_url (Optional[str]): The URL of the playlist that contains the channel's uploaded videos.
         view_count (int): The number of times the channel has been viewed.
-        subscriber_count (int): The number of subscribers that the channel has.
-                                This is rounded to 3 significant figures.
+        subscriber_count (int): The number of subscribers that the channel has. This is rounded to 3 significant
+            figures.
         hidden_subscriber_count (bool): Whether the channel's subscriber count is publicly visible.
-        video_count (int): The number of public videos uploaded to the channel
-        topic_categories (Optional[list[str]]): A list of Wikipedia URLs that describe the channel's content
-        topic_ids (Optional[list[str]]): A list of topic IDs associated with the channel
-        visibility (PrivacyStatus): The channel's privacy status. Can be private, public or unlisted
+        video_count (int): The number of public videos uploaded to the channel.
+        topic_categories (Optional[list[str]]): A list of Wikipedia URLs that describe the channel's content.
+        topic_ids (Optional[list[str]]): A list of topic IDs associated with the channel.
+        visibility (PrivacyStatus): The channel's privacy status. Can be :attr:`PrivacyStatus.private`,
+            :attr:`PrivacyStatus.public` or :attr:`PrivacyStatus.unlisted`.
         is_linked (bool): Whether the channel data identifies a user that is already linked to either a YouTube
-                          username or a Google+ account
+            username or a Google+ account.
         long_upload_status (LongUploadsStatus): whether the channel is eligible to upload videos that are more than 15
-                                                minutes long.
+            minutes long.
         made_for_kids (Optional[bool]): Whether the channel is designated as child-directed, and it contains the
-                                        current "made for kids" status of the channel
+            current "made for kids" status of the channel.
         self_declared_made_for_kids (Optional[bool]): Designates the channel as child-directed.
-        keywords (Optional[list[str]]): Keywords associated with your channel
+        keywords (Optional[list[str]]): Keywords associated with your channel.
         tracking_analytics_account_id (Optional[str]): The ID for a Google Analytics account used to track and measure
-                                                       traffic to the channel
+            traffic to the channel.
         moderate_comments (Optional[bool]): Determines whether user-submitted comments left on the channel page need to
-                                            be approved by the channel owner to be publicly visible
+            be approved by the channel owner to be publicly visible.
         unsubscribed_trailer_id (Optional[str]): The ID of the video that should play in the featured video module in
-                                                 the channel page's browse view for unsubscribed viewers
+            the channel page's browse view for unsubscribed viewers.
         unsubscribed_trailer_url (Optional[str]): The URL of the video that should play in the featured video module in
-                                                  the channel page's browse view for unsubscribed viewers
-        banner_external_url (Optional[str]): The URL of the banner image that YouTube uses to generate
-                                             the various banner image sizes for a channel
+            the channel page's browse view for unsubscribed viewers.
+        banner_external_url (Optional[str]): The URL of the banner image that YouTube uses to generate the various
+            banner image sizes for a channel.
         content_owner (Optional[str]): The ID of the content owner linked to the channel.
-        time_linked (Optional[datetime.datetime]): The date and time of when the channel was linked to the content owner
-        localisations (Optional[list[LocalName]]): Encapsulates translations of the channel's metadata
-        localizations (Optional[list[LocalName]]): Alias for :attr:`localisations`
+        time_linked (Optional[datetime.datetime]): The date and time of when the channel was linked to the content
+            owner.
+        localisations (Optional[list[LocalName]]): Encapsulates translations of the channel's metadata.
+        localizations (Optional[list[LocalName]]): Alias for :attr:`localisations`.
     """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata (dict): The raw API response to construct the class
+            metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions
+            call_data (AsyncYoutubeApi): call data used for fetch functions.
+
         Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
         try:
             self.metadata = metadata
@@ -1318,20 +1367,20 @@ class YoutubeChannel:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
     async def fetch_uploads(self) -> Optional[list[PlaylistItem]]:
-        """Fetches the playlist containing all public uploads associated with the channel
+        """Fetches the playlist containing all public uploads associated with the channel.
 
         This ia an api call which then returns a
-        :class:`PlaylistItem` object
+        :class:`PlaylistItem` object.
 
         Returns:
-            Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public
-                                                   uploads
+            Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public uploads.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            PlaylistNotFound: The playlist does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.uploads_id:
             from .api import AsyncYoutubeApi
@@ -1339,19 +1388,20 @@ class YoutubeChannel:
             return await self._call_data.fetch_playlist_items(self.uploads_id)
 
     async def fetch_likes(self) -> Optional[list[PlaylistItem]]:
-        """Fetches the playlist containing all videos the channel has liked if public
+        """Fetches the playlist containing all videos the channel has liked if public.
 
         This ia an api call which then returns a
-        :class:`PlaylistItem` object if public, otherwise ``None``
+        :class:`PlaylistItem` object if public, otherwise ``None``.
 
         Returns:
-            Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public
-                                                   likes
-            HTTPException: Fetching the metadata failed
-            PlaylistNotFound: The playlist does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public likes.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.likes_id:
             from .api import AsyncYoutubeApi
@@ -1359,19 +1409,20 @@ class YoutubeChannel:
             return await self._call_data.fetch_playlist_items(self.likes_id)
 
     async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideo]:
-        """Fetches the channel trailer video if any
+        """Fetches the channel trailer video if any.
 
         This ia an api call which then returns a
-        :class:`YoutubeVideoMetadata` object if the channel has a trailer, otherwise ``None``
+        :class:`YoutubeVideoMetadata` object if the channel has a trailer, otherwise ``None``.
 
         Returns:
-            Optional[YoutubeVideoMetadata]: The video object containing data of the channel trailer
+            Optional[YoutubeVideoMetadata]: The video object containing data of the channel trailer.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            VideoNotFound: The video does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if self.unsubscribed_trailer_id:
             from .api import AsyncYoutubeApi
@@ -1382,16 +1433,17 @@ class YoutubeChannel:
         """Fetches a list of related to the channel.
 
         This ia an api call which then returns a
-        :class:`list[YoutubeCommentThread]` object
+        :class:`list[YoutubeCommentThread]` object.
 
         Returns:
-            list[YoutubeCommentThread]: A list of comments related to the channel
+            list[YoutubeCommentThread]: A list of comments related to the channel.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            ChannelNotFound: The channel does not exist
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from.api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
@@ -1404,14 +1456,41 @@ REFERENCE_TABLE = {"video": [VIDEO_URL, YoutubeVideo],
 
 
 class YoutubeComment:
+    """Represents information on an individual YouTube command.
+
+    Attributes:
+        metadata (dict): The raw API response used to construct this class.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        snippet (dict): The raw snippet data used to construct part this class.
+        id (str): The ID of the comment.
+        author_display_name (str): The display name of the author (this is not their handle).
+        author_profile_image_url (str): The image URL of the author's pfp.
+        author_channel_id (Optional[str]): The ID of the author's channel.
+        author_channel_url (Optional[str]): The URL of the author's channel.
+        channel_id (Optional[str]): The id of the channel that the video belongs to.
+        channel_url (Optional[str]): The url of the channel that the video belongs to.
+        video_id (Optional[str]): The ID of the video that the comments refer to.
+        video_url (Optional[str]): The URL of the video that the comments refer to.
+        highlight_url (Optional[str]): The highlight URL of the comment.
+        text_display (str): The comment's text in either plain text or HTML.
+        text_original (Optional[str]): The comment's raw text.
+        parent_id (Optional[str]): The unique ID of the parent comment.
+        can_rate (bool): whether the current viewer can rate the comment.
+        viewer_rating (Optional[str]): The rating the viewer has given to this comment.
+        like_count (int): The total number of likes on the comment.
+        moderation_status (Optional[str]): The comment's moderation status.
+        published_at (datetime.datetime): The date and time when the comment was originally published.
+        updated_at (datetime.datetime): The date and time when the comment was last updated.
+    """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata (dict): The raw API response to construct the class
+            metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions
+            call_data (AsyncYoutubeApi): call data used for fetch functions.
+
         Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
         try:
             self.metadata = metadata
@@ -1446,15 +1525,17 @@ class YoutubeComment:
         """Fetches a list of replies on the comment.
 
         This ia an api call which then returns a
-        :class:`list[YoutubeComment]` object
+        :class:`list[YoutubeComment]` object.
 
         Returns:
-            list[YoutubeComment]: A list of replies on the comment
+            list[YoutubeComment]: A list of replies on the comment.
+
         Raises:
-            HTTPException: Fetching the metadata failed
-            aiohttp.ClientError: There was a problem sending the request to the api
-            InvalidInput: The input is not a playlist id
-            APITimeout: The YouTube api did not respond within the timeout period set
+            HTTPException: Fetching the metadata failed.
+            CommentNotFound: The comment does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a comment id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
         """
         from.api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
@@ -1462,14 +1543,35 @@ class YoutubeComment:
 
 
 class YoutubeCommentThread:
+    """Represents the structure of a comment (thread).
+
+    Attributes:
+        metadata (dict): The raw API response used to construct this class.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        snippet (dict): The raw snippet data used to construct part this class.
+        id (str): The ID of the comment.
+        channel_id (Optional[str]): The id of the channel that the video belongs to.
+        channel_url (Optional[str]): The url of the channel that the video belongs to.
+        video_id (Optional[str]): The ID of the video that the comments refer to.
+        video_url (Optional[str]): The URL of the video that the comments refer to.
+        highlight_url (Optional[str]): The highlight URL of the comment.
+        top_level_comment (YoutubeComment): The thread's top-level comment.
+        can_reply (bool): Whether the current viewer can reply to the thread.
+        total_reply_count (Optional[int]): The total number of replies that have been submitted in response to
+            the top-level comment.
+        is_public (bool): Whether the thread, including all of its comments and comment replies, is visible to all
+            YouTube users.
+        replies (Optional[list[YoutubeComment]]): The replies on the comment if any.
+    """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
         Args:
-            metadata (dict): The raw API response to construct the class
+            metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
-            call_data (AsyncYoutubeApi): call data used for fetch functions
+            call_data (AsyncYoutubeApi): call data used for fetch functions.
+
         Raises:
-            MissingDataFromMetaData: There is malformed data in the metadata provided
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
         try:
             self.metadata = metadata
@@ -1495,15 +1597,40 @@ class YoutubeCommentThread:
 
 
 class YoutubeSearchResult:
-    """to be documented..."""
+    """Represents individual results from an API search.
+
+    Attributes:
+        data (dict): The raw API response used to construct this class.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        kind_id (str): The raw kind of the result separated by a #. Could be video, channel or playlist.
+        kind (type[Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]]).
+        id (str): The ID of the object in the result.
+        url (str): The URL of the object in the result.
+        snippet (dict): The raw snippet data used to construct part this class.
+        title (str): The title of the object in the search result.
+        description (str): The description of the object in the search result.
+        thumbnails (YoutubeThumbnailMetadata): The available thumbnails the object has.
+        channel_title (Optional[str]): The title of the channel that published the resource that the search result
+            identifies.
+        live_broadcast_content: (LiveBroadcastContent): Indicates if the object is a livestream and if it is live.
+    """
     def __init__(self, data: dict, call_url: str, call_data):
+        """
+            Args:
+                data (dict): The raw API response to construct the class.
+                call_url (str): The url used to call the API.
+                call_data (AsyncYoutubeApi): Call data used for fetch functions.
+
+            Raises:
+                MissingDataFromMetaData: There is malformed data in the metadata provided.
+        """
         try:
             self.data = data
             self.call_url = call_url
             self._call_data = call_data
             self.kind_id: str = data["id"]["kind"]
             self._str_kind: str = self.kind_id.split('#')[1]
-            self.kind = REFERENCE_TABLE[self._str_kind][1]
+            self.kind: type[Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]] = REFERENCE_TABLE[self._str_kind][1]
             self.id = self.data["id"][f"{self._str_kind}Id"]
             self.url = REFERENCE_TABLE[self._str_kind][0].format(self.id)
             self.snippet = self.data["snippet"]
@@ -1517,6 +1644,18 @@ class YoutubeSearchResult:
             raise MissingDataFromMetadata(str(missing_snippet_data), data, missing_snippet_data)
 
     async def expand(self) -> Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]:
+        """Expand the search result into its appropriate type.
+
+        Returns:
+            Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]: The proper object of the search result.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ResourceNotFound: The object does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a YouTube ID.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
         from .api import AsyncYoutubeApi
         self._call_data: AsyncYoutubeApi
         fetch_item = getattr(self._call_data, f"fetch_{self._str_kind}")
@@ -1524,8 +1663,36 @@ class YoutubeSearchResult:
 
 
 class VideoCaption:
-    """to be documented..."""
+    """Represents data of an individual caption track on a video.
+
+    Attributes:
+        id (str): The ID of the caption track.
+        snippet (dict): The raw snippet data used to construct part this class.
+        video_id (str): The ID of the video that the caption track refer to.
+        last_updated (datetime.datetime): The date and time when the caption track was last updated.
+        track_kind (CaptionTrackKind): The caption track's type.
+        language (str): The language of the caption track. The value is a BCP-47 language code.
+        name (str): The name of the caption track. The name is intended to be visible to the user as an option during
+            playback.
+        audio_track_type (AudioTrackType): The type of audio track associated with the caption track.
+        is_cc (bool): Whether the track contains closed captions. Defaults to ``False``.
+        is_large (bool): Whether the caption track uses large text for the vision-impaired. Defaults to ``False``.
+        is_easy_reader (bool): Whether the caption track is formatted for "easy reader," meaning it is at a third-grade
+            level for language learners. Defaults to ``False``.
+        is_auto_synced (bool): Whether YouTube synchronized the caption track to the audio track in the video.
+        status (CaptionStatus): The caption track's status.
+        failure_reason (CaptionFailureReason): The reason that YouTube failed to process the caption track.
+    """
     def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+            Args:
+                metadata (dict): The raw API response to construct the class.
+                call_url (str): The url used to call the API.
+                call_data (AsyncYoutubeApi): Call data used for fetch functions.
+
+            Raises:
+                MissingDataFromMetaData: There is malformed data in the metadata provided.
+        """
         try:
             self.metadata = metadata
             self.call_url = call_url

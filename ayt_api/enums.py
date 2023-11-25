@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class LongUploadsStatus(Enum):
-    """The eligibility status of the channel to upload videos longer than 15 minutes"""
+    """The eligibility status of the channel to upload videos longer than 15 minutes."""
 
     allowed = "allowed"
     disallowed = "disallowed"
@@ -14,6 +14,8 @@ class LongUploadsStatus(Enum):
 
 
 class LiveBroadcastContent(Enum):
+    """Indicates if the video is a livestream and if it is live."""
+
     live = "live"
     upcoming = "upcoming"
     none = "none"
@@ -23,6 +25,8 @@ class LiveBroadcastContent(Enum):
 
 
 class VideoDefinition(Enum):
+    """Indicates whether the video is available in high definition (HD) or only in standard definition."""
+
     hd = "hd"
     sd = "sd"
 
@@ -31,6 +35,11 @@ class VideoDefinition(Enum):
 
 
 class AcbRating(Enum):
+    """
+    The video's Australian Classification Board (ACB) or Australian Communications andMedia Authority (ACMA) rating.
+    ACMA ratings are used to classify children's television programming.
+    """
+
     acb_c = "acb_c"
     acb_e = "acb_e"
     acb_g = "acb_g"
@@ -46,6 +55,8 @@ class AcbRating(Enum):
 
 
 class VideoProjection(Enum):
+    """Specifies the projection format of the video (example: 360 or rectangular)."""
+
     _360 = "360"
     rectangular = "rectangular"
 
@@ -54,6 +65,8 @@ class VideoProjection(Enum):
 
 
 class UploadStatus(Enum):
+    """The status of the uploaded video."""
+
     deleted = "deleted"
     failed = "failed"
     processed = "processed"
@@ -65,6 +78,8 @@ class UploadStatus(Enum):
 
 
 class UploadFailureReason(Enum):
+    """Explains why a video failed to upload."""
+
     codec = "codec"
     conversion = "conversion"
     empty_file = "empty_file"
@@ -77,6 +92,8 @@ class UploadFailureReason(Enum):
 
 
 class UploadRejectionReason(Enum):
+    """Explains why YouTube rejected an uploaded video."""
+
     claim = "claim"
     copyright = "copyright"
     duplicate = "duplicate"
@@ -93,6 +110,8 @@ class UploadRejectionReason(Enum):
 
 
 class PrivacyStatus(Enum):
+    """The video's privacy status. Can be :attr:`private`, :attr:`public` or :attr:`unlisted`."""
+
     private = "private"
     public = "public"
     unlisted = "unlisted"
@@ -102,6 +121,8 @@ class PrivacyStatus(Enum):
 
 
 class License(Enum):
+    """The video's license."""
+
     creative_common = "creative_common"
     youtube = "youtube"
 
@@ -110,6 +131,8 @@ class License(Enum):
 
 
 class CaptionStatus(Enum):
+    """The caption track's status."""
+
     failed = "failed"
     serving = "serving"
     syncing = "syncing"
@@ -119,6 +142,8 @@ class CaptionStatus(Enum):
 
 
 class CaptionFailureReason(Enum):
+    """The reason that YouTube failed to process the caption track."""
+
     processing_failed = "processing_failed"
     unknown_format = "unknown_format"
     unsupported_format = "unsupported_format"
@@ -128,6 +153,8 @@ class CaptionFailureReason(Enum):
 
 
 class AudioTrackType(Enum):
+    """The type of audio track associated with the caption track."""
+
     commentary = "commentary"
     descriptive = "descriptive"
     primary = "primary"
@@ -138,6 +165,8 @@ class AudioTrackType(Enum):
 
 
 class CaptionTrackKind(Enum):
+    """The caption track's type."""
+
     asr = "asr"
     forced = "forced"
     standard = "standard"
