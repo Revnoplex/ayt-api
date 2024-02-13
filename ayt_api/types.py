@@ -1047,12 +1047,15 @@ class YoutubePlaylist:
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist_items(self.id)
 
-    async def fetch_videos(self) -> list[YoutubeVideo]:
+    async def fetch_videos(self, exclude: list[str] = None) -> list[YoutubeVideo]:
         """
         Fetches a list of the videos in the playlist.
 
         This is an api call which returns a list of
         :class:`YoutubeVideo` objects.
+
+        Args:
+            exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
 
         Returns:
             list[YoutubeVideo]: A list containing videos from the playlist.
@@ -1066,7 +1069,7 @@ class YoutubePlaylist:
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.fetch_playlist_videos(self.id)
+        return await self._call_data.fetch_playlist_videos(self.id, exclude)
 
     async def fetch_channel(self):
         """Fetches the channel associated with the playlist.
