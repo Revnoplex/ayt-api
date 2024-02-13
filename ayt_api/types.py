@@ -597,7 +597,7 @@ class YoutubeVideo(BaseVideo):
                 if self.status.get("failureReason") else None
             self.rejection_reason = UploadRejectionReason(camel_to_snake(self.status["rejectionReason"])) \
                 if self.status.get("rejectionReason") else None
-            self.visibility = PrivacyStatus(self.status["privacyStatus"])
+            self.visibility = PrivacyStatus(camel_to_snake(self.status["privacyStatus"]))
             if self.status.get("publishAt") is None:
                 self.publish_set_at: Optional[datetime.datetime] = None
             else:
@@ -705,7 +705,7 @@ class YoutubeVideo(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeAPI
+        from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
@@ -725,7 +725,7 @@ class YoutubeVideo(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeAPI
+        from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_captions(self.id)
 
@@ -836,7 +836,7 @@ class PlaylistItem(BaseVideo):
             self.published_at = None if self.content_details.get("videoPublishedAt") is None else \
                 isodate.parse_datetime(self.content_details["videoPublishedAt"])
             self.available = bool(self.published_at)
-            self.visibility: Optional[PrivacyStatus] = PrivacyStatus(self.status["privacyStatus"]) if \
+            self.visibility: Optional[PrivacyStatus] = PrivacyStatus(camel_to_snake(self.status["privacyStatus"])) if \
                 self.status.get("privacyStatus") else None
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
@@ -845,10 +845,10 @@ class PlaylistItem(BaseVideo):
         """Fetches extended information on the video in the playlist.
 
         This ia an api call which then returns a
-        :class:`YoutubeVideoMetadata` object.
+        :class:`YoutubeVideo` object.
 
         Returns:
-            YoutubeVideoMetadata: The video object containing data of the video.
+            YoutubeVideo The video object containing data of the video.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -918,7 +918,7 @@ class PlaylistItem(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeAPI
+        from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
@@ -938,7 +938,7 @@ class PlaylistItem(BaseVideo):
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeAPI
+        from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_captions(self.id)
 
@@ -1012,7 +1012,7 @@ class YoutubePlaylist:
                 self.snippet["localized"]["language"] = self.default_language
                 self.localised: Optional[LocalName] = LocalName(**self.snippet["localized"])
             self.localized = self.localised
-            self.visibility: Optional[PrivacyStatus] = PrivacyStatus(self.status["privacyStatus"]) if \
+            self.visibility: Optional[PrivacyStatus] = PrivacyStatus(camel_to_snake(self.status["privacyStatus"])) if \
                 self.status.get("privacyStatus") else None
             self.item_count: Optional[int] = self.content_details.get("itemCount")
             self.embed_html: Optional[str] = self.player.get("embedHtml")
@@ -1052,7 +1052,7 @@ class YoutubePlaylist:
         Fetches a list of the videos in the playlist.
 
         This is an api call which returns a list of
-        :class:`PlaylistItem` objects.
+        :class:`YoutubeVideo` objects.
 
         Returns:
             list[YoutubeVideo]: A list containing videos from the playlist.
@@ -1338,7 +1338,7 @@ class YoutubeChannel:
             else:
                 self.topic_categories: Optional[list[str]] = self.topic_details.get("topicCategories")
                 self.topic_ids: Optional[list[str]] = self.topic_details.get("topicIds")
-            self.visibility: Optional[PrivacyStatus] = PrivacyStatus(self.status["privacyStatus"])
+            self.visibility: Optional[PrivacyStatus] = PrivacyStatus(camel_to_snake(self.status["privacyStatus"]))
             self.is_linked: bool = self.status["isLinked"]
             self.long_upload_status = LongUploadsStatus(camel_to_snake(self.status["longUploadsStatus"]))
             self.made_for_kids: Optional[bool] = self.status.get("madeForKids")
@@ -1412,10 +1412,10 @@ class YoutubeChannel:
         """Fetches the channel trailer video if any.
 
         This ia an api call which then returns a
-        :class:`YoutubeVideoMetadata` object if the channel has a trailer, otherwise ``None``.
+        :class:`YoutubeVideo` object if the channel has a trailer, otherwise ``None``.
 
         Returns:
-            Optional[YoutubeVideoMetadata]: The video object containing data of the channel trailer.
+            Optional[YoutubeVideo]: The video object containing data of the channel trailer.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1445,7 +1445,7 @@ class YoutubeChannel:
             InvalidInput: The input is not a channel id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeAPI
+        from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_channel_comments(self.id, max_comments)
 
@@ -1537,7 +1537,7 @@ class YoutubeComment:
             InvalidInput: The input is not a comment id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        from.api import AsyncYoutubeAPI
+        from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_comment_replies(self.id, max_comments)
 

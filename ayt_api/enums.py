@@ -115,6 +115,7 @@ class PrivacyStatus(Enum):
     private = "private"
     public = "public"
     unlisted = "unlisted"
+    privacy_status_unspecified = "privacy_status_unspecified"
 
     def __str__(self):
         return self.value
