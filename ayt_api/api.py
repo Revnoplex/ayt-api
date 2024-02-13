@@ -197,7 +197,7 @@ class AsyncYoutubeAPI:
         return await self._call_api("playlistItems", "playlistId", playlist_id, ["snippet", "status", "contentDetails"],
                                     PlaylistItem, PlaylistNotFound, 500, None, True)
 
-    async def fetch_playlist_videos(self, playlist_id) -> list[YoutubeVideo]:
+    async def fetch_playlist_videos(self, playlist_id, exclude: list[str] = None) -> list[YoutubeVideo]:
         """Fetches a list of videos in a playlist using a playlist id.
 
         Playlist videos are fetched using a GET request which the response is then concentrated into a list of
@@ -205,7 +205,7 @@ class AsyncYoutubeAPI:
 
         Args:
             playlist_id (str): The id of the playlist to use.
-
+            exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
         Returns:
             list[YoutubeVideo]: A list containing playlist video objects.
 
@@ -218,7 +218,7 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         plist_items = await self.fetch_playlist_items(playlist_id)
-        video_ids = [item.id for item in plist_items]
+        video_ids = [item.id for item in plist_items if item.id not in (exclude or [])]
         return await self.fetch_video(video_ids)
 
     async def fetch_video(self, video_id: Union[str, list[str]]) -> Union[YoutubeVideo, list[YoutubeVideo]]:
