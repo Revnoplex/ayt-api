@@ -1,3 +1,5 @@
+from typing import Union
+
 import aiohttp
 
 
@@ -17,13 +19,15 @@ class PlaylistNotFound(ResourceNotFound):
     Attributes:
         playlist_id (str): The playlist id that was attempted to be fetched.
     """
-    def __init__(self, playlist_id):
+    def __init__(self, playlist_id: Union[str, list[str]]):
         """
         Args:
-            playlist_id (str): The playlist id that was attempted to be fetched.
+            playlist_id (Union[str, list[str]]): The playlist id that was attempted to be fetched.
         """
         self.playlist_id = playlist_id
-        message = f'The playlist id {playlist_id} did not match any visible playlists on youtube'
+        message = f'The playlist id {playlist_id} did not match any visible playlists on youtube' \
+            if isinstance(playlist_id, str) else (f'The playlist ids {", ".join(playlist_id)} did not match any visible'
+                                                  f' playlists on youtube')
         super().__init__(message)
 
 
@@ -33,13 +37,15 @@ class VideoNotFound(ResourceNotFound):
     Attributes:
         video_id (str): The video id that was attempted to be fetched.
     """
-    def __init__(self, video_id):
+    def __init__(self, video_id: Union[str, list[str]]):
         """
         Args:
-            video_id (str): The video id that was attempted to be fetched.
+            video_id (Union[str, list[str]]): The video id that was attempted to be fetched.
         """
         self.video_id = video_id
-        message = f'The video id {video_id} did not match any visible videos on youtube'
+        message = f'The video id {video_id} did not match any visible videos on youtube' \
+            if isinstance(video_id, str) else (f'The video ids {", ".join(video_id)} did not match any visible videos '
+                                               f'on youtube')
         super().__init__(message)
 
 
@@ -49,13 +55,15 @@ class ChannelNotFound(ResourceNotFound):
     Attributes:
         channel_id (Optional[str]): channel id that was attempted to be fetched if any.
     """
-    def __init__(self, channel_id=None,):
+    def __init__(self, channel_id: Union[str, list[str]] = None):
         """
         Args:
-            channel_id (Optional[str]): channel id that was attempted to be fetched if any.
+            channel_id (Optional[Union[str, list[str]]]): channel id that was attempted to be fetched if any.
         """
         self.channel_id = channel_id
-        message = f'The channel with the id {channel_id} did not match any channels on youtube'
+        message = f'The channel with the id {channel_id} did not match any channels on youtube' \
+            if isinstance(channel_id, str) else (f'The channel ids {", ".join(channel_id)} did not match any visible '
+                                                 f'channel on youtube')
         super().__init__(message)
 
 
@@ -65,13 +73,15 @@ class CommentNotFound(ResourceNotFound):
     Attributes:
         comment_id (str): comment id that was attempted to be fetched.
     """
-    def __init__(self, comment_id):
+    def __init__(self, comment_id: Union[str, list[str]]):
         """
         Args:
-            comment_id (str): comment id that was attempted to be fetched.
+            comment_id (Union[str, list[str]]): comment id that was attempted to be fetched.
         """
         self.comment_id = comment_id
-        message = f'The comment id {comment_id} did not match any visible videos on youtube'
+        message = f'The comment id {comment_id} did not match any visible comments on youtube' \
+            if isinstance(comment_id, str) else (f'The comment ids {", ".join(comment_id)} did not match any visible '
+                                                 f'comments on youtube')
         super().__init__(message)
 
 
