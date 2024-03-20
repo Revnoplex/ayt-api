@@ -2,7 +2,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ayt-api?style=for-the-badge&logo=python)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Revnoplex/ayt-api?style=for-the-badge&logo=github)
 # ayt-api
-A Basic Asynchronous, Object oriented python library for the YouTube api
+A Basic, Asynchronous, Object-Oriented YouTube API Wrapper Written in Python.
 
 The library is designed towards being used in python based discord bots that use an asynchronous discord api wrapper
 
