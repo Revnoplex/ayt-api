@@ -28,7 +28,7 @@ def get_version(rel_path):
 
 setup(
     name="ayt-api",
-    description="An Asynchronous, Object oriented python library for the YouTube api",
+    description="A basic, asynchronous, object-oriented YouTube API wrapper written in Python.",
     long_description_content_type="text/markdown",
     long_description=readme,
     author="Revnoplex",
