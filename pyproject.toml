@@ -7,7 +7,7 @@ name = "ayt-api"
 authors = [
   { name="Revnoplex", email="revnoplex.business@protonmail.com" },
 ]
-description = "An Asynchronous, Object oriented python library for the YouTube api"
+description = "A basic, asynchronous, object-oriented YouTube API wrapper written in Python."
 readme = "README.md"
 requires-python = ">=3.7"
 license = {file = "LICENSE.md"}
