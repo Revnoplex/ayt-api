@@ -624,27 +624,17 @@ class YoutubeVideo(BaseVideo):
             self.stream_scheduled_end_time: Optional[datetime.datetime] = None
             self.stream_concurrent_viewers: Optional[int] = None
             self.stream_active_live_chat_id: Optional[str] = None
-            if self.live_streaming_details is None:
-                pass
-            else:
-                if self.live_streaming_details.get("actualStartTime") is None:
-                    pass
-                else:
+            if self.live_streaming_details is not None:
+                if self.live_streaming_details.get("actualStartTime") is not None:
                     self.stream_actual_start_time: Optional[datetime.datetime] = \
                         isodate.parse_datetime(self.live_streaming_details.get("actualStartTime"))
-                if self.live_streaming_details.get("scheduledStartTime") is None:
-                    pass
-                else:
+                if self.live_streaming_details.get("scheduledStartTime") is not None:
                     self.stream_scheduled_start_time: Optional[datetime.datetime] = \
                         isodate.parse_datetime(self.live_streaming_details.get("scheduledStartTime"))
-                if self.live_streaming_details.get("actualEndTime") is None:
-                    pass
-                else:
+                if self.live_streaming_details.get("actualEndTime") is not None:
                     self.stream_actual_end_time: Optional[datetime.datetime] = \
                         isodate.parse_datetime(self.live_streaming_details.get("actualEndTime"))
-                if self.live_streaming_details.get("scheduledEndTime") is None:
-                    pass
-                else:
+                if self.live_streaming_details.get("scheduledEndTime") is not None:
                     self.stream_scheduled_end_time: Optional[datetime.datetime] = \
                         isodate.parse_datetime(self.live_streaming_details.get("scheduledEndTime"))
                 self.stream_concurrent_viewers: Optional[int] = self.live_streaming_details.get("concurrentViewers")
@@ -1453,9 +1443,11 @@ class YoutubeChannel:
         return await self._call_data.fetch_channel_comments(self.id, max_comments)
 
 
-REFERENCE_TABLE = {"video": [VIDEO_URL, YoutubeVideo],
-                   "channel": [CHANNEL_URL, YoutubeChannel],
-                   "playlist": [PLAYLIST_URL, YoutubePlaylist]}
+REFERENCE_TABLE = {
+    "video": [VIDEO_URL, YoutubeVideo],
+    "channel": [CHANNEL_URL, YoutubeChannel],
+    "playlist": [PLAYLIST_URL, YoutubePlaylist]
+}
 
 
 class YoutubeComment:
