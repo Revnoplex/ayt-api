@@ -185,7 +185,7 @@ class AsyncYoutubeAPI:
             playlist_id (str): The id of the playlist to use.
 
         Returns:
-            list[PlaylistItem: A list containing playlist video objects.
+            list[PlaylistItem]: A list containing playlist video objects.
 
         Raises:
             HTTPException: Fetching the metadata failed.
