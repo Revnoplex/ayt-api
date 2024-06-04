@@ -24,6 +24,7 @@ class YoutubeThumbnail:
         width (Optional[int]): The amount of horizontal pixels in the thumbnail.
         height (Optional[int]): The amount of vertical pixels in the thumbnail.
         resolution (str): The Width x Height of the thumbnail.
+        size (str): An alias of resolution
     """
     url: Optional[str]
     width: Optional[int] = None
@@ -31,20 +32,28 @@ class YoutubeThumbnail:
 
     def __post_init__(self):
         self.resolution = "{}x{}".format(self.width, self.height)
+        self.size = self.resolution
 
     def __str__(self):
         return self.url
 
 
 class YoutubeThumbnailMetadata:
-    """Data for the available thumbnails of a video."""
+    """
+    Data for the available thumbnails of a video.
+
+    Attributes:
+        metadata (dict): The raw thumbnail metadata to construct the class.
+        available (tuple[str]): Tells what thumbnails are available with the video
+    """
+
     def __init__(self, thumbnail_metadata: dict):
         """
         Args:
             thumbnail_metadata (dict): The raw thumbnail metadata to construct the class.
         """
         self.metadata = thumbnail_metadata
-        self.available = self.metadata.keys()
+        self.available = tuple(self.metadata.keys())
 
     def __str__(self):
         return f"Available Resolutions: {', '.join(self.available)}"
@@ -52,6 +61,29 @@ class YoutubeThumbnailMetadata:
     def __repr__(self):
         return f"YoutubeThumbnailMetadata(default={repr(self.default)},medium={repr(self.medium)}," \
                f"high={repr(self.high)},standard={repr(self.standard)},maxres={repr(self.maxres)})"
+
+    def highest_available(self) -> Optional[str]:
+        """
+        Helper function to get the highest resolution out of the thumbnails available
+
+        Returns:
+            Optional[str]: The name of the highest available thumbnail format
+        """
+        def get_size(thumbnail_code):
+            thumbnail_object = getattr(self, thumbnail_code)
+            return thumbnail_object.height * thumbnail_object.width
+        if self.available:
+            return max(self.available, key=get_size)
+
+    @property
+    def highest(self) -> Optional[YoutubeThumbnail]:
+        """
+        Helper property that provided the highest resolution out of the thumbnails available
+
+        Returns:
+            Optional[YoutubeThumbnail]: The thumbnail with the highest resolution available
+        """
+        return getattr(self, self.highest_available()) if self.highest_available() else None
 
     @property
     def default(self) -> Optional[YoutubeThumbnail]:
