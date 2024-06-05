@@ -98,7 +98,7 @@ class AsyncYoutubeAPI:
                                                          f"{next_page_query}{max_results_query}")
             try:
                 async with yt_api_session.get(call_url) as yt_api_response:
-                    if yt_api_response.status == 200:
+                    if yt_api_response.ok:
                         res_data = await yt_api_response.json()
                         if "error" in res_data:
                             check = [error.get("reason") for error in res_data["error"]["errors"]
