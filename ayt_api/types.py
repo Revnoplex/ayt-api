@@ -1,8 +1,9 @@
 import datetime
+import os
 import re
 import shlex
 from dataclasses import dataclass
-from typing import Union, Optional
+from typing import Union, Optional, Any
 import isodate
 from .exceptions import MissingDataFromMetadata
 from .utils import camel_to_snake
@@ -27,6 +28,7 @@ class YoutubeThumbnail:
         size (str): An alias of resolution
     """
     url: Optional[str]
+    _call_data: Any
     width: Optional[int] = None
     height: Optional[int] = None
 
@@ -36,6 +38,25 @@ class YoutubeThumbnail:
 
     def __str__(self):
         return self.url
+
+    async def download(self):
+        """Downloads the thumbnail and stores it as a :class:`bytes` object
+        Returns:
+            bytes: The image as a :class:`bytes` object
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            RuntimeError: The contents was not a jpeg image
+            asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.download_thumbnail(self.url)
+
+    async def save(self, fp: str | os.PathLike | None = None):
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        await self._call_data.save_thumbnail(self.url, fp)
 
 
 class YoutubeThumbnailMetadata:
@@ -47,13 +68,15 @@ class YoutubeThumbnailMetadata:
         available (tuple[str]): Tells what thumbnails are available with the video
     """
 
-    def __init__(self, thumbnail_metadata: dict):
+    def __init__(self, thumbnail_metadata: dict, call_data):
         """
         Args:
             thumbnail_metadata (dict): The raw thumbnail metadata to construct the class.
+            call_data (AsyncYoutubeAPI): Call data used for fetch functions.
         """
         self.metadata = thumbnail_metadata
         self.available = tuple(self.metadata.keys())
+        self._call_data = call_data
 
     def __str__(self):
         return f"Available Resolutions: {', '.join(self.available)}"
@@ -95,7 +118,7 @@ class YoutubeThumbnailMetadata:
             Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
         """
         if self.metadata.get("default") is not None:
-            return YoutubeThumbnail(**self.metadata["default"])
+            return YoutubeThumbnail(**self.metadata["default"], _call_data=self._call_data)
 
     @property
     def medium(self) -> Optional[YoutubeThumbnail]:
@@ -105,7 +128,7 @@ class YoutubeThumbnailMetadata:
             Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
         """
         if self.metadata.get("medium") is not None:
-            return YoutubeThumbnail(**self.metadata["medium"])
+            return YoutubeThumbnail(**self.metadata["medium"], _call_data=self._call_data)
 
     @property
     def high(self) -> Optional[YoutubeThumbnail]:
@@ -115,7 +138,7 @@ class YoutubeThumbnailMetadata:
             Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
         """
         if self.metadata.get("high") is not None:
-            return YoutubeThumbnail(**self.metadata["high"])
+            return YoutubeThumbnail(**self.metadata["high"],  _call_data=self._call_data)
 
     @property
     def standard(self) -> Optional[YoutubeThumbnail]:
@@ -125,7 +148,7 @@ class YoutubeThumbnailMetadata:
             Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
         """
         if self.metadata.get("standard") is not None:
-            return YoutubeThumbnail(**self.metadata["standard"])
+            return YoutubeThumbnail(**self.metadata["standard"], _call_data=self._call_data)
 
     @property
     def maxres(self) -> Optional[YoutubeThumbnail]:
@@ -135,7 +158,7 @@ class YoutubeThumbnailMetadata:
             Optional[YoutubeThumbnail]: A YouTube thumbnail object. Could be ``None``.
         """
         if self.metadata.get("maxres") is not None:
-            return YoutubeThumbnail(**self.metadata["maxres"])
+            return YoutubeThumbnail(**self.metadata["maxres"], _call_data=self._call_data)
 
 
 @dataclass
@@ -590,7 +613,7 @@ class YoutubeVideo(BaseVideo):
                 self.channel_url: Optional[str] = CHANNEL_URL.format(self.channel_id)
             self.title: str = self.snippet["title"]
             self.description: str = self.snippet["description"]
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
             self.channel_title: Optional[str] = self.snippet.get("channelTitle")
             self.tags: Optional[list[str]] = self.snippet.get("tags")
             self.category_id: int = int(self.snippet["categoryId"])
@@ -845,7 +868,7 @@ class PlaylistItem(BaseVideo):
             self.url = VIDEO_URL.format(self.id)
             self.title: str = self.snippet.get("title")
             self.description: str = self.snippet.get('description')
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
             self.channel_id: Optional[str] = self.snippet.get("videoOwnerChannelId")
             if self.channel_id is None:
                 self.channel_url: Optional[str] = None
@@ -1025,7 +1048,7 @@ class YoutubePlaylist:
                 self.channel_url: Optional[str] = CHANNEL_URL.format(self.channel_id)
             self.title: str = self.snippet["title"]
             self.description: str = self.snippet["description"]
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
             self.channel_title: Optional[str] = self.snippet.get("channelTitle")
             self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
             if self.snippet.get("localized") is None:
@@ -1339,7 +1362,7 @@ class YoutubeChannel:
             self.username: Optional[str] = self.custom_url
             self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.created_at = self.published_at
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
             self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
             if self.snippet.get("localized") is None:
                 self.localised: Optional[LocalName] = None
@@ -1663,7 +1686,7 @@ class YoutubeSearchResult:
             self.snippet = self.data["snippet"]
             self.title: str = self.snippet["title"]
             self.description: str = self.snippet["description"]
-            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"])
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
             self.channel_title: Optional[str] = self.snippet.get("channelTitle")
             self.live_broadcast_content: LiveBroadcastContent = \
                 LiveBroadcastContent(self.snippet["liveBroadcastContent"])

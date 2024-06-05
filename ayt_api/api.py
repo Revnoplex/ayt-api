@@ -1,5 +1,7 @@
 import asyncio
 import datetime
+import os
+import pathlib
 from typing import Optional, Union, Any
 from urllib import parse
 
@@ -151,6 +153,53 @@ class AsyncYoutubeAPI:
                         raise HTTPException(yt_api_response, message, error_data)
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
+
+    async def download_thumbnail(self, thumbnail_url: str) -> bytes:
+        """Downloads the thumbnail specified and stores it as a :class:`bytes` object
+
+        Args:
+            thumbnail_url (str): The i.ytimg.com asset url of the thumbnail
+        Returns:
+            bytes: The image as a :class:`bytes` object
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            RuntimeError: The contents was not a jpeg image
+            asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+        """
+        async with (aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout)
+                    as thumbnail_session):
+            async with thumbnail_session.get(thumbnail_url) as thumbnail_response:
+                if not thumbnail_response.ok:
+                    raise HTTPException(thumbnail_response)
+                elif thumbnail_response.content_type != "image/jpeg":
+                    raise RuntimeError("Received unexpected content type when attempting to download thumbnail")
+                else:
+                    return await thumbnail_response.read()
+
+    async def save_thumbnail(self, thumbnail_url: str, fp: os.PathLike | str | None = None):
+        """Downloads the thumbnail specified and saves it to a specified location
+
+            Args:
+                thumbnail_url (str): The i.ytimg.com asset url of the thumbnail
+                fp (os.PathLike | str): The path and/or filename to save the file to.
+                    Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
+            Raises:
+                HTTPException: Fetching the request failed.
+                aiohttp.ClientError: There was a problem sending the request to the api.
+                RuntimeError: The contents was not a jpeg image
+                asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+        """
+        thumbnail = await self.download_thumbnail(thumbnail_url)
+        parsed_url = parse.urlparse(thumbnail_url)
+        default_filename = parsed_url.path.split("/")[-2] + "-" + parsed_url.path.split("/")[-1]
+        if isinstance(fp, str):
+            fp = pathlib.Path(fp)
+        path = (fp or pathlib.Path(default_filename)).expanduser()
+        if path.is_dir():
+            path = path.joinpath(default_filename)
+        with open(path, "wb") as thumbnail_file:
+            thumbnail_file.write(thumbnail)
 
     async def fetch_playlist(self, playlist_id: Union[str, list[str]]) -> Union[YoutubePlaylist, list[YoutubePlaylist]]:
         """Fetches playlist metadata using a playlist id.
