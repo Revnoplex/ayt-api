@@ -41,5 +41,5 @@ setup(
     setup_requires=["wheel"],
     tests_require=['pytest>=7.1.2'],
     test_suite='tests',
-    python_requires=">=3.7.0",
+    python_requires=">=3.8.0",
 )
