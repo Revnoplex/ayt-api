@@ -1287,6 +1287,9 @@ class YoutubeChannel:
         published_at (datetime.datetime): The date and time that the channel was created.
         created_at (datetime.datetime): Alias for :attr:`published_at`.
         thumbnails (YoutubeThumbnailMetadata): The thumbnail images associated with the channel.
+        icon (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
+        pfp (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
+        avatar (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
         default_language (Optional[str]): The language of the text in the :class:`YoutubeChannelMetadata` class's
             :attr:`title` and :attr:`description` properties.
         localised (Optional[LocalName]): The localized title and description for the channel or title and description
@@ -1363,6 +1366,9 @@ class YoutubeChannel:
             self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.created_at = self.published_at
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
+            self.icon = self.thumbnails
+            self.pfp = self.thumbnails
+            self.avatar = self.thumbnails
             self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
             if self.snippet.get("localized") is None:
                 self.localised: Optional[LocalName] = None
