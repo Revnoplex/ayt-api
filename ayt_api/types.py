@@ -59,6 +59,42 @@ class YoutubeThumbnail:
         await self._call_data.save_thumbnail(self.url, fp)
 
 
+@dataclass
+class YoutubeBanner:
+    """Data for an individual YouTube thumbnail.
+
+    Attributes:
+        url (Optional[str]): The file url for the banner.
+    """
+    url: Optional[str]
+    _call_data: Any
+
+    def __str__(self):
+        return self.url
+
+    async def download(self):
+        # noinspection SpellCheckingInspection
+        """Downloads the banner and stores it as a :class:`bytes` object
+                Returns:
+                    tuple[bytes, str]: A list containing the image as a :class:`bytes` object and the file extension of
+                        the image
+                Raises:
+                    HTTPException: Fetching the request failed.
+                    aiohttp.ClientError: There was a problem sending the request to the api.
+                    RuntimeError: The contents was not a jpeg image
+                    asyncio.TimeoutError: The yt3.googleusercontent.com server did not respond within the timeout
+                        period set.
+                """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.download_banner(self.url)
+
+    async def save(self, fp: str | os.PathLike | None = None):
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        await self._call_data.save_banner(self.url, fp)
+
+
 class YoutubeThumbnailMetadata:
     """
     Data for the available thumbnails of a video.
@@ -1327,7 +1363,7 @@ class YoutubeChannel:
             the channel page's browse view for unsubscribed viewers.
         unsubscribed_trailer_url (Optional[str]): The URL of the video that should play in the featured video module in
             the channel page's browse view for unsubscribed viewers.
-        banner_external_url (Optional[str]): The URL of the banner image that YouTube uses to generate the various
+        banner_external (Optional[YoutubeBanner]): The banner image that YouTube uses to generate the various
             banner image sizes for a channel.
         content_owner (Optional[str]): The ID of the content owner linked to the channel.
         time_linked (Optional[datetime.datetime]): The date and time of when the channel was linked to the content
@@ -1405,8 +1441,9 @@ class YoutubeChannel:
             self.unsubscribed_trailer_id: Optional[str] = self._branding_channel.get("unsubscribedTrailer")
             self.unsubscribed_trailer_url: Optional[str] = VIDEO_URL.format(self.unsubscribed_trailer_id) \
                 if self.unsubscribed_trailer_id else None
-            self.banner_external_url: Optional[str] = self.branding_settings.get("image").get("bannerExternalUrl") \
-                if self.branding_settings.get("image") else None
+            self.banner_external = YoutubeBanner(
+                self.branding_settings.get("image").get("bannerExternalUrl"), self._call_data
+            ) if self.branding_settings.get("image") else None
             self.content_owner: Optional[str] = self.content_owner_details.get("contentOwner")
             self.time_linked = None if self.content_owner_details.get("timeLinked") is None else \
                 isodate.parse_datetime(self.content_owner_details.get("timeLinked"))
