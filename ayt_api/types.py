@@ -1508,6 +1508,9 @@ REFERENCE_TABLE = {
 class YoutubeComment:
     """Represents information on an individual YouTube command.
 
+    Information about the video the comment belongs to will not be available unless this object was access under
+    :attr:`YoutubeCommentThread.replies`
+
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
@@ -1520,8 +1523,11 @@ class YoutubeComment:
         channel_id (Optional[str]): The id of the channel that the video belongs to.
         channel_url (Optional[str]): The url of the channel that the video belongs to.
         video_id (Optional[str]): The ID of the video that the comments refer to.
+            Will be ``None`` unless part of a :class:`YoutubeCommentThread`.
         video_url (Optional[str]): The URL of the video that the comments refer to.
+            Will be ``None`` unless part of a :class:`YoutubeCommentThread`.
         highlight_url (Optional[str]): The highlight URL of the comment.
+            Will be ``None`` unless part of a :class:`YoutubeCommentThread`.
         url (Optional[str]): Alias of :attr:`highlight_url`
         text_display (str): The comment's text in either plain text or HTML.
         text_original (Optional[str]): The comment's raw text.
