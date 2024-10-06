@@ -1017,7 +1017,7 @@ class YoutubePlaylist:
         item_count (Optional[int]): The number of items in the playlist.
         embed_html (Optional[str]): An <iframe> tag that embeds a player that plays the video.
         localisations (Optional[list[LocalName]]): contains translations of the video's metadata.
-        localizations (Optional[list[LocalName]]): an alias of localisations.
+        localizations (Optional[list[LocalName]]): an alias of :attr:`localisations`.
     """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
@@ -1522,6 +1522,7 @@ class YoutubeComment:
         video_id (Optional[str]): The ID of the video that the comments refer to.
         video_url (Optional[str]): The URL of the video that the comments refer to.
         highlight_url (Optional[str]): The highlight URL of the comment.
+        url (Optional[str]): Alias of :attr:`highlight_url`
         text_display (str): The comment's text in either plain text or HTML.
         text_original (Optional[str]): The comment's raw text.
         parent_id (Optional[str]): The unique ID of the parent comment.
@@ -1559,6 +1560,7 @@ class YoutubeComment:
             self.video_url: Optional[str] = VIDEO_URL.format(self.video_id) if self.video_id else None
             self.highlight_url: Optional[str] = HIGHLIGHT_URL.format(self.video_url, self.id) \
                 if self.video_url else None
+            self.url = self.highlight_url
             self.text_display: str = self.snippet['textDisplay']
             self.text_original: Optional[str] = self.snippet.get('textOriginal')
             self.parent_id: Optional[str] = self.snippet.get('parentId')
@@ -1605,6 +1607,7 @@ class YoutubeCommentThread:
         video_id (Optional[str]): The ID of the video that the comments refer to.
         video_url (Optional[str]): The URL of the video that the comments refer to.
         highlight_url (Optional[str]): The highlight URL of the comment.
+        url (Optional[str]): Alias of :attr:`highlight_url`
         top_level_comment (YoutubeComment): The thread's top-level comment.
         can_reply (bool): Whether the current viewer can reply to the thread.
         total_reply_count (Optional[int]): The total number of replies that have been submitted in response to
@@ -1635,6 +1638,7 @@ class YoutubeCommentThread:
             self.video_url: Optional[str] = VIDEO_URL.format(self.video_id) if self.video_id else None
             self.highlight_url: Optional[str] = HIGHLIGHT_URL.format(self.video_url, self.id) \
                 if self.video_url else None
+            self.url = self.highlight_url
             self.top_level_comment = YoutubeComment(self.snippet['topLevelComment'], self.call_url, self._call_data)
             self.can_reply: bool = self.snippet['canReply']
             self.total_reply_count: Optional[int] = self.snippet.get('totalReplyCount')
