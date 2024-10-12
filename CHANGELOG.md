@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([1874580#diff-920c31e-R197](https://github.com/Revnoplex/ayt-api/commit/1874580a085429f8533742acefd1b4ca4aac20bb#diff-920c31e8df6efd41a120b70811f3494522b1587fe3bd4cc389823cb5b004e407R197))
 - Basic Unit Tests. 
 ([689c84f](https://github.com/Revnoplex/ayt-api/commit/689c84f62b03592b3612f9e246cd28afd3db572a))
+- Search Example.
+([e0678f0](https://github.com/Revnoplex/ayt-api/commit/e0678f01dcd510a05cdf96d6b611a2234b315b97))
 
 ### Changed
 
