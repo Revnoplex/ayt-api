@@ -36,7 +36,7 @@ setup(
     version=get_version("ayt_api/__init__.py"),
     url="https://github.com/Revnoplex/ayt-api",
     license="MIT",
-    packages=find_packages(exclude=["tests"]),
+    packages=find_packages(exclude=["tests", "experiments"]),
     install_requires=requirements,
     setup_requires=["wheel"],
     tests_require=['pytest>=7.1.2'],

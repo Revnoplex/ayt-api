@@ -133,5 +133,5 @@ dmypy.json
 .idea/
 
 # ignore testing directory
-tests
+experiments
 test/
