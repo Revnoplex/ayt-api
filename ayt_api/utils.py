@@ -177,7 +177,7 @@ def snake_keys(dictionary: dict) -> dict:
     return snake_dict
 
 
-def censor_token(call_url: str) -> str:
+def censor_key(call_url: str) -> str:
     """Censors the api key in an api call url.
 
     Args:
@@ -192,3 +192,15 @@ def censor_token(call_url: str) -> str:
         queries["key"] = ["API_KEY"]
     censored_components = components._replace(query=parse.urlencode(queries, doseq=True))
     return censored_components.geturl()
+
+
+def censor_token(call_url: str) -> str:
+    """Alias of censor_key
+
+    Args:
+        call_url (str): The api call url containing the uncensored api key.
+
+    Returns:
+        str: The url with the api key censored.
+    """
+    return censor_key(call_url)
