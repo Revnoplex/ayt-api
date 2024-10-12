@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2024-10-12
 
+**BREAKING CHANGES.** See *Changed* and *Removed* for details.
 **This Version Drops Python 3.7 Support**
 
 ### Added
