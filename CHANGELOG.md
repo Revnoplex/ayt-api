@@ -193,15 +193,15 @@ keep things consistant ([2806395](https://github.com/Revnoplex/ayt-api/commit/28
 
 ## [0.1.2] - 2023-06-17
 
-To Be Added
+Too old to list changes
 
 ## [0.1.1] - 2022-10-28
 
-To Be Added
+Too old to list changes
 
 ## [0.1.0] - 2022-05-26
 
-To Be Added
+Too old to list changes
 
 [unreleased]: https://github.com/Revnoplex/ayt-api/compare/v0.2.1...main
 [0.2.1]: https://github.com/Revnoplex/ayt-api/compare/v0.2.0.post2...v0.2.1
