@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New 'banner' classes and methods simular to thumbnails, but for YouTube channel banners.
 ([6f8ec58](https://github.com/Revnoplex/ayt-api/commit/6f8ec58d4e46c45d2256ada7fb141e15870e4347))
 - This changelog. ([42e5289](https://github.com/Revnoplex/ayt-api/commit/42e5289b6b968926644807c2d69062fb889ef465))
+- Alias of `utils.censor_key`: `censor_token`
+([1874580#diff-920c31e-R197](https://github.com/Revnoplex/ayt-api/commit/1874580a085429f8533742acefd1b4ca4aac20bb#diff-920c31e8df6efd41a120b70811f3494522b1587fe3bd4cc389823cb5b004e407R197))
 
 ### Changed
 
@@ -47,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([5bb8a23](https://github.com/Revnoplex/ayt-api/commit/5bb8a23f8e09268828a8fd20e46fe57d3285861e))
 - **Breaking**: The equivalent of `YoutubeChannel.banner_external_url` is now `YoutubeChannel.banner_external.url`.
 ([6f8ec58#diff-7363042-L1408](https://github.com/Revnoplex/ayt-api/commit/6f8ec58d4e46c45d2256ada7fb141e15870e4347#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L1408))
+- Renamed `utils.censor_token` to `censor_key`
+([1874580#diff-920c31e-L180](https://github.com/Revnoplex/ayt-api/commit/1874580a085429f8533742acefd1b4ca4aac20bb#diff-920c31e8df6efd41a120b70811f3494522b1587fe3bd4cc389823cb5b004e407L180))
 
 ### Fixed
 
