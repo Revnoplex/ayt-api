@@ -7,17 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+**This Version Drops Python 3.7 Support**
+
 ### Added
 
-To Be Added
+- Alias of `YoutubeThumbnail.resolution`: `YoutubeThumbnail.size`.
+([7e10db5#diff-7363042-R35](https://github.com/Revnoplex/ayt-api/commit/7e10db574dab18f977aa41ba80c9a4080c67e1ea#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R35))
+- Method to get the name of the highest resolution available.
+([7e10db5#diff-7363042-R65](https://github.com/Revnoplex/ayt-api/commit/7e10db574dab18f977aa41ba80c9a4080c67e1ea#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R65))
+- Property that returns the highest quality available thumbnail.
+([7e10db5#diff-7363042-R79](https://github.com/Revnoplex/ayt-api/commit/7e10db574dab18f977aa41ba80c9a4080c67e1ea#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R79))
+- Methods to download thumbnails.
+([31ed8ab](https://github.com/Revnoplex/ayt-api/commit/31ed8abdf3415b8177b66f75c9067be38f93f4a4))
+- Python 3.13 Support.
+([7b8f9ed#diff-50c86b7-R23](https://github.com/Revnoplex/ayt-api/commit/7b8f9eddc12e05365a73c5638d8efb5a7007d6a2#diff-50c86b7ed8ac2cf95bd48334961bf0530cdc77b5a56f852c5c61b89d735fd711R23))
+- **Documentation**: Add additional badges to [README.md](README.md).
+([fb06062](https://github.com/Revnoplex/ayt-api/commit/fb060623b20d74767059ef3153e18ff72ba74011))
+- Alias of the `highlight_url` attribute for both `YoutubeComment` and `YoutubeComment`: `url`.
+([c3baa03](https://github.com/Revnoplex/ayt-api/commit/c3baa03abdd4a021a4bb42da4252f92c1438b1df))
+- **Documentation**: Documented the limitations of `YoutubeComment` attributes. 
+([9eb2919](https://github.com/Revnoplex/ayt-api/commit/9eb2919d327090c640d79336864ac9cb2d851005))
+- 3 Aliases of `YoutubeChannel.thumbnails`: `icon`, `pfp` and `avatar`. 
+([eb331c0](https://github.com/Revnoplex/ayt-api/commit/eb331c060639ea667de7985e410c699a908fa2e6))
+- New 'banner' classes and methods simular to thumbnails, but for YouTube channel banners.
+([6f8ec58](https://github.com/Revnoplex/ayt-api/commit/6f8ec58d4e46c45d2256ada7fb141e15870e4347))
+- This changelog. ([42e5289](https://github.com/Revnoplex/ayt-api/commit/42e5289b6b968926644807c2d69062fb889ef465))
 
 ### Changed
 
-To Be Added
+- Updated the description of this project.
+([2d0d274](https://github.com/Revnoplex/ayt-api/commit/2d0d27421f770fb9242f1f03626160d0b4399973), 
+[6d4bac0](https://github.com/Revnoplex/ayt-api/commit/6d4bac01f7c61524615c34d78da820c2e7a2a646), 
+[8caf94d](https://github.com/Revnoplex/ayt-api/commit/8caf94d58734912ce8e096b8ded5083c538e4545))
+- Replaced instances of if-pass statements for simplified statements.
+([bff7763](https://github.com/Revnoplex/ayt-api/commit/bff77633fbc2b12814045a08ba59674b0ca7be4e))
+- `YoutubeThumbnailMetadata.available` is a `tuple`.
+([7e10db5#diff-7363042-R56](https://github.com/Revnoplex/ayt-api/commit/7e10db574dab18f977aa41ba80c9a4080c67e1ea#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R56))
+- Permit any http code returned from the API under 400. 
+([5bb8a23](https://github.com/Revnoplex/ayt-api/commit/5bb8a23f8e09268828a8fd20e46fe57d3285861e))
+- **Breaking**: The equivalent of `YoutubeChannel.banner_external_url` is now `YoutubeChannel.banner_external.url`.
+([6f8ec58#diff-7363042-L1408](https://github.com/Revnoplex/ayt-api/commit/6f8ec58d4e46c45d2256ada7fb141e15870e4347#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L1408))
 
 ### Fixed
 
-To Be Added
+- **Documentation**: Missing closing square bracket. 
+([85678be](https://github.com/Revnoplex/ayt-api/commit/85678be945266008b0c7007725b3bb748622f13d))
+
+### Removed
+
+- **Breaking**: Python 3.7 support
+([7b8f9ed](https://github.com/Revnoplex/ayt-api/commit/7b8f9eddc12e05365a73c5638d8efb5a7007d6a2))
+
 
 ## [0.2.1] - 2024-02-13
 
