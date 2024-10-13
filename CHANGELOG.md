@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Added
+
+- **Documentation**: New homepage added to pypi links. 
+([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
+- **Documentation**: Changelog added to pypi links.
+([2f9663c](https://github.com/Revnoplex/ayt-api/commit/2f9663cdcc61d4c6a642eb7bebaec1b24a264065))
+- **Documentation**: New logo added to [README.md](README.md).
+([ab5bda2](https://github.com/Revnoplex/ayt-api/commit/ab5bda215d8850bbacbdac358341c5d34e49b3bd))
+
 ## [0.3.0] - 2024-10-12
 
 **BREAKING CHANGES.** See *Changed* and *Removed* for details.
@@ -67,7 +78,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Breaking**: Python 3.7 support
 ([7b8f9ed](https://github.com/Revnoplex/ayt-api/commit/7b8f9eddc12e05365a73c5638d8efb5a7007d6a2))
-
 
 ## [0.2.1] - 2024-02-13
 
