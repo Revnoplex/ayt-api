@@ -11,6 +11,10 @@ description = "A basic, asynchronous, object-oriented YouTube API wrapper writte
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE.md"}
+keywords = [
+    "api", "youtube", "async", "asyncio", "aiohttp", "object-oriented",
+    "youtube api", "wrapper", "youtube api wrapper", "api wrapper"
+]
 classifiers = [
     "Intended Audience :: Developers",
     "Natural Language :: English",
@@ -31,7 +35,7 @@ classifiers = [
 dynamic = ["version", "dependencies"]
 
 [project.urls]
-"Homepage" = "https://github.com/Revnoplex/ayt-api"
+"Homepage" = "https://ayt-api.revnoplex.xyz"
 "Repository" = "https://github.com/Revnoplex/ayt-api"
 "Bug Tracker" = "https://github.com/Revnoplex/ayt-api/issues"
 
