@@ -7,13 +7,11 @@ Examples of using this library are available [here](https://github.com/Revnoplex
 
 # API
 ```{toctree}
-:maxdepth: 3
 :caption: API
 
 api
 ```
 ```{toctree}
-:maxdepth: 2
 
 types
 filters
@@ -21,14 +19,12 @@ enums
 ```
 # Exceptions
 ```{toctree}
-:maxdepth: 2
 :caption: Exceptions
 
 exceptions
 ```
 # Utils
 ```{toctree}
-:maxdepth: 2
 :caption: Utils
 
 utils
