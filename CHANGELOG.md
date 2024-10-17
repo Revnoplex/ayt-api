@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([2f9663c](https://github.com/Revnoplex/ayt-api/commit/2f9663cdcc61d4c6a642eb7bebaec1b24a264065))
 - **Documentation**: New logo added to [README.md](README.md).
 ([ab5bda2](https://github.com/Revnoplex/ayt-api/commit/ab5bda215d8850bbacbdac358341c5d34e49b3bd))
+- **Documentation**: Added readthedocs documentation. (too many commits to list)
 
 ## [0.3.0] - 2024-10-12
 
