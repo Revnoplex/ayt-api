@@ -22,8 +22,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'myst_parser',
-    'sphinx_rtd_dark_mode',
-    'sphinxext.opengraph'
+    'sphinxext.opengraph',
+    'sphinx.ext.napoleon'
 ]
 
 intersphinx_mapping = {
@@ -36,7 +36,7 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 html_logo = 'https://ayt-api.revnoplex.xyz/ayt-api-square.svg'
 html_favicon = html_logo
 
