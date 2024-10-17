@@ -7,7 +7,6 @@ Examples of using this library are available [here](https://github.com/Revnoplex
 
 # API
 ```{toctree}
-:caption: API
 
 api
 ```
@@ -19,13 +18,11 @@ enums
 ```
 # Exceptions
 ```{toctree}
-:caption: Exceptions
 
 exceptions
 ```
 # Utils
 ```{toctree}
-:caption: Utils
 
 utils
 ```
