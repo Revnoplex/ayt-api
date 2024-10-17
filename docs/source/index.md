@@ -1,6 +1,6 @@
 [![AYT API](https://ayt-api.revnoplex.xyz/ayt-api.svg)](https://ayt-api.revnoplex.xyz)
 
-# AYT API Documentation
+# ayt-api
 
 This is a test instance and not the full documentation. 
 

@@ -3,7 +3,7 @@
 # -- Project information
 
 project = 'AYT API'
-copyright = '2022-2024 Revnoplex'
+copyright = '2024 Revnoplex'
 author = 'Revnoplex'
 
 release = '0.3'
@@ -17,7 +17,9 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
-    'myst_parser'
+    'myst_parser',
+    'sphinx_rtd_dark_mode',
+    'sphinxext.opengraph'
 ]
 
 intersphinx_mapping = {
@@ -31,6 +33,8 @@ templates_path = ['_templates']
 # -- Options for HTML output
 
 html_theme = 'sphinx_rtd_theme'
+html_logo = 'https://ayt-api.revnoplex.xyz/ayt-api-square.svg'
+html_favicon = html_logo
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
