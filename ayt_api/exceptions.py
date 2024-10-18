@@ -147,6 +147,15 @@ class InvalidKey(YoutubeExceptions):
         super().__init__("API key not valid. Please pass a valid API key.")
 
 
+class NoAuth(YoutubeExceptions):
+    """Exception that is raised when neither an api key nor an oauth token is provided to :class:`AsyncYoutubeAPI`"""
+    def __init__(self):
+        super().__init__(
+            "No authentication method was provided! Please pass either an api token or an oauth token to "
+            "AsyncYoutubeAPI. eg. AsyncYoutubeAPI(yt_api_key='YOUR_KEY') or AsyncYoutubeAPI(oath_token='YOUR_TOKEN')"
+        )
+
+
 class APITimeout(YoutubeExceptions):
     """Exception that's raised when the api does not respond within the timeout set.
     Attributes:

@@ -2,15 +2,16 @@ import asyncio
 import datetime
 import os
 import pathlib
+import pprint
 from typing import Optional, Union, Any
 from urllib import parse
 
 import aiohttp
 from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
-    CommentNotFound, ResourceNotFound
+    CommentNotFound, ResourceNotFound, NoAuth
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, DummyObject, AuthorisedYoutubeVideo
 from .filters import SearchFilter
 from .utils import censor_token, snake_to_camel
 
@@ -27,7 +28,10 @@ class AsyncYoutubeAPI:
     """
     URL_PREFIX = "https://www.googleapis.com/youtube/v{version}"
 
-    def __init__(self, yt_api_key: str, api_version: str = '3', timeout: int = 5, ignore_ssl: bool = False):
+    def __init__(
+            self, yt_api_key: str = None, api_version: str = '3', timeout: int = 5, ignore_ssl: bool = False,
+            oauth_token: str = None
+    ):
         """
         Args:
             yt_api_key (str): The API key used to access the YouTube API. to get an API key.
@@ -39,16 +43,21 @@ class AsyncYoutubeAPI:
         """
         self._key = yt_api_key
         self.api_version = api_version
+        self._token = oauth_token
+        if (not self._key) and (not self._token):
+            raise NoAuth()
         self.call_url_prefix = self.URL_PREFIX.format(version=self.api_version)
-        self._skeleton_url = self.call_url_prefix + "/{kind}?part={parts}{queries}&key=" + self._key
+        self._skeleton_url = self.call_url_prefix + "/{kind}?part={parts}{queries}"
+        self._skeleton_url_with_key = self._skeleton_url + "&key=" + self._key
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.ignore_ssl = ignore_ssl
 
-    async def _call_api(self, call_type: str, query: str, ids: Union[str, list[str]], parts: list[str],
-                        return_type: type, exception_type: type[ResourceNotFound], max_results: int = None,
-                        max_items: int = None, multi_resp=False, next_page: str = None,
-                        next_list: list[str] = None,
-                        current_count=0, expected_count=1, other_queries: str = None) -> Union[Any, list]:
+    async def _call_api(
+            self, call_type: str, query: str, ids: Union[str, list[str]], parts: list[str], return_type: type,
+            exception_type: type[ResourceNotFound], max_results: int = None, max_items: int = None, multi_resp=False,
+            next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
+            other_queries: str = None, oauth=False
+    ) -> Union[Any, list]:
         """A centralised function for calling the api.
         Args:
             call_type (str): The type of request to make to the YouTube api.
@@ -95,11 +104,15 @@ class AsyncYoutubeAPI:
             next_page_query = "" if next_page is None else f'&pageToken={next_page}'
             max_results_query = "" if max_results is None else f'&maxResults={max_results}'
             x_queries = "" if other_queries is None else other_queries
-            call_url = self._skeleton_url.format(kind=call_type, parts=",".join(parts),
-                                                 queries=f"&{query}={id_object}{x_queries}"
-                                                         f"{next_page_query}{max_results_query}")
+            call_url = (self._skeleton_url if oauth else self._skeleton_url_with_key).format(
+                kind=call_type, parts=",".join(parts),
+                queries=f"&{query}={id_object}{x_queries}{next_page_query}{max_results_query}"
+            )
             try:
-                async with yt_api_session.get(call_url) as yt_api_response:
+                headers = {}
+                if oauth:
+                    headers = {"Authorization": f"Bearer {self._token}"}
+                async with yt_api_session.get(call_url, headers=headers) as yt_api_response:
                     if yt_api_response.ok:
                         res_data = await yt_api_response.json()
                         if "error" in res_data:
@@ -120,18 +133,17 @@ class AsyncYoutubeAPI:
                                 if res_data.get("nextPageToken") is not None:
                                     current_count += len(res_data.get("items"))
                                     if not max_items or current_count < max_items:
-                                        items_next_page = await self._call_api(call_type, query, ids, parts,
-                                                                               return_type, exception_type, max_results,
-                                                                               max_items, multi_resp,
-                                                                               res_data["nextPageToken"],
-                                                                               current_count=current_count,
-                                                                               expected_count=expected_count)
+                                        items_next_page = await self._call_api(
+                                            call_type, query, ids, parts, return_type, exception_type, max_results,
+                                            max_items, multi_resp, res_data["nextPageToken"],
+                                            current_count=current_count, expected_count=expected_count, oauth=oauth
+                                        )
                                 items_next_list = []
                                 if next_list:
-                                    items_next_list = await self._call_api(call_type, query, next_list, parts,
-                                                                           return_type, exception_type, max_results,
-                                                                           max_items, multi_resp,
-                                                                           expected_count=expected_count)
+                                    items_next_list = await self._call_api(
+                                        call_type, query, next_list, parts, return_type, exception_type, max_results,
+                                        max_items, multi_resp, expected_count=expected_count, oauth=oauth
+                                    )
                                 items = [return_type(item, call_url, self) for item in items]
                                 return (items + items_next_page + items_next_list)[:max_items]
                             else:
@@ -317,7 +329,9 @@ class AsyncYoutubeAPI:
         video_ids = [item.id for item in plist_items if item.id not in (exclude or [])]
         return await self.fetch_video(video_ids)
 
-    async def fetch_video(self, video_id: Union[str, list[str]]) -> Union[YoutubeVideo, list[YoutubeVideo]]:
+    async def fetch_video(
+            self, video_id: Union[str, list[str]], authenticated=False
+    ) -> Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
         """Fetches information on a video using a video id.
 
         Video metadata is fetched using a GET request which the response is then concentrated into a
@@ -325,6 +339,7 @@ class AsyncYoutubeAPI:
 
         Args:
             video_id (str): The id of the video to use.
+            authenticated (bool): authentication. to be documented...
 
         Returns:
             Union[YoutubeVideo, list[YoutubeVideo]]: The video object containing data of the video.
@@ -336,10 +351,15 @@ class AsyncYoutubeAPI:
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        return await self._call_api("videos", "id", video_id, ["snippet", "status", "contentDetails", "statistics",
-                                                               "player", "topicDetails", "recordingDetails",
-                                                               "liveStreamingDetails", "localizations"], YoutubeVideo,
-                                    VideoNotFound, 50)
+
+        return await self._call_api(
+            "videos", "id", video_id,
+            [
+                "snippet", "status", "contentDetails", "statistics", "player", "topicDetails",
+                "recordingDetails", "liveStreamingDetails", "localizations"
+            ] + (["fileDetails", "processingDetails", "suggestions",] if authenticated else []),
+            AuthorisedYoutubeVideo if authenticated else YoutubeVideo, VideoNotFound, 50, oauth=authenticated
+        )
 
     async def fetch_channel(self, channel_id: Union[str, list[str]]) -> Union[YoutubeChannel, list[YoutubeChannel]]:
         """Fetches information on a channel using a channel id.

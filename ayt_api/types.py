@@ -1245,14 +1245,14 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
         try:
             self.file_details: dict = metadata["fileDetails"]
             self.processing_details: dict = metadata["processingDetails"]
-            self.suggestions: dict = metadata["suggestions"]
+            self.suggestions: Optional[dict] = metadata.get("suggestions") or {}
             self.has_custom_thumbnail: bool = self.content_details["hasCustomThumbnail"]
             self.self_declared_made_for_kids: bool = self.status["selfDeclaredMadeForKids"]
             self.dislike_count: Optional[int] = self.statistics.get("dislikeCount")
             self.file_name: str = self.file_details["fileName"]
-            self.file_size: int = self.file_details["fileSize"]
-            self.file_type: str = self.file_details["fileType"]
-            self.file_container: str = self.file_details["container"]
+            self.file_size: Optional[int] = self.file_details.get("fileSize")
+            self.file_type: Optional[str] = self.file_details.get("fileType")
+            self.file_container: Optional[str] = self.file_details.get("container")
             if self.file_details.get("videoStreams") is None:
                 self.video_streams: Optional[list[VideoStream]] = None
             else:
@@ -1263,7 +1263,8 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
             else:
                 self.audio_streams: Optional[list[AudioStream]] = \
                     [AudioStream(audio_data) for audio_data in self.file_details["audioStreams"]]
-            self.file_duration = datetime.timedelta(milliseconds=self.file_details["durationMS"])
+            self.file_duration = datetime.timedelta(milliseconds=self.file_details["durationMS"]) \
+                if self.file_details.get("durationMS") else None
             self.file_bitrate: int = self.file_details.get("bitrateBps")
             if self.file_details.get("creationTime") is None:
                 self.file_creation_time: Optional[datetime.datetime] = None
