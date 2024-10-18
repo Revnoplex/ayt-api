@@ -1191,13 +1191,13 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
                 child-directed.
         dislike_count (Optional[int]): The number of users who have indicated that they disliked the video.
         file_name (str): The uploaded file's name.
-        file_size (int): The uploaded file's size in bytes.
-        file_type (str): The uploaded file's type as detected by YouTube's video processing engine.
-        file_container (str): The uploaded video file's container format.
+        file_size (Optional[int]): The uploaded file's size in bytes.
+        file_type (Optional[str]): The uploaded file's type as detected by YouTube's video processing engine.
+        file_container (Optional[str]): The uploaded video file's container format.
         video_streams (Optional[list[VideoStream]]): A list of video streams contained in the uploaded video file.
         audio_streams (Optional[list[AudioStream]]): A list of audio streams contained in the uploaded video file.
-        file_duration (datetime.timedelta): The length of the uploaded video millisecond accurate.
-        file_bitrate (int): The uploaded video file's combined (video and audio) bitrate in bits per second.
+        file_duration (Optional[datetime.timedelta]): The length of the uploaded video millisecond accurate.
+        file_bitrate (Optional[int]): The uploaded video file's combined (video and audio) bitrate in bits per second.
         file_creation_time (Optional[datetime.datetime]): The date and time when the uploaded video file was created.
         processing_status (Optional[str]): The video's processing status.
         processing_progress (Optional[ProcessingProgress]):

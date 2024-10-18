@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import os
 import pathlib
-import pprint
 from typing import Optional, Union, Any
 from urllib import parse
 
@@ -11,7 +10,7 @@ from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
     CommentNotFound, ResourceNotFound, NoAuth
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, DummyObject, AuthorisedYoutubeVideo
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo
 from .filters import SearchFilter
 from .utils import censor_token, snake_to_camel
 
@@ -36,6 +35,7 @@ class AsyncYoutubeAPI:
         Args:
             yt_api_key (str): The API key used to access the YouTube API. to get an API key.
                 See instructions here: https://developers.google.com/youtube/v3/getting-started
+            oauth_token (str): The OAuth token to used for authorised requests
             api_version (str): The API version to use. defaults to 3.
             timeout (int): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
@@ -75,6 +75,7 @@ class AsyncYoutubeAPI:
             current_count (int): The sum of items returned each api request.
             expected_count (int): The number of items expected to be returned by the api that were requested.
             other_queries (Optional[str]): Additional query strings to use in the call url.
+            oauth (bool): Whether to use an OAuth token to authorise the request.
 
         Returns:
             Union[Any, list]: The object specified in :param:`return_type`.
@@ -339,7 +340,8 @@ class AsyncYoutubeAPI:
 
         Args:
             video_id (str): The id of the video to use.
-            authenticated (bool): authentication. to be documented...
+            authenticated (bool): Whether to fetch additional uploader side information about a video
+                (Need OAuth token).
 
         Returns:
             Union[YoutubeVideo, list[YoutubeVideo]]: The video object containing data of the video.
