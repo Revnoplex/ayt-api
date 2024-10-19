@@ -302,7 +302,7 @@ class AsyncYoutubeAPI:
                 fetches every item in a playlist. WARNING! If a specified playlist has a lot of videos, not specifying
                 a value to :param:`max_items` could hammer the api too much causing you to get rate limited so do this
                 with caution.
-            authenticated (bool): Whether to fetch additional uploader side information about a video
+            authenticated (bool): Whether to fetch additional creator side information about a playlist
                 (Needs OAuth token).
 
         Returns:
@@ -386,7 +386,7 @@ class AsyncYoutubeAPI:
 
         Args:
             channel_id (str): The id of the channel to use.
-            authenticated (bool): Whether to fetch additional uploader side information about a video
+            authenticated (bool): Whether to fetch additional owner side information about a channel
                 (Needs OAuth token).
 
         Returns:
@@ -418,7 +418,7 @@ class AsyncYoutubeAPI:
 
         Args:
             handle (str): The handle of the channel to use.
-            authenticated (bool): Whether to fetch additional uploader side information about a video
+            authenticated (bool): Whether to fetch additional owner side information about a channel
                 (Needs OAuth token).
 
         Returns:
@@ -479,7 +479,7 @@ class AsyncYoutubeAPI:
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
                 WARNING! specifying a high number or ``None`` could hammer the api too much causing you
                 to get rate limited so do this with caution.
-            authenticated (bool): Whether to fetch additional uploader side information about a video
+            authenticated (bool): Whether to fetch additional owner side information about channel comments
                 (Needs OAuth token).
 
         Returns:
