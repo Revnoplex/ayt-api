@@ -29,7 +29,7 @@ class AsyncYoutubeAPI:
 
     def __init__(
             self, yt_api_key: str = None, api_version: str = '3', timeout: int = 5, ignore_ssl: bool = False,
-            oauth_token: str = None
+            oauth_token: str = None, use_oauth=False
     ):
         """
         Args:
@@ -40,6 +40,7 @@ class AsyncYoutubeAPI:
             timeout (int): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
+            use_oauth (bool): Whether to use the oauth token over the api key
         """
         self._key = yt_api_key
         self.api_version = api_version
@@ -49,6 +50,7 @@ class AsyncYoutubeAPI:
         self.call_url_prefix = self.URL_PREFIX.format(version=self.api_version)
         self._skeleton_url = self.call_url_prefix + "/{kind}?part={parts}{queries}"
         self._skeleton_url_with_key = self._skeleton_url + "&key=" + (self._key or "")
+        self.use_oauth = use_oauth
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.ignore_ssl = ignore_ssl
 
@@ -56,7 +58,7 @@ class AsyncYoutubeAPI:
             self, call_type: str, query: str, ids: Union[str, list[str]], parts: list[str], return_type: type,
             exception_type: type[ResourceNotFound], max_results: int = None, max_items: int = None, multi_resp=False,
             next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
-            other_queries: str = None, oauth=False, return_args: dict = None
+            other_queries: str = None, return_args: dict = None
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
         Args:
@@ -75,7 +77,6 @@ class AsyncYoutubeAPI:
             current_count (int): The sum of items returned each api request.
             expected_count (int): The number of items expected to be returned by the api that were requested.
             other_queries (Optional[str]): Additional query strings to use in the call url.
-            oauth (bool): Whether to use an OAuth token to authorise the request.
             return_args (dict): Extra arguments that are passed to the object passed to :param:`return_type`
 
         Returns:
@@ -89,7 +90,7 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         # use OAuth token if no api key was provided
-        oauth = oauth or (not self._key)
+        oauth = self.use_oauth or (not self._key)
         return_args = return_args or {}
         if len(ids) < 1:
             raise InvalidInput(ids)
@@ -141,14 +142,14 @@ class AsyncYoutubeAPI:
                                         items_next_page = await self._call_api(
                                             call_type, query, ids, parts, return_type, exception_type, max_results,
                                             max_items, multi_resp, res_data["nextPageToken"],
-                                            current_count=current_count, expected_count=expected_count, oauth=oauth,
+                                            current_count=current_count, expected_count=expected_count,
                                             return_args=return_args
                                         )
                                 items_next_list = []
                                 if next_list:
                                     items_next_list = await self._call_api(
                                         call_type, query, next_list, parts, return_type, exception_type, max_results,
-                                        max_items, multi_resp, expected_count=expected_count, oauth=oauth,
+                                        max_items, multi_resp, expected_count=expected_count,
                                         return_args=return_args
                                     )
                                 items = [return_type(item, call_url, self, **return_args) for item in items]
@@ -286,11 +287,12 @@ class AsyncYoutubeAPI:
             InvalidInput: The input is not a playlist id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        return await self._call_api("playlists", "id", playlist_id,
-                                    ["snippet", "status", "contentDetails", "player", "localizations"],
-                                    YoutubePlaylist, PlaylistNotFound)
+        return await self._call_api(
+            "playlists", "id", playlist_id, ["snippet", "status", "contentDetails", "player", "localizations"],
+            YoutubePlaylist, PlaylistNotFound
+        )
 
-    async def fetch_playlist_items(self, playlist_id: str, max_items=None, authenticated=False) -> list[PlaylistItem]:
+    async def fetch_playlist_items(self, playlist_id: str, max_items=None) -> list[PlaylistItem]:
         """Fetches a list of items in a playlist using a playlist id.
 
         Playlist video metadata is fetched using a GET request which the response is then concentrated into a list of
@@ -302,8 +304,6 @@ class AsyncYoutubeAPI:
                 fetches every item in a playlist. WARNING! If a specified playlist has a lot of videos, not specifying
                 a value to :param:`max_items` could hammer the api too much causing you to get rate limited so do this
                 with caution.
-            authenticated (bool): Whether to fetch additional creator side information about a playlist
-                (Needs OAuth token).
 
         Returns:
             list[PlaylistItem]: A list containing playlist video objects.
@@ -317,7 +317,7 @@ class AsyncYoutubeAPI:
         """
         return await self._call_api(
             "playlistItems", "playlistId", playlist_id, ["snippet", "status", "contentDetails"],
-            PlaylistItem, PlaylistNotFound, 500, max_items, True, oauth=authenticated
+            PlaylistItem, PlaylistNotFound, 500, max_items, True
         )
 
     async def fetch_playlist_videos(self, playlist_id, exclude: list[str] = None) -> list[YoutubeVideo]:
@@ -329,6 +329,7 @@ class AsyncYoutubeAPI:
         Args:
             playlist_id (str): The id of the playlist to use.
             exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
+
         Returns:
             list[YoutubeVideo]: A list containing playlist video objects.
 
@@ -345,7 +346,7 @@ class AsyncYoutubeAPI:
         return await self.fetch_video(video_ids)
 
     async def fetch_video(
-            self, video_id: Union[str, list[str]], authenticated=False
+            self, video_id: Union[str, list[str]]
     ) -> Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
         """Fetches information on a video using a video id.
 
@@ -354,8 +355,6 @@ class AsyncYoutubeAPI:
 
         Args:
             video_id (str): The id of the video to use.
-            authenticated (bool): Whether to fetch additional uploader side information about a video
-                (Needs OAuth token).
 
         Returns:
             Union[YoutubeVideo, list[YoutubeVideo]]: The video object containing data of the video.
@@ -367,18 +366,17 @@ class AsyncYoutubeAPI:
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
+        using_oauth = self.use_oauth or (not self._key)
         return await self._call_api(
             "videos", "id", video_id,
             [
                 "snippet", "status", "contentDetails", "statistics", "player", "topicDetails",
                 "recordingDetails", "liveStreamingDetails", "localizations"
-            ] + (["fileDetails", "processingDetails", "suggestions",] if authenticated else []),
-            AuthorisedYoutubeVideo if authenticated else YoutubeVideo, VideoNotFound, 50, oauth=authenticated
+            ] + (["fileDetails", "processingDetails", "suggestions",] if using_oauth else []),
+            AuthorisedYoutubeVideo if using_oauth else YoutubeVideo, VideoNotFound, 50
         )
 
-    async def fetch_channel(
-            self, channel_id: Union[str, list[str]], authenticated=False
-    ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
+    async def fetch_channel(self, channel_id: Union[str, list[str]]) -> Union[YoutubeChannel, list[YoutubeChannel]]:
         """Fetches information on a channel using a channel id. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
@@ -386,8 +384,6 @@ class AsyncYoutubeAPI:
 
         Args:
             channel_id (str): The id of the channel to use.
-            authenticated (bool): Whether to fetch additional owner side information about a channel
-                (Needs OAuth token).
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -405,11 +401,11 @@ class AsyncYoutubeAPI:
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
             ],
-            YoutubeChannel, ChannelNotFound, 50, oauth=authenticated, return_args={"authenticated": authenticated}
+            YoutubeChannel, ChannelNotFound, 50
         )
 
     async def fetch_channel_from_handle(
-            self, handle: Union[str, list[str]], authenticated=False
+            self, handle: Union[str, list[str]]
     ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
         """Fetches information on a channel using a channel's handle. e.g. **@Revnoplex.**
 
@@ -418,8 +414,6 @@ class AsyncYoutubeAPI:
 
         Args:
             handle (str): The handle of the channel to use.
-            authenticated (bool): Whether to fetch additional owner side information about a channel
-                (Needs OAuth token).
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -437,7 +431,7 @@ class AsyncYoutubeAPI:
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
              ],
-            YoutubeChannel, ChannelNotFound, 50, oauth=authenticated, return_args={"authenticated": authenticated}
+            YoutubeChannel, ChannelNotFound, 50
         )
 
     async def fetch_video_comments(self, video_id: str, max_comments: Optional[int] = 50) -> list[YoutubeCommentThread]:
@@ -467,7 +461,7 @@ class AsyncYoutubeAPI:
                                     VideoNotFound, 50, max_comments, True)
 
     async def fetch_channel_comments(
-            self, channel_id: str, max_comments: Optional[int] = 50, authenticated=False
+            self, channel_id: str, max_comments: Optional[int] = 50
     ) -> list[YoutubeCommentThread]:
         """Fetches comments on an entire channel.
 
@@ -479,8 +473,6 @@ class AsyncYoutubeAPI:
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
                 WARNING! specifying a high number or ``None`` could hammer the api too much causing you
                 to get rate limited so do this with caution.
-            authenticated (bool): Whether to fetch additional owner side information about channel comments
-                (Needs OAuth token).
 
         Returns:
             list[YoutubeCommentThread]: A list of comments as :class:`YoutubeCommentThread`.
@@ -494,7 +486,7 @@ class AsyncYoutubeAPI:
         """
         return await self._call_api(
             "commentThreads", "allThreadsRelatedToChannelId", channel_id, ["snippet", "replies", "id"],
-            YoutubeCommentThread, ChannelNotFound, 50, max_comments, True, oauth=authenticated
+            YoutubeCommentThread, ChannelNotFound, 50, max_comments, True
         )
 
     async def fetch_comment(self, comment_id: Union[str, list[str]]) -> Union[YoutubeComment, list[YoutubeComment]]:

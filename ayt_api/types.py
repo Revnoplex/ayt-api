@@ -1372,14 +1372,13 @@ class YoutubeChannel:
         localisations (Optional[list[LocalName]]): Encapsulates translations of the channel's metadata.
         localizations (Optional[list[LocalName]]): Alias for :attr:`localisations`.
     """
-    def __init__(self, metadata: dict, call_url: str, call_data, partial=False, authenticated=False):
+    def __init__(self, metadata: dict, call_url: str, call_data, partial=False):
         """
         Args:
             metadata (dict): The raw API response to construct the class.
             call_url (str): The url used to call the API.
             call_data (AsyncYoutubeAPI): call data used for fetch functions.
             partial (bool): Whether to just provide a partial object for just obtaining the channel id.
-            authenticated (bool): Whether to run api calls with OAuth credentials.
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
@@ -1387,7 +1386,6 @@ class YoutubeChannel:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
-            self._authenticated = authenticated
             self.id: str = metadata["id"]
             if partial:
                 return
@@ -1483,7 +1481,7 @@ class YoutubeChannel:
         if self.uploads_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.fetch_playlist_items(self.uploads_id, authenticated=self._authenticated)
+            return await self._call_data.fetch_playlist_items(self.uploads_id)
 
     async def fetch_likes(self, max_items=None) -> Optional[list[PlaylistItem]]:
         """Fetches the playlist containing all videos the channel has liked if public.
@@ -1510,7 +1508,7 @@ class YoutubeChannel:
         if self.likes_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.fetch_playlist_items(self.likes_id, max_items, self._authenticated)
+            return await self._call_data.fetch_playlist_items(self.likes_id, max_items)
 
     async def fetch_unsubscribed_trailer(self) -> Optional[YoutubeVideo]:
         """Fetches the channel trailer video if any.
@@ -1531,7 +1529,7 @@ class YoutubeChannel:
         if self.unsubscribed_trailer_id:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
-            return await self._call_data.fetch_video(self.unsubscribed_trailer_id, authenticated=self._authenticated)
+            return await self._call_data.fetch_video(self.unsubscribed_trailer_id)
 
     async def fetch_comments(self, max_comments: Optional[int] = 50):
         """Fetches a list of related to the channel.
@@ -1551,7 +1549,7 @@ class YoutubeChannel:
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.fetch_channel_comments(self.id, max_comments, authenticated=self._authenticated)
+        return await self._call_data.fetch_channel_comments(self.id, max_comments)
 
 
 REFERENCE_TABLE = {
