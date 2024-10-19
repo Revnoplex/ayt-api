@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: New logo added to [README.md](README.md).
 ([ab5bda2](https://github.com/Revnoplex/ayt-api/commit/ab5bda215d8850bbacbdac358341c5d34e49b3bd))
 - **Documentation**: Added readthedocs documentation. (too many commits to list)
+- API call `fetch_channel_from_handle` that fetches channel information using a channel handle instead of a channel id. 
+([40470a9#diff-cbbc953-R394](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R394))
+- API util `resolve_handle` that gets a channel id from a channel's handle.
+([40470a9#diff-cbbc953-R581](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R581))
 
 ## [0.3.0] - 2024-10-12
 
