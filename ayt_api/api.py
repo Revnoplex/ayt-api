@@ -346,7 +346,7 @@ class AsyncYoutubeAPI:
         return await self.fetch_video(video_ids)
 
     async def fetch_video(
-            self, video_id: Union[str, list[str]]
+            self, video_id: Union[str, list[str]], authorised=False
     ) -> Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
         """Fetches information on a video using a video id.
 
@@ -355,6 +355,8 @@ class AsyncYoutubeAPI:
 
         Args:
             video_id (str): The id of the video to use.
+            authorised (bool): Whether to fetch additional uploader side information about a video
+                (Needs OAuth token).
 
         Returns:
             Union[YoutubeVideo, list[YoutubeVideo]]: The video object containing data of the video.
@@ -366,14 +368,13 @@ class AsyncYoutubeAPI:
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        using_oauth = self.use_oauth or (not self._key)
         return await self._call_api(
             "videos", "id", video_id,
             [
                 "snippet", "status", "contentDetails", "statistics", "player", "topicDetails",
                 "recordingDetails", "liveStreamingDetails", "localizations"
-            ] + (["fileDetails", "processingDetails", "suggestions",] if using_oauth else []),
-            AuthorisedYoutubeVideo if using_oauth else YoutubeVideo, VideoNotFound, 50
+            ] + (["fileDetails", "processingDetails", "suggestions",] if authorised else []),
+            AuthorisedYoutubeVideo if authorised else YoutubeVideo, VideoNotFound, 50,
         )
 
     async def fetch_channel(self, channel_id: Union[str, list[str]]) -> Union[YoutubeChannel, list[YoutubeChannel]]:
