@@ -56,7 +56,7 @@ class AsyncYoutubeAPI:
             self, call_type: str, query: str, ids: Union[str, list[str]], parts: list[str], return_type: type,
             exception_type: type[ResourceNotFound], max_results: int = None, max_items: int = None, multi_resp=False,
             next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
-            other_queries: str = None, oauth=False
+            other_queries: str = None, oauth=False, return_args: dict = None
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
         Args:
@@ -76,6 +76,7 @@ class AsyncYoutubeAPI:
             expected_count (int): The number of items expected to be returned by the api that were requested.
             other_queries (Optional[str]): Additional query strings to use in the call url.
             oauth (bool): Whether to use an OAuth token to authorise the request.
+            return_args (dict): Extra arguments that are passed to the object passed to :param:`return_type`
 
         Returns:
             Union[Any, list]: The object specified in :param:`return_type`.
@@ -87,6 +88,7 @@ class AsyncYoutubeAPI:
             InvalidInput: The query was empty.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
+        return_args = return_args or {}
         if len(ids) < 1:
             raise InvalidInput(ids)
         if isinstance(ids, str):
@@ -137,19 +139,21 @@ class AsyncYoutubeAPI:
                                         items_next_page = await self._call_api(
                                             call_type, query, ids, parts, return_type, exception_type, max_results,
                                             max_items, multi_resp, res_data["nextPageToken"],
-                                            current_count=current_count, expected_count=expected_count, oauth=oauth
+                                            current_count=current_count, expected_count=expected_count, oauth=oauth,
+                                            return_args=return_args
                                         )
                                 items_next_list = []
                                 if next_list:
                                     items_next_list = await self._call_api(
                                         call_type, query, next_list, parts, return_type, exception_type, max_results,
-                                        max_items, multi_resp, expected_count=expected_count, oauth=oauth
+                                        max_items, multi_resp, expected_count=expected_count, oauth=oauth,
+                                        return_args=return_args
                                     )
-                                items = [return_type(item, call_url, self) for item in items]
+                                items = [return_type(item, call_url, self, **return_args) for item in items]
                                 return (items + items_next_page + items_next_list)[:max_items]
                             else:
                                 res_json = res_data.get("items")[0]
-                                return return_type(res_json, censor_token(call_url), self)
+                                return return_type(res_json, censor_token(call_url), self, **return_args)
                     else:
                         message = f'The youtube API returned the following error code: ' \
                                   f'{yt_api_response.status}'
@@ -364,7 +368,7 @@ class AsyncYoutubeAPI:
         )
 
     async def fetch_channel(self, channel_id: Union[str, list[str]]) -> Union[YoutubeChannel, list[YoutubeChannel]]:
-        """Fetches information on a channel using a channel id.
+        """Fetches information on a channel using a channel id. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
@@ -383,6 +387,32 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         return await self._call_api("channels", "id", channel_id,
+                                    ["snippet", "status", "contentDetails", "statistics", "topicDetails",
+                                     "brandingSettings", "contentOwnerDetails", "id", "localizations"], YoutubeChannel,
+                                    ChannelNotFound, 50)
+
+    async def fetch_channel_from_handle(
+            self, handle: Union[str, list[str]]
+    ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
+        """Fetches information on a channel using a channel's handle. e.g. **@Revnoplex.**
+
+        Channel metadata is fetched using a GET request which the response is then concentrated into a
+        :class:`YoutubeChannel` object or a list if multiple IDs were specified.
+
+        Args:
+            handle (str): The handle of the channel to use.
+
+        Returns:
+            Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel handle.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        return await self._call_api("channels", "forHandle", handle,
                                     ["snippet", "status", "contentDetails", "statistics", "topicDetails",
                                      "brandingSettings", "contentOwnerDetails", "id", "localizations"], YoutubeChannel,
                                     ChannelNotFound, 50)
@@ -547,3 +577,9 @@ class AsyncYoutubeAPI:
         return await self._call_api("captions", "videoId", video_id,
                                     ["snippet", "id"], VideoCaption,
                                     VideoNotFound, None, None, True)
+
+    async def resolve_handle(self, username: str) -> str:
+        return (await self._call_api(
+            "channels", "forHandle", username, ["snippet"], YoutubeChannel, ChannelNotFound,
+            return_args={"partial": True}
+        )).id

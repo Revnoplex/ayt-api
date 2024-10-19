@@ -1372,7 +1372,7 @@ class YoutubeChannel:
         localisations (Optional[list[LocalName]]): Encapsulates translations of the channel's metadata.
         localizations (Optional[list[LocalName]]): Alias for :attr:`localisations`.
     """
-    def __init__(self, metadata: dict, call_url: str, call_data):
+    def __init__(self, metadata: dict, call_url: str, call_data, partial=False):
         """
         Args:
             metadata (dict): The raw API response to construct the class.
@@ -1386,10 +1386,12 @@ class YoutubeChannel:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.id: str = metadata["id"]
+            if partial:
+                return
             self.branding_settings: dict = metadata["brandingSettings"]
             self.content_details: dict = metadata["contentDetails"]
             self.content_owner_details: dict = metadata["contentOwnerDetails"]
-            self.id: str = metadata["id"]
             self.url = CHANNEL_URL.format(self.id)
             self.raw_localisations: Optional[dict] = metadata.get("localizations")
             self.snippet: dict = metadata["snippet"]
