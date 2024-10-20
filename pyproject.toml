@@ -9,7 +9,7 @@ authors = [
 ]
 description = "A basic, asynchronous, object-oriented YouTube API wrapper written in Python."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {file = "LICENSE.md"}
 keywords = [
     "api", "youtube", "async", "asyncio", "aiohttp", "object-oriented",
@@ -19,7 +19,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",

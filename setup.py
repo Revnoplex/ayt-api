@@ -26,6 +26,7 @@ def get_version(rel_path):
     else:
         raise RuntimeError("Unable to find version string.")
 
+
 if __name__ == "__main__":
     setup(
         name="ayt-api",
@@ -42,5 +43,5 @@ if __name__ == "__main__":
         setup_requires=["wheel"],
         tests_require=['pytest>=7.1.2'],
         test_suite='tests',
-        python_requires=">=3.8.0",
+        python_requires=">=3.9.0",
     )
