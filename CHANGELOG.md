@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+**BREAKING CHANGES.** See *Removed* for details.
+
+**This Version Drops Python 3.8 Support**
+
 ### Added
 
 - **Documentation**: New homepage added to pypi links. 
@@ -22,9 +26,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API util `resolve_handle` that gets a channel id from a channel's handle.
 ([40470a9#diff-cbbc953-R581](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R581))
 
+### Removed
+
+- **Breaking**: Python 3.8 support
+([53c66cd](https://github.com/Revnoplex/ayt-api/commit/53c66cd0edcc0cc812f854d2209fa6a8bb7752bc))
+
 ## [0.3.0] - 2024-10-12
 
 **BREAKING CHANGES.** See *Changed* and *Removed* for details.
+
 **This Version Drops Python 3.7 Support**
 
 ### Added
