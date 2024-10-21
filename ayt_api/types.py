@@ -1829,3 +1829,99 @@ class VideoCaption:
                 if self.snippet.get("failureReason") else None
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+
+class YoutubeSubscription:
+    """
+    A class representing a user's subscription to a channel on YouTube
+
+    Attributes:
+
+    """
+
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+            Args:
+                metadata (dict): The raw API response to construct the class.
+                call_url (str): The url used to call the API.
+                call_data (AsyncYoutubeAPI): Call data used for fetch functions.
+
+            Raises:
+                MissingDataFromMetaData: There is malformed data in the metadata provided.
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.subscription_id: str = self.metadata["id"]
+            self.id = self.subscription_id
+            self.snippet: dict = self.metadata["snippet"]
+            self.content_details: dict = self.metadata["contentDetails"]
+            self.subscriber_snippet: dict = self.metadata["subscriberSnippet"]
+            self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
+            self.subscribed_at = self.published_at
+            self.title: str = self.snippet["title"]
+            self.description: str = self.snippet["description"]
+            self.resource_id: dict = self.snippet["resourceId"]
+            self.channel_id: str = self.resource_id["channelId"]
+            self.channel_url = CHANNEL_URL.format(self.channel_id)
+            self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
+            self.icon = self.thumbnails
+            self.pfp = self.thumbnails
+            self.avatar = self.thumbnails
+            self.total_item_count: str = self.content_details["totalItemCount"]
+            self.new_item_count: str = self.content_details["newItemCount"]
+            self.activity_type = SubscriptionActivityType(self.content_details["activityType"])
+            self.subscriber_title: str = self.subscriber_snippet["title"]
+            self.subscriber_description: str = self.subscriber_snippet["description"]
+            self.subscriber_id: str = self.subscriber_snippet["channelId"]
+            self.subscriber_url = CHANNEL_URL.format(self.subscriber_id)
+            self.subscriber_thumbnails = YoutubeThumbnailMetadata(
+                self.subscriber_snippet["thumbnails"], self._call_data
+            )
+            self.subscriber_icon = self.subscriber_thumbnails
+            self.subscriber_pfp = self.subscriber_thumbnails
+            self.subscriber_avatar = self.subscriber_thumbnails
+
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+    async def fetch_channel(self) -> YoutubeChannel:
+        """Fetches the channel associated with the subscription.
+
+        This ia an api call which then returns a
+        :class:`YoutubeChannel` object.
+
+        Returns:
+            YoutubeChannel: The channel object containing data of the channel.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_channel(self.channel_id)
+
+    async def fetch_subscriber(self) -> YoutubeChannel:
+        """Fetches the channel associated with the subscriber.
+
+        This ia an api call which then returns a
+        :class:`YoutubeChannel` object.
+
+        Returns:
+            YoutubeChannel: The channel object containing data of the channel.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_channel(self.subscriber_id)

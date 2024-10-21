@@ -10,7 +10,8 @@ from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
     CommentNotFound, ResourceNotFound, NoAuth
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, DummyObject, \
+    YoutubeSubscription
 from .filters import SearchFilter
 from .utils import censor_token, snake_to_camel
 
@@ -603,3 +604,9 @@ class AsyncYoutubeAPI:
             "channels", "forHandle", username, ["snippet"], YoutubeChannel, ChannelNotFound,
             return_args={"partial": True}
         )).id
+
+    async def fetch_subscriptions(self, channel_id, max_items: int = 50) -> list[YoutubeSubscription]:
+        return await self._call_api(
+            "subscriptions", "channelId", channel_id, ["contentDetails", "snippet", "subscriberSnippet"],
+            YoutubeSubscription, ChannelNotFound, max_items if max_items < 50 else 50, max_items, True
+        )

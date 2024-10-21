@@ -174,3 +174,13 @@ class CaptionTrackKind(Enum):
 
     def __str__(self):
         return self.value
+
+
+class SubscriptionActivityType(Enum):
+    """The type of activity this subscription is for (only uploads, everything)."""
+
+    all = "all"
+    uploads = "uploads"
+
+    def __str__(self):
+        return self.value
