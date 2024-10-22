@@ -14,13 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Documentation**: New homepage added to pypi links. 
+- *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
-- **Documentation**: Changelog added to pypi links.
+- *Documentation*: Changelog added to pypi links.
 ([2f9663c](https://github.com/Revnoplex/ayt-api/commit/2f9663cdcc61d4c6a642eb7bebaec1b24a264065))
-- **Documentation**: New logo added to [README.md](README.md).
+- *Documentation*: New logo added to [README.md](README.md).
 ([ab5bda2](https://github.com/Revnoplex/ayt-api/commit/ab5bda215d8850bbacbdac358341c5d34e49b3bd))
-- **Documentation**: Added readthedocs documentation. (too many commits to list)
+- *Documentation*: Added readthedocs documentation. (too many commits to list)
 - API call `fetch_channel_from_handle` that fetches channel information using a channel handle instead of a channel id. 
 ([40470a9#diff-cbbc953-R394](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R394))
 - API util `resolve_handle` that gets a channel id from a channel's handle.
@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([53c66cd](https://github.com/Revnoplex/ayt-api/commit/53c66cd0edcc0cc812f854d2209fa6a8bb7752bc))
 
 ### Fixed
-- **Documentation**: Updated old instances of class names still in documentation.
+- *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 
 ## [0.3.0] - 2024-10-12
@@ -56,11 +56,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([31ed8ab](https://github.com/Revnoplex/ayt-api/commit/31ed8abdf3415b8177b66f75c9067be38f93f4a4))
 - Python 3.13 Support.
 ([7b8f9ed#diff-50c86b7-R23](https://github.com/Revnoplex/ayt-api/commit/7b8f9eddc12e05365a73c5638d8efb5a7007d6a2#diff-50c86b7ed8ac2cf95bd48334961bf0530cdc77b5a56f852c5c61b89d735fd711R23))
-- **Documentation**: Add additional badges to [README.md](README.md).
+- *Documentation*: Add additional badges to [README.md](README.md).
 ([fb06062](https://github.com/Revnoplex/ayt-api/commit/fb060623b20d74767059ef3153e18ff72ba74011))
 - Alias of the `highlight_url` attribute for both `YoutubeComment` and `YoutubeComment`: `url`.
 ([c3baa03](https://github.com/Revnoplex/ayt-api/commit/c3baa03abdd4a021a4bb42da4252f92c1438b1df))
-- **Documentation**: Documented the limitations of `YoutubeComment` attributes. 
+- *Documentation*: Documented the limitations of `YoutubeComment` attributes. 
 ([9eb2919](https://github.com/Revnoplex/ayt-api/commit/9eb2919d327090c640d79336864ac9cb2d851005))
 - 3 Aliases of `YoutubeChannel.thumbnails`: `icon`, `pfp` and `avatar`. 
 ([eb331c0](https://github.com/Revnoplex/ayt-api/commit/eb331c060639ea667de7985e410c699a908fa2e6))
@@ -93,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Documentation**: Missing closing square bracket. 
+- *Documentation*: Missing closing square bracket. 
 ([85678be](https://github.com/Revnoplex/ayt-api/commit/85678be945266008b0c7007725b3bb748622f13d))
 
 ### Removed
