@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: Python 3.8 support.
 ([53c66cd](https://github.com/Revnoplex/ayt-api/commit/53c66cd0edcc0cc812f854d2209fa6a8bb7752bc))
 
+### Deprecated
+- `censor_token` in favour of `censor_key`. 
+([a4c0258](https://github.com/Revnoplex/ayt-api/commit/a4c02587779aa64e42399d68c2fa65822b40a87a))
+
 ### Fixed
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
