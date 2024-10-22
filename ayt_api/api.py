@@ -605,7 +605,24 @@ class AsyncYoutubeAPI:
             return_args={"partial": True}
         )).id
 
-    async def fetch_subscriptions(self, channel_id, max_items: int = 50) -> list[YoutubeSubscription]:
+    async def fetch_subscriptions(self, channel_id: str, max_items: int = 50) -> list[YoutubeSubscription]:
+        """
+        Fetch subscriptions a specified channel has
+
+        Args:
+            channel_id (str): The ID of the channel to fetch the subscriptions of.
+            max_items (int): The maximum number of subscriptions to fetch. Defaults to 50. Specify ``None`` to fetch
+                all comments. WARNING! specifying a high number or ``None`` could hammer the api too much causing you
+                to get rate limited so do this with caution.
+        Returns:
+            list[YoutubeSubscription]: A list of the channel's subscriptions as :class:`YoutubeSubscription`
+        Raises:
+            HTTPException: Fetching the subscriptions failed.
+            Channel: The channel to get subscriptions on does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
         return await self._call_api(
             "subscriptions", "channelId", channel_id, ["contentDetails", "snippet", "subscriberSnippet"],
             YoutubeSubscription, ChannelNotFound, max_items if max_items < 50 else 50, max_items, True

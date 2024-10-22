@@ -1836,7 +1836,38 @@ class YoutubeSubscription:
     A class representing a user's subscription to a channel on YouTube
 
     Attributes:
-
+        metadata (dict): The raw API response used to construct this class.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        subscription_id (str): The ID that YouTube uses to uniquely identify the subscription.
+        id (str): Alias of :attr:`subscription_id`.
+        snippet (dict): The raw snippet data used to construct part this class.
+        content_details (dict): The raw content details data used to construct part of this class.
+        subscriber_snippet (dict): The raw subscriber snippet data used to construct part this class.
+        published_at (datetime.datetime): The date and time the subscriber subscribed to the channel this subscription
+            points to.
+        subscribed_at (datetime.datetime): Alias of :attr:`published_at`.
+        title (str): The title of the channel the subscription points to.
+        description (str): The description of the channel the subscription points to.
+        resource_id (dict): The raw resource id information used to construct part this class.
+        channel_id (str): The ID of the channel the subscription points to.
+        channel_url (str): The URL of the channel the subscription points to.
+        thumbnails (YoutubeThumbnailMetadata): The thumbnail images associated with the channel the subscription points
+            to.
+        icon (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
+        pfp (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
+        avatar (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
+        total_item_count (str): The approximate number of items that the subscription points to.
+        new_item_count (str): The number of new items in the subscription since its content was last read.
+        activity_type (SubscriptionActivityType): The type of activity this subscription is for.
+        subscriber_title (str): The title of the channel associated with the subscriber.
+        subscriber_description (str): The description of the channel associated with the subscriber.
+        subscriber_id (str): The ID of the channel associated with the subscriber.
+        subscriber_url (str): The URL of the channel associated with the subscriber.
+        subscriber_thumbnails (YoutubeThumbnailMetadata): The thumbnail images associated with the channel associated
+            with the subscriber.
+        subscriber_icon (YoutubeThumbnailMetadata): Alias of :attr:`subscriber_thumbnails`.
+        subscriber_pfp (YoutubeThumbnailMetadata): Alias of :attr:`subscriber_thumbnails`.
+        subscriber_avatar (YoutubeThumbnailMetadata): Alias of :attr:`subscriber_thumbnails`.
     """
 
     def __init__(self, metadata: dict, call_url: str, call_data):
@@ -1887,7 +1918,7 @@ class YoutubeSubscription:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
     async def fetch_channel(self) -> YoutubeChannel:
-        """Fetches the channel associated with the subscription.
+        """Fetches the channel the subscription points to.
 
         This ia an api call which then returns a
         :class:`YoutubeChannel` object.
