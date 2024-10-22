@@ -1,3 +1,4 @@
+from __future__ import annotations
 import datetime
 import os
 import re
@@ -8,6 +9,7 @@ import isodate
 from .exceptions import MissingDataFromMetadata
 from .utils import camel_to_snake
 from .enums import *
+
 
 VIDEO_URL = "https://www.youtube.com/watch?v={}"
 PLAYLIST_URL = "https://www.youtube.com/playlist?list={}"
@@ -39,10 +41,12 @@ class YoutubeThumbnail:
     def __str__(self):
         return self.url
 
-    async def download(self):
+    async def download(self) -> bytes:
         """Downloads the thumbnail and stores it as a :class:`bytes` object
+
         Returns:
             bytes: The image as a :class:`bytes` object
+
         Raises:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
@@ -54,6 +58,18 @@ class YoutubeThumbnail:
         return await self._call_data.download_thumbnail(self.url)
 
     async def save(self, fp: str | os.PathLike | None = None):
+        """Downloads the thumbnail and saves it to a specified location
+
+        Args:
+            fp (os.PathLike | str): The path and/or filename to save the file to.
+                Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            RuntimeError: The contents was not a jpeg image
+            asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+        """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         await self._call_data.save_thumbnail(self.url, fp)
@@ -72,24 +88,38 @@ class YoutubeBanner:
     def __str__(self):
         return self.url
 
-    async def download(self):
+    async def download(self) -> tuple[bytes, str]:
         # noinspection SpellCheckingInspection
         """Downloads the banner and stores it as a :class:`bytes` object
-                Returns:
-                    tuple[bytes, str]: A list containing the image as a :class:`bytes` object and the file extension of
-                        the image
-                Raises:
-                    HTTPException: Fetching the request failed.
-                    aiohttp.ClientError: There was a problem sending the request to the api.
-                    RuntimeError: The contents was not a jpeg image
-                    asyncio.TimeoutError: The yt3.googleusercontent.com server did not respond within the timeout
-                        period set.
-                """
+
+        Returns:
+            tuple[bytes, str]: A list containing the image as a :class:`bytes` object and the file extension of
+                the image
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            RuntimeError: The contents was not a jpeg image
+            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout
+                period set.
+        """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.download_banner(self.url)
 
     async def save(self, fp: str | os.PathLike | None = None):
+        """Downloads the banner specified and saves it to a specified location
+
+        Args:
+            fp (os.PathLike | str): The path and/or filename to save the file to.
+                Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            RuntimeError: The contents was not a jpeg image
+            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout period set.
+        """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         await self._call_data.save_banner(self.url, fp)
@@ -749,7 +779,7 @@ class YoutubeVideo(BaseVideo):
                           f"{str(missing_snippet_data).split('.')[0]}"
             raise MissingDataFromMetadata(missing_str, metadata, missing_snippet_data)
 
-    async def fetch_channel(self):
+    async def fetch_channel(self) -> Optional[YoutubeChannel]:
         """Fetches the channel associated with the video.
 
         This ia an api call which then returns a
@@ -770,7 +800,7 @@ class YoutubeVideo(BaseVideo):
             self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_channel(self.channel_id)
 
-    async def fetch_comments(self, max_comments: Optional[int] = 50):
+    async def fetch_comments(self, max_comments: Optional[int] = 50) -> list[YoutubeCommentThread]:
         """Fetches a list of comments on the video.
 
         This ia an api call which then returns a
@@ -790,14 +820,14 @@ class YoutubeVideo(BaseVideo):
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
-    async def fetch_captions(self):
+    async def fetch_captions(self) -> list[VideoCaption]:
         """Fetches a list of captions on the video.
 
         This ia an api call which then returns a
-        :class:`list[VideoCaptions]` object.
+        :class:`list[VideoCaption]` object.
 
         Returns:
-            list[VideoCaptions]: A list of captions on the video.
+            list[VideoCaption]: A list of captions on the video.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -942,7 +972,7 @@ class PlaylistItem(BaseVideo):
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video(self.id)
 
-    async def fetch_playlist(self):
+    async def fetch_playlist(self) -> YoutubePlaylist:
         """Fetches the playlist associated with the video.
 
         This ia an api call which then returns a
@@ -962,7 +992,7 @@ class PlaylistItem(BaseVideo):
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist(self.playlist_id)
 
-    async def fetch_channel(self):
+    async def fetch_channel(self) -> Optional[YoutubeChannel]:
         """Fetches the channel associated with the video.
 
         This ia an api call which then returns a
@@ -983,7 +1013,7 @@ class PlaylistItem(BaseVideo):
             self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_channel(self.channel_id)
 
-    async def fetch_comments(self, max_comments: Optional[int] = 50):
+    async def fetch_comments(self, max_comments: Optional[int] = 50) -> list[YoutubeCommentThread]:
         """Fetches a list of comments on the video.
 
         This ia an api call which then returns a
@@ -1003,14 +1033,14 @@ class PlaylistItem(BaseVideo):
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_comments(self.id, max_comments)
 
-    async def fetch_captions(self):
+    async def fetch_captions(self) -> list[VideoCaption]:
         """Fetches a list of comments on the video.
 
         This ia an api call which then returns a
-        :class:`list[VideoCaptions]` object.
+        :class:`list[VideoCaption]` object.
 
         Returns:
-            list[VideoCaptions]: A list of comments on the video.
+            list[VideoCaption]: A list of comments on the video.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1152,7 +1182,7 @@ class YoutubePlaylist:
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist_videos(self.id, exclude)
 
-    async def fetch_channel(self):
+    async def fetch_channel(self) -> Optional[YoutubeChannel]:
         """Fetches the channel associated with the playlist.
 
         This ia an api call which then returns a
@@ -1531,7 +1561,7 @@ class YoutubeChannel:
             self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_video(self.unsubscribed_trailer_id)
 
-    async def fetch_comments(self, max_comments: Optional[int] = 50):
+    async def fetch_comments(self, max_comments: Optional[int] = 50) -> list[YoutubeCommentThread]:
         """Fetches a list of related to the channel.
 
         This ia an api call which then returns a
@@ -1633,7 +1663,7 @@ class YoutubeComment:
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
-    async def fetch_replies(self, max_comments: Optional[int] = 50):
+    async def fetch_replies(self, max_comments: Optional[int] = 50) -> list[YoutubeComment]:
         """Fetches a list of replies on the comment.
 
         This ia an api call which then returns a

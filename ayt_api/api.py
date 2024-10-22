@@ -62,6 +62,7 @@ class AsyncYoutubeAPI:
             other_queries: str = None, return_args: dict = None
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
+
         Args:
             call_type (str): The type of request to make to the YouTube api.
             query (str): The variable name for the :param:`ids` (identifier keywords).
@@ -180,8 +181,10 @@ class AsyncYoutubeAPI:
 
         Args:
             thumbnail_url (str): The i.ytimg.com asset url of the thumbnail
+
         Returns:
             bytes: The image as a :class:`bytes` object
+
         Raises:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
@@ -201,15 +204,16 @@ class AsyncYoutubeAPI:
     async def save_thumbnail(self, thumbnail_url: str, fp: os.PathLike | str | None = None):
         """Downloads the thumbnail specified and saves it to a specified location
 
-            Args:
-                thumbnail_url (str): The i.ytimg.com asset url of the thumbnail
-                fp (os.PathLike | str): The path and/or filename to save the file to.
-                    Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
-            Raises:
-                HTTPException: Fetching the request failed.
-                aiohttp.ClientError: There was a problem sending the request to the api.
-                RuntimeError: The contents was not a jpeg image
-                asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+        Args:
+            thumbnail_url (str): The i.ytimg.com asset url of the thumbnail
+            fp (os.PathLike | str): The path and/or filename to save the file to.
+                Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            RuntimeError: The contents was not a jpeg image
+            asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
         """
         thumbnail = await self.download_thumbnail(thumbnail_url)
         parsed_url = parse.urlparse(thumbnail_url)
@@ -226,17 +230,18 @@ class AsyncYoutubeAPI:
         # noinspection SpellCheckingInspection
         """Downloads the banner specified and stores it as a :class:`bytes` object
 
-                Args:
-                    banner_url (str): The yt3.googleusercontent.com asset url of the banner
-                Returns:
-                    tuple[bytes, str]: A list containing the image as a :class:`bytes` object and the file extension of
-                        the image
-                Raises:
-                    HTTPException: Fetching the request failed.
-                    aiohttp.ClientError: There was a problem sending the request to the api.
-                    RuntimeError: The contents was not a jpeg image
-                    asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
-                """
+        Args:
+            banner_url (str): The yt3.googleusercontent.com asset url of the banner
+
+        Returns:
+            tuple[bytes, str]: A list containing the image as a :class:`bytes` object and the file extension of
+                the image
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout period set.
+        """
         async with (aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout)
                     as thumbnail_session):
             async with thumbnail_session.get(banner_url) as thumbnail_response:
@@ -248,15 +253,15 @@ class AsyncYoutubeAPI:
     async def save_banner(self, banner_url: str, fp: os.PathLike | str | None = None):
         """Downloads the banner specified and saves it to a specified location
 
-            Args:
-                banner_url (str): The i.ytimg.com asset url of the thumbnail
-                fp (os.PathLike | str): The path and/or filename to save the file to.
-                    Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
-            Raises:
-                HTTPException: Fetching the request failed.
-                aiohttp.ClientError: There was a problem sending the request to the api.
-                RuntimeError: The contents was not a jpeg image
-                asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+        Args:
+            banner_url (str): The i.ytimg.com asset url of the thumbnail
+            fp (os.PathLike | str): The path and/or filename to save the file to.
+                Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout period set.
         """
         banner, extension = await self.download_banner(banner_url)
         parsed_url = parse.urlparse(banner_url)
@@ -632,6 +637,7 @@ class AsyncYoutubeAPI:
                 to get rate limited so do this with caution.
         Returns:
             list[YoutubeSubscription]: A list of the channel's subscriptions as :class:`YoutubeSubscription`
+
         Raises:
             HTTPException: Fetching the subscriptions failed.
             ChannelNotFound: The channel to get subscriptions on does not exist.
