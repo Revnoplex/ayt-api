@@ -1,4 +1,5 @@
 import pathlib
+import warnings
 from typing import Optional
 from urllib import parse
 
@@ -197,10 +198,18 @@ def censor_key(call_url: str) -> str:
 def censor_token(call_url: str) -> str:
     """Alias of censor_key
 
+    .. deprecated:: 0.4.0
+        Use :func:`censor_key` instead
+
     Args:
         call_url (str): The api call url containing the uncensored api key.
 
     Returns:
         str: The url with the api key censored.
     """
+    warnings.warn(
+        "censor_token is deprecated since 0.4.0 and is scheduled "
+        "for removal in a later release. Use censor_key instead.",
+        DeprecationWarning
+    )
     return censor_key(call_url)

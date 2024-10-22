@@ -13,7 +13,7 @@ from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, 
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, DummyObject, \
     YoutubeSubscription
 from .filters import SearchFilter
-from .utils import censor_token, snake_to_camel
+from .utils import censor_key, snake_to_camel
 
 
 class AsyncYoutubeAPI:
@@ -158,7 +158,7 @@ class AsyncYoutubeAPI:
                                 return (items + items_next_page + items_next_list)[:max_items]
                             else:
                                 res_json = res_data.get("items")[0]
-                                return return_type(res_json, censor_token(call_url), self, **return_args)
+                                return return_type(res_json, censor_key(call_url), self, **return_args)
                     else:
                         message = f'The youtube API returned the following error code: ' \
                                   f'{yt_api_response.status}'
