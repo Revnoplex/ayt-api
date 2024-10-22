@@ -753,10 +753,10 @@ class YoutubeVideo(BaseVideo):
         """Fetches the channel associated with the video.
 
         This ia an api call which then returns a
-        :class:`YoutubeChannelMetadata` object.
+        :class:`YoutubeChannel` object.
 
         Returns:
-            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel.
+            Optional[YoutubeChannel]: The channel object containing data of the channel.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -966,10 +966,10 @@ class PlaylistItem(BaseVideo):
         """Fetches the channel associated with the video.
 
         This ia an api call which then returns a
-        :class:`YoutubeChannelMetadata` object.
+        :class:`YoutubeChannel` object.
 
         Returns:
-            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel.
+            Optional[YoutubeChannel]: The channel object containing data of the channel.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1156,10 +1156,10 @@ class YoutubePlaylist:
         """Fetches the channel associated with the playlist.
 
         This ia an api call which then returns a
-        :class:`YoutubeChannelMetadata` object.
+        :class:`YoutubeChannel` object.
 
         Returns:
-            Optional[YoutubeChannelMetadata]: The channel object containing data of the channel.
+            Optional[YoutubeChannel]: The channel object containing data of the channel.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1180,7 +1180,7 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
 
         This class is used if authorisation is provided that you are the owner of the video. It contains
         attributes only accessible by the video owner as well as attributes inherited
-        from :class:`YoutubeVideoMetadata`. The ayt-api library currently doesn't support authorisation for this
+        from :class:`YoutubeVideo`. The ayt-api library currently doesn't support authorisation for this
         so this class is not used but is here for future implementation.
 
     Attributes:
@@ -1327,7 +1327,7 @@ class YoutubeChannel:
         icon (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
         pfp (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
         avatar (YoutubeThumbnailMetadata): Alias of :attr:`thumbnails`.
-        default_language (Optional[str]): The language of the text in the :class:`YoutubeChannelMetadata` class's
+        default_language (Optional[str]): The language of the text in the :class:`YoutubeChannel` class's
             :attr:`title` and :attr:`description` properties.
         localised (Optional[LocalName]): The localized title and description for the channel or title and description
             in the :attr:`default_language`.
