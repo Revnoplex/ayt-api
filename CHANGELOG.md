@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([40470a9#diff-cbbc953-R394](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R394))
 - API util `resolve_handle` that gets a channel id from a channel's handle.
 ([40470a9#diff-cbbc953-R581](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R581))
+- API call `fetch_subscriptions` and associated types that fetches the subscriptions a channel has.
+([53674e6](https://github.com/Revnoplex/ayt-api/commit/53674e6f02e4d007e05ed34ef2d00017ca0ff3fe),
+[48b0dd3](https://github.com/Revnoplex/ayt-api/commit/48b0dd31c5702105bb03c25c854c2e5b3ed0d280))
 
 ### Removed
 
