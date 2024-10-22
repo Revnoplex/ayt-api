@@ -600,6 +600,22 @@ class AsyncYoutubeAPI:
                                     VideoNotFound, None, None, True)
 
     async def resolve_handle(self, username: str) -> str:
+        """
+        Resolve a channel's handle name into a channel id.
+
+        Args:
+            username (str): The handle name of the channel to resolve.
+
+        Returns:
+            str: The ID of the channel.
+
+        Raises:
+            HTTPException: Resolving the channel handle failed.
+            ChannelNotFound: The given handle didn't match any channels.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a handle.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
         return (await self._call_api(
             "channels", "forHandle", username, ["snippet"], YoutubeChannel, ChannelNotFound,
             return_args={"partial": True}
@@ -618,7 +634,7 @@ class AsyncYoutubeAPI:
             list[YoutubeSubscription]: A list of the channel's subscriptions as :class:`YoutubeSubscription`
         Raises:
             HTTPException: Fetching the subscriptions failed.
-            Channel: The channel to get subscriptions on does not exist.
+            ChannelNotFound: The channel to get subscriptions on does not exist.
             aiohttp.ClientError: There was a problem sending the request to the api.
             InvalidInput: The input is not a channel id.
             APITimeout: The YouTube api did not respond within the timeout period set.
