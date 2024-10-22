@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: Python 3.8 support
 ([53c66cd](https://github.com/Revnoplex/ayt-api/commit/53c66cd0edcc0cc812f854d2209fa6a8bb7752bc))
 
+### Fixed
+- **Documentation**: Updated old instances of class names still in documentation.
+([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
+
 ## [0.3.0] - 2024-10-12
 
 **BREAKING CHANGES.** See *Changed* and *Removed* for details.
