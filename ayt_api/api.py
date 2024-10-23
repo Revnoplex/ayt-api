@@ -286,7 +286,7 @@ class AsyncYoutubeAPI:
         :class:`YoutubePlaylist` object.
 
         Args:
-            playlist_id (str): The id of the playlist to use.
+            playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
 
         Returns:
             Union[YoutubePlaylist, list[YoutubePlaylist]]: The playlist object containing data of the playlist.
@@ -310,7 +310,7 @@ class AsyncYoutubeAPI:
         :class:`PlaylistItem` objects.
 
         Args:
-            playlist_id (str): The id of the playlist to use.
+            playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
             max_items (int | None): The maximum number of playlist items to fetch. Defaults to ``None`` which
                 fetches every item in a playlist. WARNING! If a specified playlist has a lot of videos, not specifying
                 a value to :param:`max_items` could hammer the api too much causing you to get rate limited so do this
@@ -338,7 +338,7 @@ class AsyncYoutubeAPI:
         :class:`YoutubeVideo` objects.
 
         Args:
-            playlist_id (str): The id of the playlist to use.
+            playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
             exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
 
         Returns:
@@ -365,7 +365,7 @@ class AsyncYoutubeAPI:
         :class:`YoutubeVideo` object if one ID was specified if more, it returns a list of them.
 
         Args:
-            video_id (str): The id of the video to use.
+            video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
             authorised (bool): Whether to fetch additional uploader side information about a video
                 (Needs OAuth token).
 
@@ -389,13 +389,13 @@ class AsyncYoutubeAPI:
         )
 
     async def fetch_channel(self, channel_id: Union[str, list[str]]) -> Union[YoutubeChannel, list[YoutubeChannel]]:
-        """Fetches information on a channel using a channel id. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``
+        """Fetches information on a channel using a channel id.
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
 
         Args:
-            channel_id (str): The id of the channel to use.
+            channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -419,13 +419,13 @@ class AsyncYoutubeAPI:
     async def fetch_channel_from_handle(
             self, handle: Union[str, list[str]]
     ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
-        """Fetches information on a channel using a channel's handle. e.g. **@Revnoplex.**
+        """Fetches information on a channel using a channel's handle.
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
 
         Args:
-            handle (str): The handle of the channel to use.
+            handle (str): The handle of the channel to use. e.g. **@Revnoplex**.
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -453,7 +453,7 @@ class AsyncYoutubeAPI:
         :class:`YoutubeCommentThread` object.
 
         Args:
-            video_id (str): The id of the video to use.
+            video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
                 WARNING! specifying a high number or ``None`` could hammer the api too much causing you
                 to get rate limited so do this with caution.
@@ -481,7 +481,7 @@ class AsyncYoutubeAPI:
         :class:`YoutubeCommentThread` object.
 
         Args:
-            channel_id (str): The id of the channel to use.
+            channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
                 WARNING! specifying a high number or ``None`` could hammer the api too much causing you
                 to get rate limited so do this with caution.
@@ -508,7 +508,7 @@ class AsyncYoutubeAPI:
         :class:`YoutubeComment` object or a list if a list of ids were specified.
 
         Args:
-            comment_id (str): The id of the comment to use.
+            comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
 
         Returns:
             Union[YoutubeComment, list[YoutubeComment]]: The YouTube comment object.
@@ -529,7 +529,7 @@ class AsyncYoutubeAPI:
         :class:`list[YoutubeComment]` object.
 
         Args:
-            comment_id (str): The id of the comment to use.
+            comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
                 WARNING! specifying a high number or ``None`` could hammer the api too much causing you
                 to get rate limited so do this with caution.
@@ -593,7 +593,7 @@ class AsyncYoutubeAPI:
         :class:`list[VideoCaptions]` object.
 
         Args:
-            video_id (str): The id of the video to use.
+            video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
 
         Returns:
             list[VideoCaption]: A list of captions as :class:`VideoCaption`.
@@ -614,10 +614,10 @@ class AsyncYoutubeAPI:
         Resolve a channel's handle name into a channel id.
 
         Args:
-            username (str): The handle name of the channel to resolve.
+            username (str): The handle name of the channel to resolve. e.g. **@Revnoplex**.
 
         Returns:
-            str: The ID of the channel.
+            str: The ID of the channel. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
 
         Raises:
             HTTPException: Resolving the channel handle failed.
@@ -636,7 +636,7 @@ class AsyncYoutubeAPI:
         Fetch subscriptions a specified channel has
 
         Args:
-            channel_id (str): The ID of the channel to fetch the subscriptions of.
+            channel_id (str): The ID of the channel to fetch the subscriptions of. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
             max_items (int): The maximum number of subscriptions to fetch. Defaults to 50. Specify ``None`` to fetch
                 all comments. WARNING! specifying a high number or ``None`` could hammer the api too much causing you
                 to get rate limited so do this with caution.
