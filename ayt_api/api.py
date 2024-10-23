@@ -10,8 +10,7 @@ from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
     CommentNotFound, ResourceNotFound, NoAuth
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, DummyObject, \
-    YoutubeSubscription
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel
 
@@ -68,7 +67,7 @@ class AsyncYoutubeAPI:
 
         Args:
             call_type (str): The type of request to make to the YouTube api.
-            query (str): The variable name for the :param:`ids` (identifier keywords).
+            query (str): The variable name for the ``ids`` (identifier keywords).
             ids (Union[str, list[str]]): The identifier keywords (usually IDs to look for).
             parts (list[str]): A list of parts to request of the main request.
             return_type (type): The object to return the results in.
@@ -82,10 +81,10 @@ class AsyncYoutubeAPI:
             current_count (int): The sum of items returned each api request.
             expected_count (int): The number of items expected to be returned by the api that were requested.
             other_queries (Optional[str]): Additional query strings to use in the call url.
-            return_args (dict): Extra arguments that are passed to the object passed to :param:`return_type`
+            return_args (dict): Extra arguments that are passed to the object passed to ``return_type``
 
         Returns:
-            Union[Any, list]: The object specified in :param:`return_type`.
+            Union[Any, list]: The object specified in ``return_type``.
 
         Raises:
             HTTPException: Fetching the request failed.
@@ -204,12 +203,12 @@ class AsyncYoutubeAPI:
                 else:
                     return await thumbnail_response.read()
 
-    async def save_thumbnail(self, thumbnail_url: str, fp: os.PathLike | str | None = None):
+    async def save_thumbnail(self, thumbnail_url: str, fp: Union[os.PathLike, str, None] = None):
         """Downloads the thumbnail specified and saves it to a specified location
 
         Args:
             thumbnail_url (str): The i.ytimg.com asset url of the thumbnail
-            fp (os.PathLike | str): The path and/or filename to save the file to.
+            fp (Union[os.PathLike, str, None]): The path and/or filename to save the file to.
                 Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
 
         Raises:
@@ -254,12 +253,12 @@ class AsyncYoutubeAPI:
                 else:
                     return await thumbnail_response.read(), thumbnail_response.content_type.split("/")[-1]
 
-    async def save_banner(self, banner_url: str, fp: os.PathLike | str | None = None):
+    async def save_banner(self, banner_url: str, fp: Union[os.PathLike, str, None] = None):
         """Downloads the banner specified and saves it to a specified location
 
         Args:
             banner_url (str): The yt3.ggpht.com or yt3.googleusercontent.com asset url of the thumbnail
-            fp (os.PathLike | str): The path and/or filename to save the file to.
+            fp (Union[os.PathLike, str, None]): The path and/or filename to save the file to.
                 Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
 
         Raises:
@@ -315,7 +314,7 @@ class AsyncYoutubeAPI:
                 fetches every item in a playlist.
 
                 .. warning::
-                    If a specified playlist has a lot of videos, not specifying a value to :param:`max_items` could
+                    If a specified playlist has a lot of videos, not specifying a value to ``max_items`` could
                     hammer the api too much causing you to get rate limited so do this with caution.
 
         Returns:

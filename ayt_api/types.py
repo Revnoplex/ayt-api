@@ -100,8 +100,8 @@ class YoutubeBanner:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
             RuntimeError: The contents was not a jpeg image
-            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the timeout
-                period set.
+            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
+            timeout period set.
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
@@ -118,7 +118,8 @@ class YoutubeBanner:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
             RuntimeError: The contents was not a jpeg image
-            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the timeout period set.
+            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
+                timeout period set.
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
@@ -1524,7 +1525,7 @@ class YoutubeChannel:
                 fetches every item in a playlist.
 
                 .. warning::
-                    If a specified playlist has a lot of videos, not specifying a value to :param:`max_items` could
+                    If a specified playlist has a lot of videos, not specifying a value to ``max_items`` could
                     hammer the api too much causing you to get rate limited so do this with caution.
 
         Returns:

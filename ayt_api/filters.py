@@ -152,7 +152,7 @@ class VideoDefinitionFilter(Enum):
 class SearchFilter:
     """Filters a search result.
 
-    All filter names that start with "video" as well as :param:`event_type` must also have :param:`_type` set to
+    All filter names that start with "video" as well as ``event_type`` must also have ``_type`` set to
     :class:`YoutubeVideo` for the request to be valid or a :class:`HTTPException`
     will be raised due the API returning a 400 status code error.
 
@@ -164,11 +164,11 @@ class SearchFilter:
             ISO 3166-1 alpha-2 code.
         relevance_language (Optional[str]): Show results most relevant to the specified language as a ISO639-1 code.
         topic_id (Optional[str]): Show results associated with the specified topic.
-        video_category_id (Optional[str]): Filters video search results based on their category. The :param:`_type`
+        video_category_id (Optional[str]): Filters video search results based on their category. The ``_type``
             filter must be also be set to :class:`YoutubeVideo`.
         channel_type (Union[ChannelTypeFilter, str, None]): Restrict a search to a particular type of channel
             (e.g. show).
-        event_type (Union[str, EventTypeFilter, None]): Restricts a search to broadcast events. The :param:`_type`
+        event_type (Union[str, EventTypeFilter, None]): Restricts a search to broadcast events. The ``_type``
             filter must be also be set to :class:`YoutubeVideo`.
         order (Union[str, OrderFilter, None]): Specifies the method that will be used to order resources in the search.
             The method is relevance.
@@ -177,24 +177,24 @@ class SearchFilter:
         _type (Union[str, type[Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]], None]): Restricts a search
             to only a particular type of resource. Defaults to all (no restrictions).
         video_caption (Union[str, VideoCaptionFilter, None]): Show results based on whether videos have captions.
-            The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
         video_definition (Union[str, VideoDefinitionFilter, None]): Restrict a search to only show videos with the
-            specified definition. The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            specified definition. The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
         video_dimension (Union[str, VideoDimensionFilter, None]): Restrict a search to only retrieve 2D or 3D videos.
-            The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
         video_duration (Union[str, VideoDurationFilter, None]): Show videos based on their duration.
-            The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
         video_embeddable (Union[str, VideoEmbeddableFilter, None]): Restrict a search to only videos that can be
-            embedded into a webpage. The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            embedded into a webpage. The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
         video_license (Union[str, VideoLicenseFilter, None]): Restrict a search to only show videos that use the
-            particular license specified. The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            particular license specified. The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
         video_paid_product_placement (Union[str, VideoPaidProductPlacementFilter, None]): Restrict a search to only
-            show videos that the creator has denoted as having a paid promotion. The :param:`_type` filter must be also
+            show videos that the creator has denoted as having a paid promotion. The ``_type`` filter must be also
             be set to :class:`YoutubeVideo`.
         video_syndicated (Union[str, VideoSyndicatedFilter, None]): Restrict a search to only videos that can be
-            played outside YouTube. The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            played outside YouTube. The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
         video_type (Union[str, VideoTypeFilter, None]): Restrict a search to a particular type of videos.
-            The :param:`_type` filter must be also be set to :class:`YoutubeVideo`.
+            The ``_type`` filter must be also be set to :class:`YoutubeVideo`.
     """
 
     channel_id: str = None
