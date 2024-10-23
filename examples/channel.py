@@ -12,7 +12,7 @@ async def channel_example():
     print(channel.related_playlists)
     print(channel.long_upload_status)
     print(channel.keywords)
-    print(channel.banner_external_url)
+    print(channel.banner_external.url)
     print(channel.url)
 
 loop = asyncio.new_event_loop()
