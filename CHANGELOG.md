@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-**BREAKING CHANGES.** See *Removed* for details.
+**BREAKING CHANGES.** See *Changed* and *Removed* for details.
 
 **This Version Drops Python 3.8 Support**
 
@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([9ac4776](https://github.com/Revnoplex/ayt-api/commit/9ac4776e7b2c9759a26c1d2371f8dc35f15a3674))
 
 ### Changed
+- **Breaking**: Renamed attribute `_type` to `kind` in `filters.SearchFilter`. 
+([7a60e71](https://github.com/Revnoplex/ayt-api/commit/7a60e71289bafe78a9a44516f852d4a1553da009))
 - *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
 ([3af95cd](https://github.com/Revnoplex/ayt-api/commit/3af95cd89ba922de30ef7070f3b9811636851075))
 
