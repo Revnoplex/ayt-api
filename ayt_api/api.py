@@ -22,7 +22,7 @@ class AsyncYoutubeAPI:
     Attributes:
         api_version (str): The API version to use. defaults to 3.
         call_url_prefix (str): The start of the YouTube API call url to use.
-        timeout (ClientTimeout): The timeout if the api does not respond.
+        timeout (aiohttp.ClientTimeout): The timeout if the api does not respond.
         ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
             This is useful for using the api on a restricted network.
     """
