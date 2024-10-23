@@ -5,4 +5,5 @@
     :undoc-members:
     :show-inheritance:
     :class-doc-from: both
+    :member-order: bysource
 ```
