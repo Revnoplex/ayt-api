@@ -41,7 +41,10 @@ class AsyncYoutubeAPI:
             timeout (int): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
-            use_oauth (bool): Whether to use the oauth token over the api key
+            use_oauth (bool): Whether to use the oauth token over the api key.
+
+        Raises:
+            NoAuth: no api key or OAuth2 token was provided.
         """
         self._key = yt_api_key
         self.api_version = api_version
