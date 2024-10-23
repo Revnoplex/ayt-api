@@ -23,7 +23,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'myst_parser',
     'sphinxext.opengraph',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode'
 ]
 
 intersphinx_mapping = {
