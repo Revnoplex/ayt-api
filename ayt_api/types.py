@@ -100,7 +100,7 @@ class YoutubeBanner:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
             RuntimeError: The contents was not a jpeg image
-            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout
+            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the timeout
                 period set.
         """
         from .api import AsyncYoutubeAPI
@@ -118,7 +118,7 @@ class YoutubeBanner:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
             RuntimeError: The contents was not a jpeg image
-            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout period set.
+            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the timeout period set.
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI

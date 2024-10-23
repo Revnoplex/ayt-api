@@ -231,7 +231,7 @@ class AsyncYoutubeAPI:
         """Downloads the banner specified and stores it as a :class:`bytes` object
 
         Args:
-            banner_url (str): The yt3.googleusercontent.com asset url of the banner
+            banner_url (str): The yt3.ggpht.com or yt3.googleusercontent.com asset url of the banner
 
         Returns:
             tuple[bytes, str]: A list containing the image as a :class:`bytes` object and the file extension of
@@ -240,7 +240,8 @@ class AsyncYoutubeAPI:
         Raises:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
-            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout period set.
+            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
+                timeout period set.
         """
         async with (aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout)
                     as thumbnail_session):
@@ -254,14 +255,15 @@ class AsyncYoutubeAPI:
         """Downloads the banner specified and saves it to a specified location
 
         Args:
-            banner_url (str): The i.ytimg.com asset url of the thumbnail
+            banner_url (str): The yt3.ggpht.com or yt3.googleusercontent.com asset url of the thumbnail
             fp (os.PathLike | str): The path and/or filename to save the file to.
                 Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
 
         Raises:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
-            asyncio.TimeoutError: The yt3.ggpht.com server did not respond within the timeout period set.
+            asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
+                timeout period set.
         """
         banner, extension = await self.download_banner(banner_url)
         parsed_url = parse.urlparse(banner_url)
