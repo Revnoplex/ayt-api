@@ -6,7 +6,7 @@ api = ayt_api.AsyncYoutubeAPI("Your API Key")
 
 
 async def search_example():
-    search_result = await api.search("Channel Name", 10, ayt_api.SearchFilter(_type=YoutubeChannel))
+    search_result = await api.search("Channel Name", 10, ayt_api.SearchFilter(kind=YoutubeChannel))
     print(len(search_result))
     for result in search_result:
         print(result.call_url)
