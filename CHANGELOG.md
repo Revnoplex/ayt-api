@@ -41,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
+- *Documentation*: Formatting error in docstring for `exceptions.APITimeout`. 
+([9ac4776](https://github.com/Revnoplex/ayt-api/commit/9ac4776e7b2c9759a26c1d2371f8dc35f15a3674))
 
 ### Changed
 - *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
