@@ -1,7 +1,8 @@
 # API Calls
 ```{eval-rst}
-.. automodule:: ayt_api.api
+.. autoclass:: ayt_api.api.AsyncYoutubeAPI     
     :members:
     :undoc-members:
     :show-inheritance:
+    :class-doc-from: both
 ```
