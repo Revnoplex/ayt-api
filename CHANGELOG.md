@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([a4c0258](https://github.com/Revnoplex/ayt-api/commit/a4c02587779aa64e42399d68c2fa65822b40a87a))
 
 ### Fixed
+- Outdated use of old attribute `banner_external_url` in [channel example](examples/channel.py). 
+([2a0c7bd](https://github.com/Revnoplex/ayt-api/commit/2a0c7bd3d81c94c7650c389839fecf25c7c181f4))
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 - *Documentation*: Formatting error in docstring for `exceptions.APITimeout`. 
