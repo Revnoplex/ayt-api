@@ -158,6 +158,7 @@ class NoAuth(YoutubeExceptions):
 
 class APITimeout(YoutubeExceptions):
     """Exception that's raised when the api does not respond within the timeout set.
+
     Attributes:
         timeout_set (int): The timeout that was set.
     """
