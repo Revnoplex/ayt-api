@@ -1521,9 +1521,11 @@ class YoutubeChannel:
 
         Args:
             max_items (int | None): The maximum number of playlist items to fetch. Defaults to ``None`` which
-                fetches every item in a playlist. WARNING! If a specified playlist has a lot of videos, not specifying
-                a value to :param:`max_items` could hammer the api too much causing you to get rate limited so do this
-                with caution.
+                fetches every item in a playlist.
+
+                .. warning::
+                    If a specified playlist has a lot of videos, not specifying a value to :param:`max_items` could
+                    hammer the api too much causing you to get rate limited so do this with caution.
 
         Returns:
             Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public likes.

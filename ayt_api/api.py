@@ -312,9 +312,11 @@ class AsyncYoutubeAPI:
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
             max_items (int | None): The maximum number of playlist items to fetch. Defaults to ``None`` which
-                fetches every item in a playlist. WARNING! If a specified playlist has a lot of videos, not specifying
-                a value to :param:`max_items` could hammer the api too much causing you to get rate limited so do this
-                with caution.
+                fetches every item in a playlist.
+
+                .. warning::
+                    If a specified playlist has a lot of videos, not specifying a value to :param:`max_items` could
+                    hammer the api too much causing you to get rate limited so do this with caution.
 
         Returns:
             list[PlaylistItem]: A list containing playlist video objects.
@@ -455,8 +457,10 @@ class AsyncYoutubeAPI:
         Args:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
-                WARNING! specifying a high number or ``None`` could hammer the api too much causing you
-                to get rate limited so do this with caution.
+
+                .. warning::
+                    Specifying a high number or ``None`` could hammer the api too much causing you to get rate limited
+                    so do this with caution.
 
         Returns:
             list[YoutubeCommentThread]: A list of comments as :class:`YoutubeCommentThread`.
@@ -483,8 +487,10 @@ class AsyncYoutubeAPI:
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
-                WARNING! specifying a high number or ``None`` could hammer the api too much causing you
-                to get rate limited so do this with caution.
+
+                .. warning::
+                    Specifying a high number or ``None`` could hammer the api too much causing you to get rate limited
+                    so do this with caution.
 
         Returns:
             list[YoutubeCommentThread]: A list of comments as :class:`YoutubeCommentThread`.
@@ -531,8 +537,10 @@ class AsyncYoutubeAPI:
         Args:
             comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
-                WARNING! specifying a high number or ``None`` could hammer the api too much causing you
-                to get rate limited so do this with caution.
+
+                .. warning::
+                    Specifying a high number or ``None`` could hammer the api too much causing you to get rate limited
+                    so do this with caution.
 
         Returns:
             list[YoutubeComment]: The replies on the comment.
