@@ -42,6 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 
+### Changed
+- *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
+([3af95cd](https://github.com/Revnoplex/ayt-api/commit/3af95cd89ba922de30ef7070f3b9811636851075))
+
 ## [0.3.0] - 2024-10-12
 
 **BREAKING CHANGES.** See *Changed* and *Removed* for details.
