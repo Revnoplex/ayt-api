@@ -425,6 +425,8 @@ class AsyncYoutubeAPI:
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
 
+        .. versionadded:: 0.4.0
+
         Args:
             handle (str): The handle of the channel to use. e.g. **@Revnoplex**.
 
@@ -620,6 +622,8 @@ class AsyncYoutubeAPI:
         """
         Resolve a channel's handle name into a channel id.
 
+        .. versionadded:: 0.4.0
+
         Args:
             username (str): The handle name of the channel to resolve. e.g. **@Revnoplex**.
 
@@ -641,6 +645,8 @@ class AsyncYoutubeAPI:
     async def fetch_subscriptions(self, channel_id: str, max_items: int = 50) -> list[YoutubeSubscription]:
         """
         Fetch subscriptions a specified channel has
+
+        .. versionadded:: 0.4.0
 
         Args:
             channel_id (str): The ID of the channel to fetch the subscriptions of. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.

@@ -1868,6 +1868,8 @@ class YoutubeSubscription:
     """
     A class representing a user's subscription to a channel on YouTube
 
+    .. versionadded:: 0.4.0
+
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.

@@ -177,7 +177,11 @@ class CaptionTrackKind(Enum):
 
 
 class SubscriptionActivityType(Enum):
-    """The type of activity this subscription is for."""
+    """
+    The type of activity this subscription is for.
+
+    .. versionadded:: 0.4.0
+    """
 
     all = "all"
     uploads = "uploads"

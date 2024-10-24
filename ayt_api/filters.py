@@ -178,6 +178,9 @@ class SearchFilter:
             as well as standard content.
         kind (Union[str, type[Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]], None]): Restricts a search
             to only a particular kind of resource. Defaults to all (no restrictions).
+
+            .. versionchanged:: 0.4.0
+
         video_caption (Union[str, VideoCaptionFilter, None]): Show results based on whether videos have captions.
             The ``kind`` filter must be also be set to :class:`YoutubeVideo`.
         video_definition (Union[str, VideoDefinitionFilter, None]): Restrict a search to only show videos with the
