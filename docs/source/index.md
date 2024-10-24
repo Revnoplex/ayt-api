@@ -13,7 +13,7 @@ The library is designed towards being used in python based discord bots that use
 
 # API
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 api/index.md
 ```
@@ -25,8 +25,12 @@ api/index.md
 changelog
 ```
 
-# Examples
-Examples of using this library are available [here](https://github.com/Revnoplex/ayt-api/tree/main/examples)
+# Usage
+```{toctree}
+:maxdepth: 1
+
+usage/index.md
+```
 
 # External Links
 
