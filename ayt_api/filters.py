@@ -152,9 +152,11 @@ class VideoDefinitionFilter(Enum):
 class SearchFilter:
     """Filters a search result.
 
-    All filter names that start with "video" as well as ``event_type`` must also have ``kind`` set to
-    :class:`YoutubeVideo` for the request to be valid or a :class:`HTTPException`
-    will be raised due the API returning a 400 status code error.
+    Note:
+        All filter names that start with "video" as well as ``event_type`` must also have ``kind`` set to
+        :class:`YoutubeVideo` for the request to be valid or a :class:`HTTPException`
+        will be raised due the API returning a `400 <https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400>`_
+        status code error.
 
     Attributes:
         channel_id (Optional[str]): Show results related to a certain channel.

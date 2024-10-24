@@ -313,7 +313,7 @@ class AsyncYoutubeAPI:
             max_items (int | None): The maximum number of playlist items to fetch. Defaults to ``None`` which
                 fetches every item in a playlist.
 
-                .. warning::
+                Warning:
                     If a specified playlist has a lot of videos, not specifying a value to ``max_items`` could
                     hammer the api too much causing you to get rate limited so do this with caution.
 
@@ -457,7 +457,7 @@ class AsyncYoutubeAPI:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
 
-                .. warning::
+                Warning:
                     Specifying a high number or ``None`` could hammer the api too much causing you to get rate limited
                     so do this with caution.
 
@@ -487,7 +487,7 @@ class AsyncYoutubeAPI:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
 
-                .. warning::
+                Warning:
                     Specifying a high number or ``None`` could hammer the api too much causing you to get rate limited
                     so do this with caution.
 
@@ -537,7 +537,7 @@ class AsyncYoutubeAPI:
             comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
 
-                .. warning::
+                Warning:
                     Specifying a high number or ``None`` could hammer the api too much causing you to get rate limited
                     so do this with caution.
 
@@ -645,8 +645,12 @@ class AsyncYoutubeAPI:
         Args:
             channel_id (str): The ID of the channel to fetch the subscriptions of. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
             max_items (int): The maximum number of subscriptions to fetch. Defaults to 50. Specify ``None`` to fetch
-                all comments. WARNING! specifying a high number or ``None`` could hammer the api too much causing you
-                to get rate limited so do this with caution.
+                all comments.
+
+                Warning:
+                    Specifying a high number or ``None`` could hammer the api too much causing you
+                    to get rate limited so do this with caution.
+
         Returns:
             list[YoutubeSubscription]: A list of the channel's subscriptions as :class:`YoutubeSubscription`
 
