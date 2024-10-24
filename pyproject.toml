@@ -38,6 +38,7 @@ dynamic = ["version", "dependencies"]
 "Repository" = "https://github.com/Revnoplex/ayt-api"
 "Bug Tracker" = "https://github.com/Revnoplex/ayt-api/issues"
 "Changelog" = "https://github.com/Revnoplex/ayt-api/blob/main/CHANGELOG.md"
+"Documentation" = "https://ayt-api-docs.revnoplex.xyz"
 
 [tool.setuptools]
 packages = ["ayt_api"]
