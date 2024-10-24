@@ -180,6 +180,7 @@ class SearchFilter:
             to only a particular kind of resource. Defaults to all (no restrictions).
 
             .. versionchanged:: 0.4.0
+                Renamed from ``_type``
 
         video_caption (Union[str, VideoCaptionFilter, None]): Show results based on whether videos have captions.
             The ``kind`` filter must be also be set to :class:`YoutubeVideo`.
