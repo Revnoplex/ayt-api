@@ -24,7 +24,8 @@ extensions = [
     'myst_parser',
     'sphinxext.opengraph',
     'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'notfound.extension'
 ]
 
 intersphinx_mapping = {

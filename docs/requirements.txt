@@ -4,3 +4,4 @@ myst_parser>=4.0.0
 sphinxext-opengraph>=0.9.1
 aiohttp>=3.8.1
 isodate>=0.6.1
+sphinx-notfound-page>=1.0.4
