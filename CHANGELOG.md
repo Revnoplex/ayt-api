@@ -91,6 +91,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking**: The equivalent of `YoutubeChannel.banner_external_url` is now `YoutubeChannel.banner_external.url`.
+([6f8ec58#diff-7363042-L1408](https://github.com/Revnoplex/ayt-api/commit/6f8ec58d4e46c45d2256ada7fb141e15870e4347#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L1408))
 - Updated the description of this project.
 ([2d0d274](https://github.com/Revnoplex/ayt-api/commit/2d0d27421f770fb9242f1f03626160d0b4399973), 
 [6d4bac0](https://github.com/Revnoplex/ayt-api/commit/6d4bac01f7c61524615c34d78da820c2e7a2a646), 
@@ -101,8 +103,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([7e10db5#diff-7363042-R56](https://github.com/Revnoplex/ayt-api/commit/7e10db574dab18f977aa41ba80c9a4080c67e1ea#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R56))
 - Permit any http code returned from the API under 400. 
 ([5bb8a23](https://github.com/Revnoplex/ayt-api/commit/5bb8a23f8e09268828a8fd20e46fe57d3285861e))
-- **Breaking**: The equivalent of `YoutubeChannel.banner_external_url` is now `YoutubeChannel.banner_external.url`.
-([6f8ec58#diff-7363042-L1408](https://github.com/Revnoplex/ayt-api/commit/6f8ec58d4e46c45d2256ada7fb141e15870e4347#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L1408))
 - Renamed `utils.censor_token` to `censor_key`
 ([1874580#diff-920c31e-L180](https://github.com/Revnoplex/ayt-api/commit/1874580a085429f8533742acefd1b4ca4aac20bb#diff-920c31e8df6efd41a120b70811f3494522b1587fe3bd4cc389823cb5b004e407L180))
 
