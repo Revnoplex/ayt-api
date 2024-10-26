@@ -588,7 +588,11 @@ class YoutubeVideo(BaseVideo):
         channel_url (Optional[str]): The url of the channel that the video belongs to.
         tags (Optional[list[str]]): The tags the uploaded has provided to make the video appear in search results
             relating to it.
-        category_id (int): The id of the category that was set for the video.
+        category_id (str): The id of the category that was set for the video.
+
+            .. versionchanged:: 0.4.0
+                :attr:`category_id` is now a :type:`str` rathern than an :type:`int`
+
         live_broadcast_content: (LiveBroadcastContent): Indicates if the video is a livestream and if it is live.
         default_language (Optional[str]): The default language the video is set in.
             The value is a BCP-47 language code.
@@ -683,7 +687,7 @@ class YoutubeVideo(BaseVideo):
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
             self.channel_title: Optional[str] = self.snippet.get("channelTitle")
             self.tags: Optional[list[str]] = self.snippet.get("tags")
-            self.category_id: int = int(self.snippet["categoryId"])
+            self.category_id: str = self.snippet["categoryId"]
             self.live_broadcast_content: LiveBroadcastContent = \
                 LiveBroadcastContent(self.snippet["liveBroadcastContent"])
             self.default_language: Optional[str] = self.snippet.get("defaultLanguage")
@@ -840,6 +844,26 @@ class YoutubeVideo(BaseVideo):
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_captions(self.id)
+
+    async def fetch_category(self) -> YoutubeVideoCategory:
+        """
+        Fetches the category that has been or could be associated with the video.
+
+        .. versionadded:: 0.4.0
+
+        Returns:
+            YoutubeVideoCategory: The video category
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            VideoCategoryNotFound: The video category does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video category id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_video_category(self.category_id)
 
     @property
     def chapters(self) -> Optional[list[VideoChapter]]:
@@ -2009,6 +2033,7 @@ class YoutubeVideoCategory:
         snippet (dict): The raw snippet data used to construct part this class.
         title (str): The video category's title.
         channel_id (str): The ID of the YouTube channel that created the video category.
+        channel_url (str): The URL of the YouTube channel that created the video category.
         assignable (bool): Indicates whether videos can be associated with the category.
     """
     def __init__(self, metadata: dict, call_url: str, call_data):
@@ -2034,3 +2059,32 @@ class YoutubeVideoCategory:
 
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+    async def fetch_channel(self) -> YoutubeChannel:
+        """Fetches the channel that created the video category.
+
+        This ia an api call which then returns a
+        :class:`YoutubeChannel` object.
+
+        Returns:
+            YoutubeChannel: The channel object containing data of the channel.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_channel(self.channel_id)
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return (
+            f"YoutubeVideoCategory({{'id': '{self.id}', 'snippet': {{'title': '{self.title}', 'channelId': "
+            f"'{self.channel_id}', 'assignable': {self.assignable}}}}}, '{self.call_url}', {self._call_data})"
+        )
