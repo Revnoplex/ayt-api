@@ -85,6 +85,26 @@ class CommentNotFound(ResourceNotFound):
         super().__init__(message)
 
 
+class VideoCategoryNotFound(ResourceNotFound):
+    """Raises if the specified video category id does not exist on YouTube.
+
+    Attributes:
+        category_id (str): video category id that was attempted to be fetched.
+    """
+    def __init__(self, category_id: Union[str, list[str]]):
+        """
+        Args:
+            category_id (Union[str, list[str]]): video category id that was attempted to be fetched.
+        """
+        self.category_id = category_id
+        message = (
+            f'The video category id {category_id} did not match any visible categories on youtube'
+            if isinstance(category_id, str) else
+            f'The video category ids {", ".join(category_id)} did not match any visible categories on youtube'
+        )
+        super().__init__(message)
+
+
 class InvalidMetadata(YoutubeExceptions):
     """Raises when invalid metadata is given.
 

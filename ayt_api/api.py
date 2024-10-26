@@ -8,9 +8,10 @@ from urllib import parse
 import aiohttp
 from aiohttp import TCPConnector
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
-    CommentNotFound, ResourceNotFound, NoAuth
+    CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
+    YoutubeVideoCategory
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel
 
@@ -381,7 +382,11 @@ class AsyncYoutubeAPI:
                 .. versionadded:: 0.4.0
 
         Returns:
-            Union[YoutubeVideo, list[YoutubeVideo]]: The video object containing data of the video.
+            Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
+                The video object containing data of the video.
+
+                .. versionchanged:: 0.4.0
+                    Now could also return a :class:`AuthorisedYoutubeVideo` as well
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -680,4 +685,29 @@ class AsyncYoutubeAPI:
         return await self._call_api(
             "subscriptions", "channelId", channel_id, ["contentDetails", "snippet", "subscriberSnippet"],
             YoutubeSubscription, ChannelNotFound, max_items if max_items < 50 else 50, max_items, True
+        )
+
+    async def fetch_video_category(
+            self, category_id: Union[str, list[str]]
+    ) -> Union[YoutubeVideoCategory, list[YoutubeVideoCategory]]:
+        """
+        Fetches a category that has been or could be associated with uploaded videos.
+
+        .. versionadded:: 0.4.0
+
+        Args:
+            category_id (Union[str, list[str]]): The video category ID/s to fetch
+
+        Returns:
+            Union[YoutubeVideoCategory, list[YoutubeVideoCategory]]: The video category/ies
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            VideoCategoryNotFound: The video category does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video category id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        return await self._call_api(
+            "videoCategories", "id", category_id, ["snippet"], YoutubeVideoCategory, VideoCategoryNotFound, 50
         )

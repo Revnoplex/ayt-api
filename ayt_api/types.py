@@ -1994,3 +1994,43 @@ class YoutubeSubscription:
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_channel(self.subscriber_id)
+
+
+class YoutubeVideoCategory:
+    """
+    Represents a YouTube video category
+
+    .. versionadded:: 0.4.0
+
+    Attributes:
+        metadata (dict): The raw API response used to construct this class.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        id (str): The ID that YouTube uses to uniquely identify the video category.
+        snippet (dict): The raw snippet data used to construct part this class.
+        title (str): The video category's title.
+        channel_id (str): The ID of the YouTube channel that created the video category.
+        assignable (bool): Indicates whether videos can be associated with the category.
+    """
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+            Args:
+                metadata (dict): The raw API response to construct the class.
+                call_url (str): The url used to call the API.
+                call_data (AsyncYoutubeAPI): Call data used for fetch functions.
+
+            Raises:
+                MissingDataFromMetaData: There is malformed data in the metadata provided.
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.id: str = self.metadata["id"]
+            self.snippet: dict = self.metadata["snippet"]
+            self.title: str = self.snippet["title"]
+            self.channel_id: str = self.snippet["channelId"]
+            self.channel_url = CHANNEL_URL.format(self.channel_id)
+            self.assignable: bool = self.snippet["assignable"]
+
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
