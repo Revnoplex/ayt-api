@@ -29,7 +29,7 @@ class AsyncYoutubeAPI:
     URL_PREFIX = "https://www.googleapis.com/youtube/v{version}"
 
     def __init__(
-            self, yt_api_key: str = None, api_version: str = '3', timeout: int = 5, ignore_ssl: bool = False,
+            self, yt_api_key: str = None, api_version: str = '3', timeout: float = 5, ignore_ssl: bool = False,
             oauth_token: str = None, use_oauth=False
     ):
         """
@@ -40,7 +40,7 @@ class AsyncYoutubeAPI:
 
                 .. versionadded:: 0.4.0
             api_version (str): The API version to use. defaults to 3.
-            timeout (int): The timeout if the api does not respond.
+            timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
             use_oauth (bool): Whether to use the oauth token over the api key.
@@ -61,6 +61,12 @@ class AsyncYoutubeAPI:
         self.use_oauth = use_oauth
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.ignore_ssl = ignore_ssl
+
+    def __repr__(self):
+        return (
+            f"AsyncYoutubeAPI('API_KEY', '{self.api_version}', {self.timeout.total}, {self.ignore_ssl}, 'OAUTH_TOKEN',"
+            f" {self.use_oauth})"
+        )
 
     async def _call_api(
             self, call_type: str, query: str, ids: Union[str, list[str]], parts: list[str], return_type: type,
