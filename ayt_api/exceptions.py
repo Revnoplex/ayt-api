@@ -148,7 +148,11 @@ class InvalidKey(YoutubeExceptions):
 
 
 class NoAuth(YoutubeExceptions):
-    """Exception that is raised when neither an api key nor an oauth token is provided to :class:`AsyncYoutubeAPI`"""
+    """
+    Exception that is raised when neither an api key nor an oauth token is provided to :class:`AsyncYoutubeAPI`
+
+    .. versionadded:: 0.4.0
+    """
     def __init__(self):
         super().__init__(
             "No authentication method was provided! Please pass either an api token or an oauth token to "

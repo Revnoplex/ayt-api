@@ -36,14 +36,18 @@ class AsyncYoutubeAPI:
             yt_api_key (str): The API key used to access the YouTube API. to get an API key.
                 See instructions here: https://developers.google.com/youtube/v3/getting-started
             oauth_token (str): The OAuth token to used for authorised requests
+
+                .. versionadded:: 0.4.0
             api_version (str): The API version to use. defaults to 3.
             timeout (int): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
             use_oauth (bool): Whether to use the oauth token over the api key.
 
+                .. versionadded:: 0.4.0
+
         Raises:
-            NoAuth: no api key or OAuth2 token was provided.
+            NoAuth: no api key or OAuth2 token was provided. *Added in version 0.4.0.*
         """
         self._key = yt_api_key
         self.api_version = api_version
@@ -82,6 +86,8 @@ class AsyncYoutubeAPI:
             expected_count (int): The number of items expected to be returned by the api that were requested.
             other_queries (Optional[str]): Additional query strings to use in the call url.
             return_args (dict): Extra arguments that are passed to the object passed to ``return_type``
+
+                .. versionadded:: 0.4.0
 
         Returns:
             Union[Any, list]: The object specified in ``return_type``.
@@ -313,6 +319,8 @@ class AsyncYoutubeAPI:
             max_items (int | None): The maximum number of playlist items to fetch. Defaults to ``None`` which
                 fetches every item in a playlist.
 
+                .. versionadded:: 0.4.0
+
                 Warning:
                     If a specified playlist has a lot of videos, not specifying a value to ``max_items`` could
                     hammer the api too much causing you to get rate limited so do this with caution.
@@ -369,6 +377,8 @@ class AsyncYoutubeAPI:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
             authorised (bool): Whether to fetch additional uploader side information about a video
                 (Needs OAuth token).
+
+                .. versionadded:: 0.4.0
 
         Returns:
             Union[YoutubeVideo, list[YoutubeVideo]]: The video object containing data of the video.

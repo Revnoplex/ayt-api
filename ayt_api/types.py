@@ -257,9 +257,9 @@ class RegionRestrictions:
 class ContentRating:
     """Specifies the ratings that the video received under various rating schemes.
 
-        There are many attributes for each rating system, only 1 or 2 (if there is a reason) will be available,
-        the rest will be ``None`` or all if there is no restrictions set. The attributes documented below are
-        non-exhaustive.
+    There are many attributes for each rating system, only 1 or 2 (if there is a reason) will be available,
+    the rest will be ``None`` or all if there is no restrictions set. The attributes documented below are
+    non-exhaustive.
 
     Attributes:
         acb (Optional[AcbRating]): The video's Australian Classification Board (ACB) or Australian Communications and
@@ -1209,10 +1209,9 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
     """
     A data class containing owner only information video data such as the file and processing information.
 
-        This class is used if authorisation is provided that you are the owner of the video. It contains
-        attributes only accessible by the video owner as well as attributes inherited
-        from :class:`YoutubeVideo`. The ayt-api library currently doesn't support authorisation for this
-        so this class is not used but is here for future implementation.
+    This class is used if authorisation is provided that you are the owner of the video. It contains
+    attributes only accessible by the video owner as well as attributes inherited
+    from :class:`YoutubeVideo`.
 
     Attributes:
         file_details (dict): The raw file details used to construct this class.
@@ -1410,6 +1409,8 @@ class YoutubeChannel:
             call_url (str): The url used to call the API.
             call_data (AsyncYoutubeAPI): call data used for fetch functions.
             partial (bool): Whether to just provide a partial object for just obtaining the channel id.
+
+                .. versionadded:: 0.4.0
         Raises:
             MissingDataFromMetaData: There is malformed data in the metadata provided.
         """
@@ -1523,6 +1524,8 @@ class YoutubeChannel:
         Args:
             max_items (int | None): The maximum number of playlist items to fetch. Defaults to ``None`` which
                 fetches every item in a playlist.
+
+                .. versionadded:: 0.4.0
 
                 Warning:
                     If a specified playlist has a lot of videos, not specifying a value to ``max_items`` could
