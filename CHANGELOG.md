@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API call `fetch_subscriptions` and associated types that fetches the subscriptions a channel has.
 ([53674e6](https://github.com/Revnoplex/ayt-api/commit/53674e6f02e4d007e05ed34ef2d00017ca0ff3fe),
 [48b0dd3](https://github.com/Revnoplex/ayt-api/commit/48b0dd31c5702105bb03c25c854c2e5b3ed0d280))
+- Video categories (api call and associated types). 
+([9d60ec3](https://github.com/Revnoplex/ayt-api/commit/9d60ec3373042a33f2a0893b219d1b07b28825a4), 
+[455ec21](https://github.com/Revnoplex/ayt-api/commit/455ec218551f774c936558f9af153eafaa98a762))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
