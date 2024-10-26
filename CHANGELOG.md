@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Video categories (api call and associated types). 
 ([9d60ec3](https://github.com/Revnoplex/ayt-api/commit/9d60ec3373042a33f2a0893b219d1b07b28825a4), 
 [455ec21](https://github.com/Revnoplex/ayt-api/commit/455ec218551f774c936558f9af153eafaa98a762))
+- Exception `InvalidToken` which raises when the OAuth token is invalid.
+([9190f66](https://github.com/Revnoplex/ayt-api/commit/9190f66ff4964efd21c11c7f289901f8301de95b))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
