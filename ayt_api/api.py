@@ -169,7 +169,7 @@ class AsyncYoutubeAPI:
                                         max_items, multi_resp, expected_count=expected_count,
                                         return_args=return_args
                                     )
-                                items = [return_type(item, call_url, self, **return_args) for item in items]
+                                items = [return_type(item, censor_key(call_url), self, **return_args) for item in items]
                                 return (items + items_next_page + items_next_list)[:max_items]
                             else:
                                 res_json = res_data.get("items")[0]
