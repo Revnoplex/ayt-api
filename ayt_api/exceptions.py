@@ -167,9 +167,19 @@ class InvalidKey(YoutubeExceptions):
         super().__init__("API key not valid. Please pass a valid API key.")
 
 
+class InvalidToken(YoutubeExceptions):
+    """
+    Exception that's raised when an OAuth token is invalid, expired or one is needed.
+
+    .. versionadded:: 0.4.0
+    """
+    def __init__(self):
+        super().__init__("Invalid or expired OAuth token. Please pass a new valid OAuth token.")
+
+
 class NoAuth(YoutubeExceptions):
     """
-    Exception that is raised when neither an api key nor an oauth token is provided to :class:`AsyncYoutubeAPI`
+    Exception that is raised when neither an api key nor an oauth token is provided to :class:`AsyncYoutubeAPI`.
 
     .. versionadded:: 0.4.0
     """
@@ -210,6 +220,9 @@ class HTTPException(YoutubeExceptions):
             response (ClientResponse): The aiohttp response associated with the error.
             message (str): The error message associated with the error that the YouTube api gave.
             error_data (dict): The raw error data associated with the error.
+        Raises:
+            InvalidKey: raised when the reason is because of an invalid YouTube api key.
+            InvalidToken: raised when the reason is because of an invalid OAuth token.
         """
         self.response: aiohttp.ClientResponse = response
         self.error_data = error_data
@@ -220,7 +233,10 @@ class HTTPException(YoutubeExceptions):
             self.reason = error_data["errors"][0].get("reason") if error_data else None
         self.status: int = response.status
         self.message = message
+        print(self.error_data)
         if self.reason == "API_KEY_INVALID":
             raise InvalidKey()
+        if self.reason == "authError":
+            raise InvalidToken()
         self.text: str = f': {message}' or ""
         super().__init__(f'{self.response.status} {self.response.reason}{self.text}')
