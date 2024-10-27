@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import json
 import os
 import pathlib
 from typing import Optional, Union, Any
@@ -61,6 +62,58 @@ class AsyncYoutubeAPI:
         self.use_oauth = use_oauth
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.ignore_ssl = ignore_ssl
+
+    @classmethod
+    async def with_authorisation_code(
+            cls, code: str, client_id: str, client_secret: str,
+            api_version: str = '3', timeout: float = 5, ignore_ssl: bool = False
+    ):
+        """
+        Run the AsyncYoutubeAPI session using OAuth 2 client credentials and an authorisation code received from an
+        OAuth2 consent screen.
+
+        .. versionadded:: 0.4.0
+
+        Args:
+            code (str): The authorisation code received after completing an OAuth2 consent screen.
+            client_id (str): A client id as part of OAuth client credentials created at
+                https://console.cloud.google.com/apis/credentials.
+            client_secret (str): The client secret as part of OAuth client credentials created at
+                https://console.cloud.google.com/apis/credentials.
+            api_version (str): The API version to use. defaults to 3.
+            timeout (float): The timeout if the api does not respond.
+            ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
+                This is useful for using the api on a restricted network.
+
+        Returns:
+            AsyncYoutubeAPI: The instance of the main class that runs all the api calls
+        Raises:
+            HTTPException: The request failed.
+            aiohttp.ClientError: There was a problem sending the request.
+            asyncio.TimeoutError: Google's OAuth servers did not respond within the timeout period set.
+        """
+        async with aiohttp.ClientSession(
+                connector=TCPConnector(verify_ssl=not ignore_ssl), timeout=aiohttp.ClientTimeout(total=timeout)
+        ) as request_token_session:
+            request_token_data = {
+                "code": code,
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "grant_type": "authorization_code",
+                "redirect_uri": "http://localhost:8000"
+            }
+            async with request_token_session.post(
+                "https://oauth2.googleapis.com/token",
+                data=json.dumps(request_token_data),
+                headers={"content-type": "application/json", }
+            ) as post_response:
+                if post_response.ok and post_response.content_type == "application/json":
+                    content = await post_response.json()
+                    return cls(None, api_version, timeout, ignore_ssl, content['access_token'])
+                error_data = None
+                if post_response.content_type == "application/json":
+                    error_data = await post_response.json()
+                raise HTTPException(post_response, error_data.get("error") if error_data else None, error_data)
 
     def __repr__(self):
         return (
