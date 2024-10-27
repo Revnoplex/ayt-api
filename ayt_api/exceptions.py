@@ -233,7 +233,6 @@ class HTTPException(YoutubeExceptions):
             self.reason = error_data["errors"][0].get("reason") if error_data else None
         self.status: int = response.status
         self.message = message
-        print(self.error_data)
         if self.reason == "API_KEY_INVALID":
             raise InvalidKey()
         if self.reason == "authError":
