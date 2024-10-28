@@ -16,7 +16,7 @@ from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, 
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
     YoutubeVideoCategory
 from .filters import SearchFilter
-from .utils import censor_key, snake_to_camel
+from .utils import censor_key, snake_to_camel, basic_html_page
 
 
 class AsyncYoutubeAPI:
@@ -122,12 +122,50 @@ class AsyncYoutubeAPI:
         )
 
         async def receive(request: web.Request):
-            api = await cls.with_authorisation_code(
-                request.query.get("code"), client_id, client_secret, redirect_uri, api_version, timeout, ignore_ssl
-            )
+            if not request.query.get("code"):
+                response = web.Response(
+                    text=basic_html_page("400 Bad Request", "Missing url parameter <code>code</code>"),
+                    content_type="text/html",
+                    status=400,
+                )
+                return response
+            try:
+                api = await cls.with_authorisation_code(
+                    request.query.get("code"), client_id, client_secret, redirect_uri, api_version, timeout, ignore_ssl
+                )
+            except HTTPException as e:
+                return web.Response(
+                    text=basic_html_page(f"{e.status} {e.response.reason}", f"{e.message}"),
+                    content_type="text/html",
+                    status=e.status
+                )
+            except asyncio.TimeoutError as e:
+                await qq.put(e)
+                return web.Response(
+                    text=basic_html_page(
+                        "504 Gateway Timeout",
+                        f"<b>oauth2.googleapis.com</b> did not respond within the timeout set"
+                    ),
+                    content_type="text/html",
+                    status=504
+                )
+            except aiohttp.ClientError as e:
+                await qq.put(e)
+                return web.Response(
+                    text=basic_html_page("500 Internal Server Error", f"{type(e).__name__}: {e}"),
+                    content_type="text/html",
+                    status=500
+                )
+            except RuntimeError as e:
+                await qq.put(e)
+                return web.Response(
+                    text=basic_html_page("502 Bad Gateway", f"{e}"),
+                    content_type="text/html",
+                    status=502
+                )
             await qq.put(api)
             return web.Response(
-                text="<h1>200 OK</h1>\n<p>You can close this tab now</p>",
+                text=basic_html_page("Authorisation Code Received", "You can close this tab now"),
                 content_type="text/html"
             )
 
@@ -138,7 +176,10 @@ class AsyncYoutubeAPI:
         site = web.TCPSite(runner, host="127.0.0.1", port=chosen_port)
         await site.start()
         yield consent_url
-        yield await qq.get()
+        result = await qq.get()
+        if isinstance(result, BaseException):
+            raise result
+        yield result
 
     @classmethod
     async def with_authorisation_code(
@@ -191,7 +232,9 @@ class AsyncYoutubeAPI:
                 error_data = None
                 if post_response.content_type == "application/json":
                     error_data = await post_response.json()
-                raise HTTPException(post_response, error_data.get("error") if error_data else None, error_data)
+                if post_response.status >= 400:
+                    raise HTTPException(post_response, error_data.get("error") if error_data else None, error_data)
+                raise RuntimeError("Unexpected response from oauth2.googleapis.com")
 
     def __repr__(self):
         return (
