@@ -213,3 +213,20 @@ def censor_token(call_url: str) -> str:
         DeprecationWarning
     )
     return censor_key(call_url)
+
+
+def basic_html_page(title: str, description: str):
+    return f"""\
+        <!doctype html>
+        <html lang="en">
+        <head>
+            <title>{title}</title>
+            <link rel="icon" href="https://ayt-api.revnoplex.xyz/ayt-api-square.svg">
+            <link rel="stylesheet" type="text/css" href="https://revnoplex.xyz/css/main.css">
+        </head>
+        <body>
+            <h1>{title}</h1>
+            <p>{description}.</p>
+        </body>
+        </html>\
+    """
