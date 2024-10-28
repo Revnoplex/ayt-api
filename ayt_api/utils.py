@@ -215,7 +215,18 @@ def censor_token(call_url: str) -> str:
     return censor_key(call_url)
 
 
-def basic_html_page(title: str, description: str):
+def basic_html_page(title: str, description: str) -> str:
+    """
+    Builds a basic html page
+
+    This is used in :func:`ayt_api.api.AsyncYoutubeAPI.with_oauth_flow_generator`
+
+    Args:
+        title (str): The title and heading for the page
+        description (str): The description that will be displayed on the page
+    Returns:
+        str: The html page
+    """
     return f"""\
         <!doctype html>
         <html lang="en">

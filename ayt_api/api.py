@@ -71,6 +71,7 @@ class AsyncYoutubeAPI:
             ignore_ssl: bool = False
     ) -> AsyncGenerator[Union[str, AsyncYoutubeAPI]]:
         """
+
         A generator that yields an OAuth consent url, waits for authorisation,
         and automatically requests an access token before yielding a :class:`AsyncYoutubeAPI`
         object that has oauth2 credentials automatically provided.
@@ -104,7 +105,7 @@ class AsyncYoutubeAPI:
             Union[str, AsyncYoutubeAPI]: The OAuth2 consent url and then the instance of the main class that runs all
                 the api calls
         Raises:
-            HTTPException: The request failed.
+            RuntimeError: The request failed.
             aiohttp.ClientError: There was a problem sending the request.
             asyncio.TimeoutError: Google's OAuth servers did not respond within the timeout period set.
         """
