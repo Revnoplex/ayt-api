@@ -4,7 +4,7 @@ import datetime
 import json
 import os
 import pathlib
-import random
+import socket
 from typing import Optional, Union, Any, AsyncGenerator
 from urllib import parse
 
@@ -21,6 +21,9 @@ from .utils import censor_key, snake_to_camel, basic_html_page
 
 class AsyncYoutubeAPI:
     """Represents the main class for running all the tools.
+
+    .. versionchanged:: 0.4.0
+        Supports OAuth2 methods for running privileged api calls.
 
     Attributes:
         api_version (str): The API version to use. defaults to 3.
@@ -66,44 +69,52 @@ class AsyncYoutubeAPI:
         self.ignore_ssl = ignore_ssl
 
     @classmethod
-    async def with_oauth_flow_generator(
-            cls, client_id: str, client_secret: str, api_version: str = '3', timeout: float = 5,
-            ignore_ssl: bool = False
-    ) -> AsyncGenerator[Union[str, AsyncYoutubeAPI]]:
+    def generate_url_and_socket(cls, client_id: str) -> tuple[str, socket.socket]:
         """
+        Sets up a consent url and a socket to use with oauth2 authentication.
 
-        A generator that yields an OAuth consent url, waits for authorisation,
-        and automatically requests an access token before yielding a :class:`AsyncYoutubeAPI`
-        object that has oauth2 credentials automatically provided.
-
-        An example of how to use:
-
-        .. code-block:: python
-
-            api = None
-            async for stage in ayt_api.AsyncYoutubeAPI.with_oauth_flow_generator("CLIENT_ID", "CLIENT_SECRET"):
-                if isinstance(stage, str):
-                    # prints the oauth consent url
-                    print(stage)
-                    continue
-                # stage is now an AscyncYoutubeAPI object that is assigned to api
-                api = stage
-            if api:
-                resource = await api.fetch_video("VIDEO_ID", authorised=True)
-                ...
+        .. versionadded:: 0.4.0
 
         Args:
-            client_id (str): A client id as part of OAuth client credentials created at
-                https://console.cloud.google.com/apis/credentials.
+            client_id (str): The client_id to use in the consent url
+        Returns:
+            tuple[str, socket.socket]: The consent url and internal socket to use later with
+                :func:`with_authcode_receiver`.
+        Raises:
+            OSError: Setting up the socket failed
+        """
+        consent_url = (
+            "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.googleapis.com/auth/youtube"
+            "&response_type=code&redirect_uri={redirect_uri}&client_id={client_id}&service=lso&o2v=1&ddm=0"
+            "&flowName=GeneralOAuthFlow"
+        )
+        sock = socket.socket()
+        sock.bind(('127.0.0.1', 0))
+        sock_name = [str(component) for component in sock.getsockname()]
+        return consent_url.format(redirect_uri=f"http://{':'.join(sock_name)}", client_id=client_id), sock
+
+    @classmethod
+    async def with_authcode_receiver(
+            cls, oauth2_consent_url: str, sock: socket.socket, client_secret: str, api_version: str = '3',
+            timeout: float = 5, ignore_ssl: bool = False
+    ):
+        """
+        Run the AsyncYoutubeAPI session by first setting up a web server to listen for a connection after the oauth2
+        consent is complete and receive the authentication code to then exchange for an oauth2 access token.
+
+        .. versionadded:: 0.4.0
+
+        Args:
+            oauth2_consent_url (str): The oauth2 consent url containing the client id and the redirect uri
+            sock (socket.socket): The socket to listen on that the redirect uri leads to
             client_secret (str): The client secret as part of OAuth client credentials created at
                 https://console.cloud.google.com/apis/credentials.
             api_version (str): The API version to use. defaults to 3.
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
-        Yields:
-            Union[str, AsyncYoutubeAPI]: The OAuth2 consent url and then the instance of the main class that runs all
-                the api calls
+        Returns:
+            AsyncYoutubeAPI: The instance of the main class that runs all the api calls
         Raises:
             RuntimeError: The request failed.
             aiohttp.ClientError: There was a problem sending the request.
@@ -111,28 +122,26 @@ class AsyncYoutubeAPI:
         """
         qq = asyncio.Queue()
 
-        chosen_port = random.randint(49152, 65535)
-
-        redirect_uri = f"http://127.0.0.1:{chosen_port}"
-
-        consent_url = (
-            "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.googleapis.com/auth/youtube"
-            f"&response_type=code&redirect_uri={redirect_uri}"
-            f"&client_id={client_id}&service=lso&o2v=1"
-            "&ddm=0&flowName=GeneralOAuthFlow"
-        )
+        consent_url_components = parse.urlparse(oauth2_consent_url)
+        consent_url_queries = parse.parse_qs(consent_url_components.query)
+        for required_parameter in ["redirect_uri", "client_id"]:
+            if not consent_url_queries.get(required_parameter):
+                raise ValueError(f"Missing required url parameter: `{required_parameter}`")
+        redirect_uri = consent_url_queries["redirect_uri"][0]
+        client_id = consent_url_queries["client_id"][0]
 
         async def receive(request: web.Request):
             if not request.query.get("code"):
                 response = web.Response(
-                    text=basic_html_page("400 Bad Request", "Missing url parameter <code>code</code>"),
+                    text=basic_html_page("400 Bad Request", "Missing required url parameter: <code>code</code>"),
                     content_type="text/html",
                     status=400,
                 )
                 return response
             try:
                 api = await cls.with_authorisation_code(
-                    request.query.get("code"), client_id, client_secret, redirect_uri, api_version, timeout, ignore_ssl
+                    request.query.get("code"), client_id, client_secret, redirect_uri,
+                    api_version, timeout, ignore_ssl
                 )
             except HTTPException as e:
                 return web.Response(
@@ -174,13 +183,62 @@ class AsyncYoutubeAPI:
         app.router.add_route("GET", "/", receive)
         runner = web.AppRunner(app)
         await runner.setup()
-        site = web.TCPSite(runner, host="127.0.0.1", port=chosen_port)
+        site = web.SockSite(runner, sock)
         await site.start()
-        yield consent_url
         result = await qq.get()
         if isinstance(result, BaseException):
             raise result
-        yield result
+        return result
+
+    @classmethod
+    async def with_oauth_flow_generator(
+            cls, client_id: str, client_secret: str, api_version: str = '3', timeout: float = 5,
+            ignore_ssl: bool = False
+    ) -> AsyncGenerator[Union[str, AsyncYoutubeAPI]]:
+        """
+
+        A generator that yields an OAuth consent url, waits for authorisation,
+        and automatically requests an access token before yielding a :class:`AsyncYoutubeAPI`
+        object that has oauth2 credentials automatically provided.
+
+        .. versionadded:: 0.4.0
+
+        An example of how to use:
+
+        .. code-block:: python
+
+            api = None
+            async for stage in ayt_api.AsyncYoutubeAPI.with_oauth_flow_generator("CLIENT_ID", "CLIENT_SECRET"):
+                if isinstance(stage, str):
+                    # prints the oauth consent url
+                    print(stage)
+                    continue
+                # stage is now an AscyncYoutubeAPI object that is assigned to api
+                api = stage
+            if api:
+                resource = await api.fetch_video("VIDEO_ID", authorised=True)
+                ...
+
+        Args:
+            client_id (str): A client id as part of OAuth client credentials created at
+                https://console.cloud.google.com/apis/credentials.
+            client_secret (str): The client secret as part of OAuth client credentials created at
+                https://console.cloud.google.com/apis/credentials.
+            api_version (str): The API version to use. defaults to 3.
+            timeout (float): The timeout if the api does not respond.
+            ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
+                This is useful for using the api on a restricted network.
+        Yields:
+            Union[str, AsyncYoutubeAPI]: The OAuth2 consent url and then the instance of the main class that runs all
+                the api calls
+        Raises:
+            RuntimeError: The request failed.
+            aiohttp.ClientError: There was a problem sending the request.
+            asyncio.TimeoutError: Google's OAuth servers did not respond within the timeout period set.
+        """
+        consent_url, sock = cls.generate_url_and_socket(client_id)
+        yield consent_url
+        yield await cls.with_authcode_receiver(consent_url, sock, client_secret, api_version, timeout, ignore_ssl)
 
     @classmethod
     async def with_authorisation_code(
