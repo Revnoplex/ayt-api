@@ -4,6 +4,14 @@
 ```{literalinclude} ../../../examples/channel.py
 ```
 
+## Initialising with OAuth2
+```{literalinclude} ../../../examples/oauth2.py
+```
+
+## Initialising using OAuth2 generator function
+```{literalinclude} ../../../examples/oauth2-generator.py
+```
+
 ## Fetching Information on a Playlist
 ```{literalinclude} ../../../examples/playlist.py
 ```
