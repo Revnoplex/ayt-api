@@ -205,19 +205,9 @@ class AsyncYoutubeAPI:
 
         An example of how to use:
 
-        .. code-block:: python
-
-            api = None
-            async for stage in ayt_api.AsyncYoutubeAPI.with_oauth_flow_generator("CLIENT_ID", "CLIENT_SECRET"):
-                if isinstance(stage, str):
-                    # prints the oauth consent url
-                    print(stage)
-                    continue
-                # stage is now an AscyncYoutubeAPI object that is assigned to api
-                api = stage
-            if api:
-                resource = await api.fetch_video("VIDEO_ID", authorised=True)
-                ...
+        .. literalinclude:: ../../../examples/oauth2-generator.py
+            :lines: 6-16
+            :dedent: 4
 
         Args:
             client_id (str): A client id as part of OAuth client credentials created at
