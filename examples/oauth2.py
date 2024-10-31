@@ -7,10 +7,10 @@ async def oauth2_example():
         "Your Client ID"
     )
     print(consent_url)
-    auth_api = await ayt_api.AsyncYoutubeAPI.with_authcode_receiver(
+    api = await ayt_api.AsyncYoutubeAPI.with_authcode_receiver(
         consent_url, sock, "Your Client Secret"
     )
-    resource = await auth_api.fetch_video("Video ID", True)
+    resource = await api.fetch_video("Video ID", True)
     print(resource.file_name)
 
 
