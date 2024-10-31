@@ -8,8 +8,16 @@
 ```{literalinclude} ../../../examples/oauth2.py
 ```
 
-## Initialising using OAuth2 generator function
+## Initialising using OAuth2 Generator Function
 ```{literalinclude} ../../../examples/oauth2-generator.py
+```
+
+## Initialising using OAuth2 Authorisation Code
+```{literalinclude} ../../../examples/oauth2-auth-code.py
+```
+
+## Initialising using OAuth2 Token
+```{literalinclude} ../../../examples/oauth2-token.py
 ```
 
 ## Fetching Information on a Playlist
