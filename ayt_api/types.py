@@ -984,7 +984,7 @@ class PlaylistItem(BaseVideo):
         :class:`YoutubeVideo` object.
 
         Returns:
-            YoutubeVideo The video object containing data of the video.
+            YoutubeVideo: The video object containing data of the video.
 
         Raises:
             HTTPException: Fetching the metadata failed.
