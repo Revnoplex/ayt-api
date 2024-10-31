@@ -591,7 +591,7 @@ class YoutubeVideo(BaseVideo):
         category_id (str): The id of the category that was set for the video.
 
             .. versionchanged:: 0.4.0
-                :attr:`category_id` is now a :type:`str` rathern than an :type:`int`
+                :attr:`category_id` is now a :class:`str` rather than an :class:`int`
 
         live_broadcast_content: (LiveBroadcastContent): Indicates if the video is a livestream and if it is live.
         default_language (Optional[str]): The default language the video is set in.
