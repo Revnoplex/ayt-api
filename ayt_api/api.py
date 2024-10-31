@@ -5,7 +5,7 @@ import json
 import os
 import pathlib
 import socket
-from typing import Optional, Union, Any, AsyncGenerator
+from typing import Optional, Union, Any, AsyncGenerator, Callable
 from urllib import parse
 
 import aiohttp
@@ -292,17 +292,18 @@ class AsyncYoutubeAPI:
         )
 
     async def _call_api(
-            self, call_type: str, query: str, ids: Union[str, list[str]], parts: list[str], return_type: type,
-            exception_type: type[ResourceNotFound], max_results: int = None, max_items: int = None, multi_resp=False,
-            next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
+            self, call_type: str, query: Optional[str], ids: Union[str, list[str], None], parts: list[str],
+            return_type: Union[type, Callable], exception_type: type[ResourceNotFound], max_results: int = None,
+            max_items: int = None,
+            multi_resp=False, next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
             other_queries: str = None, return_args: dict = None
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
 
         Args:
             call_type (str): The type of request to make to the YouTube api.
-            query (str): The variable name for the ``ids`` (identifier keywords).
-            ids (Union[str, list[str]]): The identifier keywords (usually IDs to look for).
+            query (Optional[str]): The variable name for the ``ids`` (identifier keywords).
+            ids (Union[str, list[str], None]): The identifier keywords (usually IDs to look for).
             parts (list[str]): A list of parts to request of the main request.
             return_type (type): The object to return the results in.
             exception_type (type[ResourceNotFound]): The exception to raise if the item wanted was not found.
@@ -332,15 +333,18 @@ class AsyncYoutubeAPI:
         # use OAuth token if no api key was provided
         oauth = self.use_oauth or (not self._key)
         return_args = return_args or {}
-        if len(ids) < 1:
-            raise InvalidInput(ids)
-        if isinstance(ids, str):
+        if ids is None:
             multi = False
-        elif isinstance(ids, list):
-            multi = True
-            expected_count = len(ids)
         else:
-            raise InvalidInput(ids)
+            if len(ids) < 1:
+                raise InvalidInput(ids)
+            if isinstance(ids, str):
+                multi = False
+            elif isinstance(ids, list):
+                multi = True
+                expected_count = len(ids)
+            else:
+                raise InvalidInput(ids)
         if multi and len(ids) > 50:
             next_list = ids[50:]
             ids = ids[:50]
@@ -370,8 +374,11 @@ class AsyncYoutubeAPI:
                                                                  f'{res_data["error"].get("message")}')
                         items = res_data.get("items") or []
                         returned_items = [item.get("id") if isinstance(item.get("id"), str) else None for item in items]
-                        difference = list(set(ids).difference(set(returned_items)))
-                        if (difference and multi) or (not multi_resp and len(items) < 1):
+                        difference = list(set(ids).difference(set(returned_items))) if ids is not None else None
+                        if (
+                            (difference and multi) or (not multi_resp and len(items) < 1)
+                                or (ids is None and len(items) < 1)
+                        ):
                             raise exception_type(difference if multi else ids)
                         else:
                             if multi or multi_resp:
@@ -940,3 +947,49 @@ class AsyncYoutubeAPI:
         return await self._call_api(
             "videoCategories", "id", category_id, ["snippet"], YoutubeVideoCategory, VideoCategoryNotFound, 50
         )
+
+    async def fetch_youtube_regions(self, language: str = None) -> dict[str, str]:
+        """
+        Fetches a dictionary containing the names of regions listed by YouTube
+
+        .. versionadded:: 0.4.0
+
+        Args:
+            language (str): The BCP-47 language code to return the results in
+
+        Returns:
+            dict[str, str]: A dictionary containing ISO 3166-1 alpha-2 codes mapped to their names listed by YouTube
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ResourceNotFound: No region codes could be found for the specified language.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        to_parse = await self._call_api(
+            "i18nRegions", "hl" if language else None, language, ["snippet"],
+            lambda metadata, _, _2: metadata["snippet"], ResourceNotFound, 50, multi_resp=True
+        )
+        return {entry["gl"]: entry["name"] for entry in to_parse}
+
+    async def fetch_youtube_languages(self, language: str) -> dict[str, str]:
+        """
+        Fetches a dictionary containing the names of languages listed by YouTube
+
+        .. versionadded:: 0.4.0
+
+        Args:
+            language (str): The BCP-47 language code to return the results in
+
+        Returns:
+            dict[str, str]: A dictionary containing BCP-47 language codes mapped to their names listed by YouTube
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ResourceNotFound: No region codes could be found for the specified language.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        to_parse = await self._call_api(
+            "i18nLanguages", "hl" if language else None, language, ["snippet"],
+            lambda metadata, _, _2: metadata["snippet"], ResourceNotFound, 50, multi_resp=True
+        )
+        return {entry["hl"]: entry["name"] for entry in to_parse}
