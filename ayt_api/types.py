@@ -389,11 +389,11 @@ class VideoStream:
         resolution (str): width x height.
         frame_rate (float): The video stream's frame rate, in frames per second.
         aspect_ratio (float): The video content's display aspect ratio.
-        codec (string): The video codec that the stream uses.
+        codec (str): The video codec that the stream uses.
         bitrate (int): The video stream's bitrate, in bits per second.
-        rotation (string): The amount that YouTube needs to rotate the original source content to properly display the
+        rotation (str): The amount that YouTube needs to rotate the original source content to properly display the
             video.
-        vendor (string): A value that uniquely identifies a video vendor. Typically, the value is a four-letter vendor
+        vendor (str): A value that uniquely identifies a video vendor. Typically, the value is a four-letter vendor
             code.
     """
     def __init__(self, data: dict):
@@ -422,9 +422,9 @@ class AudioStream:
     Attributes:
         data (dict): The raw audio stream data used to construct this class.
         channel_count (int): The number of audio channels that the stream contains.
-        codec (string): The audio codec that the stream uses.
+        codec (str): The audio codec that the stream uses.
         bitrate (int): The audio stream's bitrate, in bits per second.
-        vendor (string): A value that uniquely identifies a video vendor. Typically, the value is a four-letter
+        vendor (str): A value that uniquely identifies a video vendor. Typically, the value is a four-letter
             vendor code.
 
     """
@@ -583,7 +583,7 @@ class YoutubeVideo(BaseVideo):
         description (str): The description of the video.
         published_at (datetime.datetime): The date and time the video was published.
         thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has.
-        channel_title: (Optional[str]) The name of the channel that the video belongs to.
+        channel_title (Optional[str]): The name of the channel that the video belongs to.
         channel_id (Optional[str]): The id of the channel that the video belongs to.
         channel_url (Optional[str]): The url of the channel that the video belongs to.
         tags (Optional[list[str]]): The tags the uploaded has provided to make the video appear in search results
@@ -593,7 +593,7 @@ class YoutubeVideo(BaseVideo):
             .. versionchanged:: 0.4.0
                 :attr:`category_id` is now a :class:`str` rather than an :class:`int`
 
-        live_broadcast_content: (LiveBroadcastContent): Indicates if the video is a livestream and if it is live.
+        live_broadcast_content (LiveBroadcastContent): Indicates if the video is a livestream and if it is live.
         default_language (Optional[str]): The default language the video is set in.
             The value is a BCP-47 language code.
         localised (Optional[LocalName]): The localised language of the title and description of the video.
@@ -924,7 +924,7 @@ class PlaylistItem(BaseVideo):
         description (str): The description of the video.
         added_at (datetime.datetime): The date and time the video was added to the playlist.
         thumbnails (YoutubeThumbnailMetadata): The available thumbnails the video has.
-        channel_title: (Optional[str]) The name of the channel that the video belongs to.
+        channel_title (Optional[str]): The name of the channel that the video belongs to.
         channel_id (Optional[str]): The id of the channel that the video belongs to.
         channel_url (Optional[str]): The url of the channel that the video belongs to.
         playlist_id (str): The ID of the playlist the video is in.
@@ -1099,7 +1099,7 @@ class YoutubePlaylist:
         title (str): The title of the playlist.
         description (str): The description of the playlist.
         thumbnails (YoutubeThumbnailMetadata): The available thumbnails the playlist has.
-        channel_title: (Optional[str]) The name of the channel that created the playlist.
+        channel_title (Optional[str]): The name of the channel that created the playlist.
         default_language (Optional[str]): The default language the video is set in. Can be ``None``.
         localised (Optional[LocalName]): The localised language of the title and description of the video.
         localized (Optional[LocalName]): an alias of :attr:`localised`.
@@ -1539,14 +1539,14 @@ class YoutubeChannel:
             self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_playlist_items(self.uploads_id)
 
-    async def fetch_likes(self, max_items=None) -> Optional[list[PlaylistItem]]:
+    async def fetch_likes(self, max_items: int = None) -> Optional[list[PlaylistItem]]:
         """Fetches the playlist containing all videos the channel has liked if public.
 
         This ia an api call which then returns a
         :class:`PlaylistItem` object if public, otherwise ``None``.
 
         Args:
-            max_items (int | None): The maximum number of playlist items to fetch. Defaults to ``None`` which
+            max_items (Optional[int]): The maximum number of playlist items to fetch. Defaults to ``None`` which
                 fetches every item in a playlist.
 
                 .. versionadded:: 0.4.0
@@ -1786,7 +1786,7 @@ class YoutubeSearchResult:
         thumbnails (YoutubeThumbnailMetadata): The available thumbnails the object has.
         channel_title (Optional[str]): The title of the channel that published the resource that the search result
             identifies.
-        live_broadcast_content: (LiveBroadcastContent): Indicates if the object is a livestream and if it is live.
+        live_broadcast_content (LiveBroadcastContent): Indicates if the object is a livestream and if it is live.
     """
     def __init__(self, data: dict, call_url: str, call_data):
         """
