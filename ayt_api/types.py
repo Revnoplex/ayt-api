@@ -1597,6 +1597,13 @@ class YoutubeChannel:
         This ia an api call which then returns a
         :class:`list[YoutubeCommentThread]` object.
 
+        Args:
+            max_comments (Optional[int]): The maximum number of comments to fetch. Defaults to 50.
+
+                Warning:
+                        If a specified video has a lot of comments, not specifying a value to ``max_comments`` could
+                        hammer the api too much causing you to get rate limited so do this with caution.
+
         Returns:
             list[YoutubeCommentThread]: A list of comments related to the channel.
 
@@ -1698,6 +1705,13 @@ class YoutubeComment:
 
         This ia an api call which then returns a
         :class:`list[YoutubeComment]` object.
+
+        Args:
+            max_comments (Optional[int]): The maximum number of comments to fetch. Defaults to 50.
+
+                Warning:
+                        If a specified comment has a lot of replies, not specifying a value to ``max_comments`` could
+                        hammer the api too much causing you to get rate limited so do this with caution.
 
         Returns:
             list[YoutubeComment]: A list of replies on the comment.
