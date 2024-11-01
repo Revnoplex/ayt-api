@@ -51,6 +51,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([f39b0a5#diff-cbbc953-R951](https://github.com/Revnoplex/ayt-api/commit/f39b0a53241adaf386ab1fdbc9689007e7bc7ce5#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R951))
 - API call `fetch_youtube_languages` that fetches languages listed by YouTube. 
 ([f39b0a5#diff-cbbc953-R974](https://github.com/Revnoplex/ayt-api/commit/f39b0a53241adaf386ab1fdbc9689007e7bc7ce5#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R974))
+- Enums for class `AuthorisedYoutubeVideo`. 
+([19944de](https://github.com/Revnoplex/ayt-api/commit/19944deeacf8a0a68c3bbb2cfbb34e9123d89f0b))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
