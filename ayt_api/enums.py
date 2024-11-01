@@ -188,3 +188,123 @@ class SubscriptionActivityType(Enum):
 
     def __str__(self):
         return self.value
+
+
+class UploadFileType(Enum):
+    """
+    The uploaded file's type as detected by YouTube's video processing engine.
+
+    .. versionadded:: 0.4.0
+    """
+
+    archive = "archive"
+    audio = "audio"
+    document = "document"
+    image = "image"
+    other = "other"
+    project = "project"
+    video = "video"
+
+    def __str__(self):
+        return self.value
+
+
+class ProcessingStatus(Enum):
+    """
+    The video's processing status.
+
+    .. versionadded:: 0.4.0
+    """
+
+    failed = "failed"
+    processing = "processing"
+    succeeded = "succeeded"
+    terminated = "terminated"
+
+    def __str__(self):
+        return self.value
+
+
+class ProcessingFailureReason(Enum):
+    """
+    The reason that YouTube failed to process the video.
+
+    .. versionadded:: 0.4.0
+    """
+
+    other = "other"
+    streaming_failed = "streaming_failed "
+    transcode_failed = "transcode_failed"
+    upload_failed = "upload_failed"
+
+    def __str__(self):
+        return self.value
+
+
+class ProcessingError(Enum):
+    """
+    Errors that will prevent YouTube from successfully processing the uploaded video.
+
+    .. versionadded:: 0.4.0
+    """
+
+    archive_file = "archive_file"
+    audio_file = "audio_file"
+    doc_file = "doc_file"
+    image_file = "image_file"
+    not_a_video_file = "not_a_video_file"
+    project_file = "project_file"
+
+    def __str__(self):
+        return self.value
+
+
+class ProcessingWarning(Enum):
+    """
+    Reasons why YouTube may have difficulty transcoding the uploaded video or that might result in an
+    erroneous transcoding.
+
+    .. versionadded:: 0.4.0
+    """
+
+    has_editlist = "has_editlist"
+    has_edit_list = "has_edit_list"
+    inconsistent_resolution = "inconsistent_resolution"
+    problematic_audio_codec = "problematic_audio_codec"
+    problematic_video_codec = "problematic_video_codec"
+    unknown_audio_codec = "unknown_audio_codec"
+    unknown_container = "unknown_container"
+    unknown_video_codec = "unknown_video_codec"
+
+    def __str__(self):
+        return self.value
+
+
+class ProcessingHint(Enum):
+    """
+    Suggestions that may improve YouTube's ability to process the video.
+
+    .. versionadded:: 0.4.0
+    """
+
+    non_streamable_mov = "non_streamable_mov"
+    send_best_quality_video = "send_best_quality_video"
+
+    def __str__(self):
+        return self.value
+
+
+class EditorSuggestion(Enum):
+    """
+    Video editing operations that might improve the video quality or playback experience of the uploaded video.
+
+    .. versionadded:: 0.4.0
+    """
+
+    audio_quiet_audio_swap = "audio_quiet_audio_swap"
+    video_auto_levels = "video_auto_levels"
+    video_crop = "video_crop"
+    video_stabilize = "video_stabilize"
+
+    def __str__(self):
+        return self.value

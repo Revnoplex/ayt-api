@@ -1246,17 +1246,18 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
         dislike_count (Optional[int]): The number of users who have indicated that they disliked the video.
         file_name (str): The uploaded file's name.
         file_size (Optional[int]): The uploaded file's size in bytes.
-        file_type (Optional[str]): The uploaded file's type as detected by YouTube's video processing engine.
+        file_type (Optional[UploadFileType]): The uploaded file's type as detected by YouTube's video processing engine.
         file_container (Optional[str]): The uploaded video file's container format.
         video_streams (Optional[list[VideoStream]]): A list of video streams contained in the uploaded video file.
         audio_streams (Optional[list[AudioStream]]): A list of audio streams contained in the uploaded video file.
         file_duration (Optional[datetime.timedelta]): The length of the uploaded video millisecond accurate.
         file_bitrate (Optional[int]): The uploaded video file's combined (video and audio) bitrate in bits per second.
         file_creation_time (Optional[datetime.datetime]): The date and time when the uploaded video file was created.
-        processing_status (Optional[str]): The video's processing status.
+        processing_status (Optional[ProcessingStatus]): The video's processing status.
         processing_progress (Optional[ProcessingProgress]):
             contains information about the progress YouTube has made in processing the video
-        processing_failure_reason (Optional[str]): The reason that YouTube failed to process the video.
+        processing_failure_reason (Optional[ProcessingFailureReason]): The reason that YouTube failed to process the
+            video.
         file_details_availability (Optional[str]): This value indicates whether file details are available for the
             uploaded video.
         processing_issues_availability (Optional[str]):
@@ -1270,17 +1271,16 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
             experience, are available for the video.
         thumbnails_availability (Optional[str]): This value indicates whether thumbnail images have been generated for
             the video.
-        processing_errors (Optional[list[str]]):
+        processing_errors (Optional[list[ProcessingError]]):
             A list of errors that will prevent YouTube from successfully processing the uploaded video.
-        processing_warnings (Optional[list[str]]): A list of reasons why YouTube may have difficulty transcoding the
-            uploaded
-            video or that might result in an erroneous transcoding.
-        processing_hints (Optional[list[str]]): A list of suggestions that may improve YouTube's ability to process the
-            video.
+        processing_warnings (Optional[list[ProcessingWarning]]): A list of reasons why YouTube may have difficulty
+            transcoding the uploaded video or that might result in an erroneous transcoding.
+        processing_hints (Optional[list[ProcessingHint]]): A list of suggestions that may improve YouTube's ability to
+            process the video.
         tag_suggestions (Optional[list[TagSuggestion]]):
             A list of keyword tags that could be added to the video's metadata to increase the likelihood that users
             will locate your video when searching or browsing on YouTube.
-        editor_suggestions (Optional[list[str]]):
+        editor_suggestions (Optional[list[EditorSuggestion]]):
             A list of video editing operations that might improve the video quality or playback experience of the
             uploaded video.
 
@@ -1305,7 +1305,9 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
             self.dislike_count: Optional[int] = self.statistics.get("dislikeCount")
             self.file_name: str = self.file_details["fileName"]
             self.file_size: Optional[int] = self.file_details.get("fileSize")
-            self.file_type: Optional[str] = self.file_details.get("fileType")
+            self.file_type: Optional[UploadFileType] = (
+                UploadFileType(self.file_details["fileType"]) if self.file_details.get("fileType") else None
+            )
             self.file_container: Optional[str] = self.file_details.get("container")
             if self.file_details.get("videoStreams") is None:
                 self.video_streams: Optional[list[VideoStream]] = None
@@ -1325,13 +1327,19 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
             else:
                 self.file_creation_time: Optional[datetime.datetime] = \
                     isodate.parse_datetime(self.file_details["creationTime"])
-            self.processing_status: Optional[str] = self.processing_details.get("processingStatus")
+            self.processing_status: Optional[ProcessingStatus] = (
+                ProcessingStatus(self.processing_details["processingStatus"])
+                if self.processing_details.get("processingStatus") else None
+            )
             if self.processing_details.get("processingProgress") is None:
                 self.processing_progress: Optional[ProcessingProgress] = None
             else:
                 self.processing_progress: Optional[ProcessingProgress] = \
                     ProcessingProgress(self.processing_details["processingProgress"])
-            self.processing_failure_reason: Optional[str] = self.processing_details.get("processingFailureReason")
+            self.processing_failure_reason: Optional[ProcessingFailureReason] = (
+                ProcessingFailureReason(camel_to_snake(self.processing_details["processingFailureReason"]))
+                if self.processing_details.get("processingFailureReason") else None
+            )
             self.file_details_availability: Optional[str] = self.processing_details.get("fileDetailsAvailability")
             self.processing_issues_availability: Optional[str] = \
                 self.processing_details.get("processingIssuesAvailability")
@@ -1339,15 +1347,27 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
             self.editor_suggestions_availability: Optional[str] = \
                 self.processing_details.get("editorSuggestionsAvailability")
             self.thumbnails_availability: Optional[str] = self.processing_details.get("thumbnailsAvailability")
-            self.processing_errors: Optional[list[str]] = self.suggestions.get("processingErrors")
-            self.processing_warnings: Optional[list[str]] = self.suggestions.get("processingWarnings")
-            self.processing_hints: Optional[list[str]] = self.suggestions.get("processingHints")
+            self.processing_errors: Optional[list[ProcessingError]] = (
+                [ProcessingError(camel_to_snake(error)) for error in self.suggestions["processingErrors"]]
+                if isinstance(self.suggestions.get("processingErrors"), list) else None
+            )
+            self.processing_warnings: Optional[list[ProcessingWarning]] = (
+                [ProcessingWarning(camel_to_snake(warning)) for warning in self.suggestions["processingWarnings"]]
+                if isinstance(self.suggestions.get("processingWarnings"), list) else None
+            )
+            self.processing_hints: Optional[list[ProcessingHint]] = (
+                [ProcessingHint(camel_to_snake(hint)) for hint in self.suggestions["processingHints"]]
+                if isinstance(self.suggestions.get("processingHints"), list) else None
+            )
             if self.suggestions.get("tagSuggestions") is None:
                 self.tag_suggestions: Optional[list[TagSuggestion]] = None
             else:
                 self.tag_suggestions: Optional[list[TagSuggestion]] = \
                     [TagSuggestion(tag_suggestion) for tag_suggestion in self.suggestions.get("tagSuggestions")]
-            self.editor_suggestions: Optional[str] = self.suggestions.get("editorSuggestions")
+            self.editor_suggestions: Optional[list[EditorSuggestion]] = (
+                [EditorSuggestion(camel_to_snake(suggestion)) for suggestion in self.suggestions["editorSuggestions"]]
+                if isinstance(self.suggestions.get("editorSuggestions"), list) else None
+            )
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
