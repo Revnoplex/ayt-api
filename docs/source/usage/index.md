@@ -13,3 +13,10 @@ examples
 
 installation
 ```
+
+## Obtaining Credentials
+```{toctree}
+:maxdepth: 2
+
+obtaining-credentials.md
+```
