@@ -12,8 +12,9 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = {file = "LICENSE.md"}
 keywords = [
-    "api", "youtube", "async", "asyncio", "aiohttp", "object-oriented",
-    "youtube api", "wrapper", "youtube api wrapper", "api wrapper"
+    "api", "youtube", "async", "asyncio", "aiohttp", "object-oriented", "object oriented", "youtube api", "youtube-api",
+    "wrapper", "youtube api wrapper", "youtube-api-wrapper", "api wrapper", "api-wrapper", "wrapper-api", "wrapper api",
+    "wrapper library", "wrapper-library"
 ]
 classifiers = [
     "Intended Audience :: Developers",
