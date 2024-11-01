@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([40470a9#diff-cbbc953-R394](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R394))
 - API util `resolve_handle` that gets a channel id from a channel's handle.
 ([40470a9#diff-cbbc953-R581](https://github.com/Revnoplex/ayt-api/commit/40470a952af9d870d8a348aaae4286cf7d51a7d0#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R581))
+- Parameter `oauth_token` to `AsyncYoutubeAPI` to authenticate using an OAuth2 token. 
+([b7a188d#diff-cbbc953-R33](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R33))
+- Parameter `authorised` to `fetch_video()` which prompts the return of `AuthorisedYoutubeVideo` over a `YoutubeVideo`. 
+([032e817](https://github.com/Revnoplex/ayt-api/commit/032e8174eb26ce222952c58246d8eaef70ea6f12))
+- Exception `NoAuth` which raises when neither an API key nor OAuth token is passed to `AsyncYoutubeAPI`. 
+([b7a188d#diff-3f857ff](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788))
+- Parameter `max_items` to all playlist item API calls. 
+([90e1ad1](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14))
+- Parameter `use_oauth` to `AsyncYoutubeAPI` to prefer authenticating with OAuth2 over using an API key. 
+([7ae3f3e#diff-cbbc953-R32](https://github.com/Revnoplex/ayt-api/commit/7ae3f3e7183c6b7ec8b405e21c487688e47b4d0a#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R32))
 - API call `fetch_subscriptions` and associated types that fetches the subscriptions a channel has.
 ([53674e6](https://github.com/Revnoplex/ayt-api/commit/53674e6f02e4d007e05ed34ef2d00017ca0ff3fe),
 [48b0dd3](https://github.com/Revnoplex/ayt-api/commit/48b0dd31c5702105bb03c25c854c2e5b3ed0d280))
@@ -26,8 +36,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [455ec21](https://github.com/Revnoplex/ayt-api/commit/455ec218551f774c936558f9af153eafaa98a762))
 - Exception `InvalidToken` which raises when the OAuth token is invalid.
 ([9190f66](https://github.com/Revnoplex/ayt-api/commit/9190f66ff4964efd21c11c7f289901f8301de95b))
+- `AsyncYoutubeAPI` class-method `with_authorisation_code` which allows initialising using an OAuth2 authorisation code.
+([079797a](https://github.com/Revnoplex/ayt-api/commit/079797ac1988d81d9590167e22668fb0a2f4aa31))
+- `AsyncYoutubeAPI` class-method `with_oauth_flow_generator` which automates the OAuth2 authorisation flow.
+([6aede33#diff-cbbc953-R69](https://github.com/Revnoplex/ayt-api/commit/6aede33eea2f50920eec5f81f2ac7c165a1e91b9#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R69))
 - Util `basic_html_page()` that creates a html page for `with_oauth_flow_generator()` to display.
 ([80857bb](https://github.com/Revnoplex/ayt-api/commit/80857bb6bb2d02b17d49244c72ba64748fd6be16))
+- `AsyncYoutubeAPI` class-method `generate_url_and_socket` which returns an OAuth2 consent url and socket to be used 
+with `with_authcode_receiver` after giving the user the consent url. 
+([774a185#diff-cbbc953-R72](https://github.com/Revnoplex/ayt-api/commit/774a18576ba438bddedcbe555afc06cd576030f5#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R72))
+- `AsyncYoutubeAPI` class-method `with_authcode_receiver` which listens for an OAuth2 authentication code on the socket provided. 
+([774a185#diff-cbbc953-R97](https://github.com/Revnoplex/ayt-api/commit/774a18576ba438bddedcbe555afc06cd576030f5#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R97))
 - API call `fetch_youtube_regions` that fetches regions listed by YouTube. 
 ([f39b0a5#diff-cbbc953-R951](https://github.com/Revnoplex/ayt-api/commit/f39b0a53241adaf386ab1fdbc9689007e7bc7ce5#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R951))
 - API call `fetch_youtube_languages` that fetches languages listed by YouTube. 
@@ -39,6 +58,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - *Documentation*: New logo added to [README.md](README.md).
 ([ab5bda2](https://github.com/Revnoplex/ayt-api/commit/ab5bda215d8850bbacbdac358341c5d34e49b3bd))
 - *Documentation*: Added readthedocs documentation. (too many commits to list)
+- *Documentation*: Added OAuth2 examples. 
+([5dcbf3f](https://github.com/Revnoplex/ayt-api/commit/5dcbf3fc8341744028a4349e131069c349edb882), 
+[890d8c7](https://github.com/Revnoplex/ayt-api/commit/890d8c72675916f6b902c7dbb4c99ced624b937d), 
+[ffdd5f1](https://github.com/Revnoplex/ayt-api/commit/ffdd5f117a4a22ec3f883e37af1184b162ba80b0))
 
 ### Removed
 
@@ -54,6 +77,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([2a0c7bd](https://github.com/Revnoplex/ayt-api/commit/2a0c7bd3d81c94c7650c389839fecf25c7c181f4))
 - API keys in urls passed when after calling the api are always censored. 
 ([cbc1514](https://github.com/Revnoplex/ayt-api/commit/cbc1514a1930d65b54f5e3a62433fc7487a92911)) 
+- Broken attributes of `AuthorisedYoutubeVideo`. 
+([b7a188d#diff-7363042](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834))
+- `YoutubeChannel.likes_id` returning an invalid ID. 
+([90e1ad1#diff-7363042-L1420](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L1420))
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 - *Documentation*: Formatting error in docstring for `exceptions.APITimeout`. 
@@ -62,6 +89,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Breaking**: Renamed attribute `_type` to `kind` in `filters.SearchFilter`. 
 ([7a60e71](https://github.com/Revnoplex/ayt-api/commit/7a60e71289bafe78a9a44516f852d4a1553da009))
+- `AsyncYoutubeAPI` can now raise `NoAuth` if no API key or OAuth token is provided. 
+([b7a188d#diff-cbbc953-R47](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R47))
+- `fetch_video()` can now return a superclass of `YoutubeVideo`: `AuthorisedYoutubeVideo`. 
+([b7a188d#diff-cbbc953-R334](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R334))
+- OAuth token is used if no API key is provided. 
+([90e1ad1#diff-cbbc953-R92](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R92))
 - *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
 ([3af95cd](https://github.com/Revnoplex/ayt-api/commit/3af95cd89ba922de30ef7070f3b9811636851075))
 
