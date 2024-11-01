@@ -42,13 +42,13 @@ class AsyncYoutubeAPI:
         Args:
             yt_api_key (str): The API key used to access the YouTube API. to get an API key.
                 See instructions here: https://developers.google.com/youtube/v3/getting-started
-            oauth_token (str): The OAuth token to used for authorised requests
-
-                .. versionadded:: 0.4.0
             api_version (str): The API version to use. defaults to 3.
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
+            oauth_token (str): The OAuth token to used for authorised requests
+
+                .. versionadded:: 0.4.0
             use_oauth (bool): Whether to use the oauth token over the api key.
 
                 .. versionadded:: 0.4.0
