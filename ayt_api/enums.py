@@ -2,7 +2,15 @@ from enum import Enum
 
 
 class LongUploadsStatus(Enum):
-    """The eligibility status of the channel to upload videos longer than 15 minutes."""
+    """
+    The eligibility status of the channel to upload videos longer than 15 minutes.
+
+    Attributes:
+        allowed: This channel can upload videos that are more than 15 minutes long.
+        disallowed: This channel is not able or eligible to upload videos that are more than 15 minutes long.
+        eligible: This channel is eligible to upload videos that are more than 15 minutes long.
+        long_uploads_unspecified: YouTube may occasionally return this value if the status is unavailable.
+    """
 
     allowed = "allowed"
     disallowed = "disallowed"
@@ -14,7 +22,14 @@ class LongUploadsStatus(Enum):
 
 
 class LiveBroadcastContent(Enum):
-    """Indicates if the video is a livestream and if it is live."""
+    """
+    Indicates if the video is a livestream and if it is live.
+
+    Attributes:
+        live: The video is an active live broadcast.
+        upcoming: The video is an upcoming broadcast.
+        none: The video is not an upcoming/active live broadcast.
+    """
 
     live = "live"
     upcoming = "upcoming"
@@ -25,7 +40,13 @@ class LiveBroadcastContent(Enum):
 
 
 class VideoDefinition(Enum):
-    """Indicates whether the video is available in high definition (HD) or only in standard definition."""
+    """
+    Indicates whether the video is available in high definition (HD) or only in standard definition.
+
+    Attributes:
+        hd: The video is available in high definition (HD).
+        sd: The video is only in standard definition.
+    """
 
     hd = "hd"
     sd = "sd"
@@ -38,6 +59,30 @@ class AcbRating(Enum):
     """
     The video's Australian Classification Board (ACB) or Australian Communications andMedia Authority (ACMA) rating.
     ACMA ratings are used to classify children's television programming.
+
+    Attributes:
+        acb_c: Programs that have been given a C classification by the Australian Communications and Media Authority.
+            These programs are intended for children (other than preschool children) who are younger than 14 years of
+            age.
+        acb_e: Exempt (E): Some video are exempt from needing to be classified.
+        acb_g: General (G) The content is very mild in impact. Videos classified G (General) are suitable for everyone.
+            They can have content that may scare very young children.
+        acb_m: Mature (M): The content is moderate in impact. Videos classified M (Mature) are not
+            recommended for children under the age of 15. They can have content such as violence and themes that
+            requires a mature outlook.
+        acb_ma15plus: Mature Accompanied (MA 15+): The content is strong in impact. Films and computer games classified
+            MA 15+ are legally restricted to people aged 15 and over. They can contain content such as sex scenes and
+            drug use that may have a strong impact on the viewer.
+        acb_p: Preschool (P): Programs that have been given a P classification by the Australian Communications and
+            Media Authority. These programs are intended for preschool children.
+        acb_pg: Parental Guidance (PG): The content is mild in impact. Films and computer games classified PG
+            (Parental Guidance) can have content that a child may find confusing or upsetting and require the guidance
+            of a parent or guardian. It is not recommended for viewing by children under the age of 15 without guidance
+            of a parent or guardian.
+        acb_r18plus: Restricted (R 18+): The content is high in impact. Films and computer games classified as R 18+
+            are legally restricted to adults 18 years and over. They can contain content that may be offensive to
+            sections of the adult community.
+        acb_unrated: No rating is available.
     """
 
     acb_c = "acb_c"
@@ -55,7 +100,13 @@ class AcbRating(Enum):
 
 
 class VideoProjection(Enum):
-    """Specifies the projection format of the video (example: 360 or rectangular)."""
+    """
+    Specifies the projection format of the video (example: 360 or rectangular).
+
+    Attributes:
+        _360: The video is a 360 video that will work with VR headsets.
+        rectangular: The video is a regular rectangular video.
+    """
 
     _360 = "360"
     rectangular = "rectangular"
@@ -65,7 +116,15 @@ class VideoProjection(Enum):
 
 
 class UploadStatus(Enum):
-    """The status of the uploaded video."""
+    """
+    The status of the uploaded video.
+
+    Attributes:
+        deleted
+        failed
+        rejected
+        uploaded
+    """
 
     deleted = "deleted"
     failed = "failed"
@@ -78,7 +137,17 @@ class UploadStatus(Enum):
 
 
 class UploadFailureReason(Enum):
-    """Explains why a video failed to upload."""
+    """
+    Explains why a video failed to upload.
+
+    Attributes:
+         codec
+        conversion
+        empty_file
+        invalid_file
+        too_small
+        upload_aborted
+    """
 
     codec = "codec"
     conversion = "conversion"
@@ -92,7 +161,21 @@ class UploadFailureReason(Enum):
 
 
 class UploadRejectionReason(Enum):
-    """Explains why YouTube rejected an uploaded video."""
+    """
+    Explains why YouTube rejected an uploaded video.
+
+    Attributes:
+        claim
+        copyright
+        duplicate
+        inappropriate
+        legal
+        length
+        terms_of_use
+        trademark
+        uploader_account_closed
+        uploader_account_suspended
+    """
 
     claim = "claim"
     copyright = "copyright"
@@ -110,7 +193,15 @@ class UploadRejectionReason(Enum):
 
 
 class PrivacyStatus(Enum):
-    """The video's privacy status. Can be :attr:`private`, :attr:`public` or :attr:`unlisted`."""
+    """
+    The video's privacy status. Can be :attr:`private`, :attr:`public` or :attr:`unlisted`.
+
+    Attributes:
+        private
+        public
+        unlisted
+        privacy_status_unspecified
+    """
 
     private = "private"
     public = "public"
@@ -122,7 +213,13 @@ class PrivacyStatus(Enum):
 
 
 class License(Enum):
-    """The video's license."""
+    """
+    The video's license.
+
+    Attributes:
+        creative_common
+        youtube
+    """
 
     creative_common = "creative_common"
     youtube = "youtube"
@@ -132,7 +229,14 @@ class License(Enum):
 
 
 class CaptionStatus(Enum):
-    """The caption track's status."""
+    """
+    The caption track's status.
+
+    Attributes:
+        failed
+        serving
+        syncing
+    """
 
     failed = "failed"
     serving = "serving"
@@ -143,7 +247,14 @@ class CaptionStatus(Enum):
 
 
 class CaptionFailureReason(Enum):
-    """The reason that YouTube failed to process the caption track."""
+    """
+    The reason that YouTube failed to process the caption track.
+
+    Attributes:
+        processing_failed: YouTube failed to process the uploaded caption track.
+        unknown_format: The caption track's format was not recognized.
+        unsupported_format: The caption track's format is not supported.
+    """
 
     processing_failed = "processing_failed"
     unknown_format = "unknown_format"
@@ -154,7 +265,18 @@ class CaptionFailureReason(Enum):
 
 
 class AudioTrackType(Enum):
-    """The type of audio track associated with the caption track."""
+    """
+    The type of audio track associated with the caption track.
+
+    Attributes:
+        commentary: The caption track corresponds to an alternate audio track that includes commentary, such as
+            directory commentary.
+        descriptive: The caption track corresponds to an alternate audio track that includes additional descriptive
+            audio.
+        primary: The caption track corresponds to the primary audio track for the video, which is the audio track
+            normally associated with the video.
+        unknown: This is the default value.
+    """
 
     commentary = "commentary"
     descriptive = "descriptive"
@@ -166,7 +288,16 @@ class AudioTrackType(Enum):
 
 
 class CaptionTrackKind(Enum):
-    """The caption track's type."""
+    """
+    The caption track's type.
+
+    Attributes:
+        asr: A caption track generated using automatic speech recognition.
+        forced: A caption track that plays when no other track is selected in the player. For example, a video that
+            shows aliens speaking in an alien language might have a forced caption track to only show subtitles for the
+            alien language.
+        standard: A regular caption track. This is the default value.
+    """
 
     asr = "asr"
     forced = "forced"
@@ -181,6 +312,10 @@ class SubscriptionActivityType(Enum):
     The type of activity this subscription is for.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        all
+        uploads
     """
 
     all = "all"
@@ -195,6 +330,16 @@ class UploadFileType(Enum):
     The uploaded file's type as detected by YouTube's video processing engine.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        archive: The file is an archive file, such as a .zip archive.
+        audio: The file is a known audio file type, such as an .mp3 file.
+        document: The file is a document or text file, such as an MS Word document.
+        image: The file is an image file, such as a .jpeg image.
+        other: The file is another non-video file type.
+        project: The file is a video project file, such as a Microsoft Windows Movie Maker project, that does not
+            contain actual video data.
+        video: The file is a known video file type, such as an .mp4 file.
     """
 
     archive = "archive"
@@ -214,6 +359,12 @@ class ProcessingStatus(Enum):
     The video's processing status.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        failed: Video processing has failed. See ProcessingFailureReason.
+        processing: Video is currently being processed. See ProcessingProgress.
+        succeeded: Video has been successfully processed.
+        terminated: Processing information is no longer available.
     """
 
     failed = "failed"
@@ -230,6 +381,12 @@ class ProcessingFailureReason(Enum):
     The reason that YouTube failed to process the video.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        other: Some other processing component has failed.
+        streaming_failed: Video could not be sent to streamers.
+        transcode_failed: Content transcoding has failed.
+        upload_failed: File delivery has failed.
     """
 
     other = "other"
@@ -246,6 +403,14 @@ class ProcessingError(Enum):
     Errors that will prevent YouTube from successfully processing the uploaded video.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        archive_file: An archive file (e.g., a ZIP archive).
+        audio_file: File contains audio only (e.g., an MP3 file).
+        doc_file: Document or text file (e.g., MS Word document).
+        image_file: Image file (e.g., a JPEG image).
+        not_a_video_file: Other non-video file.
+        project_file: Movie project file (e.g., Microsoft Windows Movie Maker project).
     """
 
     archive_file = "archive_file"
@@ -265,6 +430,16 @@ class ProcessingWarning(Enum):
     erroneous transcoding.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        has_editlist: Edit lists are not currently supported.
+        has_edit_list: Alias of :attr:`has_editlist`. Edit lists are not currently supported.
+        inconsistent_resolution: Conflicting container and stream resolutions.
+        problematic_audio_codec: Audio codec that is known to cause problems was used.
+        problematic_video_codec: Video codec that is known to cause problems was used.
+        unknown_audio_codec: Unrecognized audio codec, transcoding is likely to fail.
+        unknown_container: Unrecognized file format, transcoding is likely to fail.
+        unknown_video_codec: Unrecognized video codec, transcoding is likely to fail.
     """
 
     has_editlist = "has_editlist"
@@ -285,6 +460,10 @@ class ProcessingHint(Enum):
     Suggestions that may improve YouTube's ability to process the video.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        non_streamable_mov: The MP4 file is not streamable, this will slow down the processing.
+        send_best_quality_video: Probably a better quality version of the video exists.
     """
 
     non_streamable_mov = "non_streamable_mov"
@@ -299,6 +478,12 @@ class EditorSuggestion(Enum):
     Video editing operations that might improve the video quality or playback experience of the uploaded video.
 
     .. versionadded:: 0.4.0
+
+    Attributes:
+        audio_quiet_audio_swap: The audio track appears silent and could be swapped with a better quality one.
+        video_auto_levels: Picture brightness levels seem off and could be corrected.
+        video_crop: Margins (mattes) detected around the picture could be cropped.
+        video_stabilize: The video appears shaky and could be stabilized.
     """
 
     audio_quiet_audio_swap = "audio_quiet_audio_swap"

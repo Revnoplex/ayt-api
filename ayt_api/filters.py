@@ -6,7 +6,13 @@ from .types import YoutubeVideo, YoutubeChannel, YoutubePlaylist
 
 
 class ChannelTypeFilter(Enum):
-    """Restrict a search to a particular type of channel (e.g. show)."""
+    """
+    Restrict a search to a particular type of channel (e.g. show).
+
+    Attributes:
+        any: Return all channels.
+        show: Only retrieve shows.
+    """
 
     show = "show"
     any = "any"
@@ -16,7 +22,14 @@ class ChannelTypeFilter(Enum):
 
 
 class EventTypeFilter(Enum):
-    """Restricts a search to broadcast events."""
+    """
+    Restricts a search to broadcast events.
+
+    Attributes:
+        completed: Only include completed broadcasts.
+        live: Only include active broadcasts.
+        upcoming: Only include upcoming broadcasts.
+    """
 
     completed = "completed"
     live = "live"
@@ -27,7 +40,19 @@ class EventTypeFilter(Enum):
 
 
 class OrderFilter(Enum):
-    """Specifies the method that will be used to order resources in the search."""
+    """
+    Specifies the method that will be used to order resources in the search.
+
+    Attributes:
+        date: Resources are sorted in reverse chronological order based on the date they were created.
+        rating: Resources are sorted from highest to lowest rating.
+        relevance: Resources are sorted based on their relevance to the search query. This is the default value for
+            this parameter.
+        title: Resources are sorted alphabetically by title.
+        video_count: Channels will be sorted in descending order of their number of uploaded videos.
+        view_count: Resources will be sorted from highest to lowest number of views. For live broadcasts, videos are
+            sorted by number of concurrent viewers while the broadcasts are ongoing.
+    """
 
     date = "date"
     rating = "rating"
@@ -41,7 +66,17 @@ class OrderFilter(Enum):
 
 
 class SafeSearchFilter(Enum):
-    """ Whether the search results should include restricted content as well as standard content."""
+    """
+    Whether the search results should include restricted content as well as standard content.
+
+    Attributes:
+        moderate: YouTube will filter some content from search results and, at the least, will filter content that is
+            restricted in your locale. Based on their content, search results could be removed from search results or
+            demoted in search results. This is the default parameter value.
+        none: YouTube will not filter the search result set.
+        strict: YouTube will try to exclude all restricted content from the search result set. Based on their content,
+            search results could be removed from search results or demoted in search results.
+    """
 
     moderate = "moderate"
     none = "none"
@@ -52,7 +87,14 @@ class SafeSearchFilter(Enum):
 
 
 class VideoCaptionFilter(Enum):
-    """Show results based on whether videos have captions."""
+    """
+    Show results based on whether videos have captions.
+
+    Attributes:
+        any: Do not filter results based on caption availability.
+        closed_caption: Only include videos that have captions.
+        none: Only include videos that do not have captions.
+    """
 
     closed_caption = "closed_caption"
     none = "none"
@@ -63,7 +105,14 @@ class VideoCaptionFilter(Enum):
 
 
 class VideoDimensionFilter(Enum):
-    """Restrict a search to only retrieve 2D or 3D videos."""
+    """
+    Restrict a search to only retrieve 2D or 3D videos.
+
+    Attributes:
+        _2d: Restrict search results to exclude 3D videos.
+        _3d: Restrict search results to only include 3D videos.
+        any: Include both 3D and non-3D videos in returned results. This is the default value.
+    """
 
     _2d = "2d"
     _3d = "3d"
@@ -74,7 +123,15 @@ class VideoDimensionFilter(Enum):
 
 
 class VideoDurationFilter(Enum):
-    """Show videos based on their duration."""
+    """
+    Show videos based on their duration.
+
+    Attributes:
+        any: Do not filter video search results based on their duration. This is the default value.
+        long: Only include videos longer than 20 minutes.
+        medium: Only include videos that are between four and 20 minutes long (inclusive).
+        short: Only include videos that are less than four minutes long.
+    """
 
     long = "long"
     medium = "medium"
@@ -86,7 +143,13 @@ class VideoDurationFilter(Enum):
 
 
 class VideoEmbeddableFilter(Enum):
-    """Restrict a search to only videos that can be embedded into a webpage."""
+    """
+    Restrict a search to only videos that can be embedded into a webpage.
+
+    Attributes:
+        any: Return all videos, embeddable or not.
+        true: Only retrieve embeddable videos.
+    """
 
     true = "true"
     any = "any"
@@ -96,7 +159,13 @@ class VideoEmbeddableFilter(Enum):
 
 
 class VideoPaidProductPlacementFilter(Enum):
-    """Restrict a search to only show videos that the creator has denoted as having a paid promotion."""
+    """
+    Restrict a search to only show videos that the creator has denoted as having a paid promotion.
+
+    Attributes:
+        any: Return all videos, regardless of whether they contain paid promotions.
+        true: Only retrieve videos with paid promotions.
+    """
 
     true = "true"
     any = "any"
@@ -106,7 +175,13 @@ class VideoPaidProductPlacementFilter(Enum):
 
 
 class VideoSyndicatedFilter(Enum):
-    """Restrict a search to only videos that can be played outside YouTube."""
+    """
+    Restrict a search to only videos that can be played outside YouTube.
+
+    Attributes:
+        any: Return all videos, syndicated or not.
+        true: Only retrieve syndicated videos.
+    """
 
     true = "true"
     any = "any"
@@ -116,7 +191,14 @@ class VideoSyndicatedFilter(Enum):
 
 
 class VideoTypeFilter(Enum):
-    """Restrict a search to a particular type of videos."""
+    """
+    Restrict a search to a particular type of videos.
+
+    Attributes:
+        any: Return all videos.
+        episode: Only retrieve episodes of shows.
+        movie: Only retrieve movies.
+    """
 
     episode = "episode"
     movie = "movie"
@@ -127,7 +209,15 @@ class VideoTypeFilter(Enum):
 
 
 class VideoLicenseFilter(Enum):
-    """Restrict a search to only show videos that use the particular license specified."""
+    """
+    Restrict a search to only show videos that use the particular license specified.
+
+    Attributes:
+        any: Return all videos, regardless of which license they have, that match the query parameters.
+        creative_common: Only return videos that have a Creative Commons license. Users can reuse videos with this
+            license in other videos that they create. Learn more.
+        youtube: Only return videos that have the standard YouTube license.
+    """
 
     creative_common = "creative_common"
     youtube = "youtube"
@@ -138,7 +228,14 @@ class VideoLicenseFilter(Enum):
 
 
 class VideoDefinitionFilter(Enum):
-    """Restrict a search to only show videos with the specified definition."""
+    """
+    Restrict a search to only show videos with the specified definition.
+
+    Attributes:
+        any: Return all videos, regardless of their resolution.
+        high: Only retrieve HD videos.
+        standard: Only retrieve videos in standard definition.
+    """
 
     high = "high"
     standard = "standard"
