@@ -11,7 +11,7 @@ from urllib import parse
 import aiohttp
 from aiohttp import TCPConnector, web
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
-    CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound
+    CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
     YoutubeVideoCategory, OAuth2Session
@@ -281,7 +281,10 @@ class AsyncYoutubeAPI:
             ) as post_response:
                 if post_response.ok and post_response.content_type == "application/json":
                     content = await post_response.json()
-                    return cls(None, api_version, timeout, ignore_ssl, OAuth2Session(**content))
+                    return cls(
+                        None, api_version, timeout, ignore_ssl,
+                        OAuth2Session(client_id=client_id, client_secret=client_secret, **content)
+                    )
                 error_data = None
                 if post_response.content_type == "application/json":
                     error_data = await post_response.json()
@@ -294,6 +297,53 @@ class AsyncYoutubeAPI:
             f"AsyncYoutubeAPI('API_KEY', '{self.api_version}', {self.timeout.total}, {self.ignore_ssl}, 'OAUTH_TOKEN',"
             f" {self.use_oauth})"
         )
+
+    async def refresh_session(self):
+        """
+        Refresh the access token for the current OAuth2 Session
+
+        .. versionadded:: 0.4.0
+
+        Note:
+            This function is for refreshing the access_token if :class:`AsyncYoutubeAPI` was initialised using one of
+            the class-methods. If the class was not initialised in this way e.g. only providing an API key or just an
+            OAuth2 access token by itself, running this function will raise :class:`NoSession`.
+
+        Raises:
+            NoSession: There is no OAuth2 session to refresh.
+            HTTPException: The request failed.
+            aiohttp.ClientError: There was a problem sending the request.
+            asyncio.TimeoutError: Google's OAuth servers did not respond within the timeout period set.
+        """
+        if not self.session:
+            raise NoSession()
+        async with aiohttp.ClientSession(
+                connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
+        ) as request_token_session:
+            request_token_data = {
+                "refresh_token": self.session.refresh_token,
+                "client_id": self.session.client_id,
+                "client_secret": self.session.client_secret,
+                "grant_type": "refresh_token",
+            }
+            async with request_token_session.post(
+                "https://oauth2.googleapis.com/token",
+                data=json.dumps(request_token_data),
+                headers={"content-type": "application/json", }
+            ) as post_response:
+                if post_response.ok and post_response.content_type == "application/json":
+                    content = await post_response.json()
+                    self.session = OAuth2Session(
+                        client_id=self.session.client_id, client_secret=self.session.client_secret,
+                        refresh_token=self.session.refresh_token, **content
+                    )
+                    return
+                error_data = None
+                if post_response.content_type == "application/json":
+                    error_data = await post_response.json()
+                if post_response.status >= 400:
+                    raise HTTPException(post_response, error_data.get("error") if error_data else None, error_data)
+                raise RuntimeError("Unexpected response from oauth2.googleapis.com")
 
     async def _call_api(
             self, call_type: str, query: Optional[str], ids: Union[str, list[str], None], parts: list[str],
