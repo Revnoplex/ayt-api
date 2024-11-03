@@ -2128,6 +2128,8 @@ class OAuth2Session:
     """
     Represents an oauth2 session
 
+    .. versionadded:: 0.4.0
+
     Attributes:
         access_token (str): The OAuth2 access token used to authorise requests.
         expires_in (int): The time in seconds before the access token expires.
@@ -2136,20 +2138,30 @@ class OAuth2Session:
         token_type (str): The authorisation type.
         expires_in (datetime.datedelta): The time the token should expire at.
         approx_expires_at (datatime.datetime): The approximate time the token should expire at
+        client_id (str): A client id as part of OAuth client credentials created at
+                https://console.cloud.google.com/apis/credentials.
+        client_secret (str): The client secret as part of OAuth client credentials created at
+            https://console.cloud.google.com/apis/credentials.
     """
-    def __init__(self, access_token: str, expires_in: int, refresh_token: str, scope: str, token_type: str):
+    def __init__(
+            self, access_token: str, expires_in: int, refresh_token: str,
+            scope: str, token_type: str, client_id: str, client_secret: str
+    ):
         self.access_token: str = access_token
         self.expires_in = datetime.timedelta(seconds=expires_in)
         self.refresh_token: str = refresh_token
         self.scope: str = scope
         self.token_type: str = token_type
         self.approx_expires_at = datetime.datetime.now() + self.expires_in
+        self.client_id: str = client_id
+        self.client_secret: str = client_secret
 
     def __repr__(self):
         return (
             f"{self.__class__.__name__}(access_token='{self.access_token}', "
             f"expires_in={int(self.expires_in.total_seconds())}, refresh_token='{self.refresh_token}', "
-            f"'scope={self.scope}', 'token_type{self.token_type}'"
+            f"scope='{self.scope}', token_type='{self.token_type}', client_id='{self.client_id}', "
+            f"client_secret='{self.client_secret}')"
         )
 
     def __str__(self):
