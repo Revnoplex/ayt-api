@@ -61,6 +61,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([19944de](https://github.com/Revnoplex/ayt-api/commit/19944deeacf8a0a68c3bbb2cfbb34e9123d89f0b))
 - Class `OAuth2Session` for managing the current OAuth2 session.
 ([baa7b9d](https://github.com/Revnoplex/ayt-api/commit/baa7b9d8c6aeb543847ea08bd6b9cea242804178))
+- Function `refresh_session` which refreshes the OAuth2 token for a session. 
+([4e210fd](https://github.com/Revnoplex/ayt-api/commit/4e210fd62c5287566d92c1fef5ec3cc5e11c4d9d))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
