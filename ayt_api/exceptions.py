@@ -14,12 +14,20 @@ class ResourceNotFound(YoutubeExceptions):
 
 
 class AuthException(YoutubeExceptions):
-    """Base exceptions for errors related to authorisation."""
+    """
+    Base exceptions for errors related to authorisation.
+
+    .. versionadded:: 0.4.0
+    """
     pass
 
 
 class OAuth2Exception(AuthException):
-    """Base exceptions for errors related to OAuth2."""
+    """
+    Base exceptions for errors related to OAuth2.
+
+    .. versionadded:: 0.4.0
+    """
     pass
 
 
@@ -201,6 +209,10 @@ class NoAuth(AuthException):
 
 
 class NoSession(OAuth2Exception):
+    """Raises when performing an operation that needs an :class:`OAuth2Session` instance when there isn't one.
+
+    .. versionadded:: 0.4.0
+    """
     def __init__(self):
         super().__init__("There is no current OAuth2 session or only an access token was provided.")
 
