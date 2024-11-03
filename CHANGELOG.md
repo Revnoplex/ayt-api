@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([032e817](https://github.com/Revnoplex/ayt-api/commit/032e8174eb26ce222952c58246d8eaef70ea6f12))
 - Exception `NoAuth` which raises when neither an API key nor OAuth token is passed to `AsyncYoutubeAPI`. 
 ([b7a188d#diff-3f857ff](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788))
+- Base Exception `AuthException` which is the base for authorisation related errors.
+([fedeb89#diff-3f857ff-R16](https://github.com/Revnoplex/ayt-api/commit/fedeb89a67e1455ccef0c5337dfd21f4523f314b#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788R16))
+- Base Exception `OAuth2Exception` which is the base for OAuth2 related errors.
+([fedeb89#diff-3f857ff-R21](https://github.com/Revnoplex/ayt-api/commit/fedeb89a67e1455ccef0c5337dfd21f4523f314b#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788R21))
 - Parameter `max_items` to all playlist item API calls. 
 ([90e1ad1](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14))
 - Parameter `use_oauth` to `AsyncYoutubeAPI` to prefer authenticating with OAuth2 over using an API key. 
@@ -99,6 +103,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([b7a188d#diff-cbbc953-R334](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R334))
 - OAuth token is used if no API key is provided. 
 ([90e1ad1#diff-cbbc953-R92](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R92))
+- `InvalidKey` now inherits from the new class `AuthException`.
+([fedeb89#diff-3f857ff-R174](https://github.com/Revnoplex/ayt-api/commit/fedeb89a67e1455ccef0c5337dfd21f4523f314b#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788R174))
 - *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
 ([3af95cd](https://github.com/Revnoplex/ayt-api/commit/3af95cd89ba922de30ef7070f3b9811636851075))
 
