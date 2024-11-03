@@ -13,6 +13,16 @@ class ResourceNotFound(YoutubeExceptions):
     pass
 
 
+class AuthException(YoutubeExceptions):
+    """Base exceptions for errors related to authorisation."""
+    pass
+
+
+class OAuth2Exception(AuthException):
+    """Base exceptions for errors related to OAuth2."""
+    pass
+
+
 class PlaylistNotFound(ResourceNotFound):
     """Raises if the specified playlist id does not exist on YouTube.
 
@@ -161,13 +171,13 @@ class InvalidInput(YoutubeExceptions):
         super().__init__(message)
 
 
-class InvalidKey(YoutubeExceptions):
+class InvalidKey(AuthException):
     """Exception that's raised when an invalid API key is passed."""
     def __init__(self):
         super().__init__("API key not valid. Please pass a valid API key.")
 
 
-class InvalidToken(YoutubeExceptions):
+class InvalidToken(OAuth2Exception):
     """
     Exception that's raised when an OAuth token is invalid, expired or one is needed.
 
@@ -177,7 +187,7 @@ class InvalidToken(YoutubeExceptions):
         super().__init__("Invalid or expired OAuth token. Please pass a new valid OAuth token.")
 
 
-class NoAuth(YoutubeExceptions):
+class NoAuth(AuthException):
     """
     Exception that is raised when neither an api key nor an oauth token is provided to :class:`AsyncYoutubeAPI`.
 
