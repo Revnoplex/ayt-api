@@ -200,6 +200,11 @@ class NoAuth(AuthException):
         )
 
 
+class NoSession(OAuth2Exception):
+    def __init__(self):
+        super().__init__("There is no current OAuth2 session or only an access token was provided.")
+
+
 class APITimeout(YoutubeExceptions):
     """Exception that's raised when the api does not respond within the timeout set.
 
