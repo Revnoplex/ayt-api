@@ -14,7 +14,7 @@ from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPExcep
     CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
-    YoutubeVideoCategory
+    YoutubeVideoCategory, OAuth2Session
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page
 
@@ -36,7 +36,7 @@ class AsyncYoutubeAPI:
 
     def __init__(
             self, yt_api_key: str = None, api_version: str = '3', timeout: float = 5, ignore_ssl: bool = False,
-            oauth_token: str = None, use_oauth=False
+            session: OAuth2Session = None, oauth_token: str = None, use_oauth=False
     ):
         """
         Args:
@@ -46,7 +46,10 @@ class AsyncYoutubeAPI:
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
-            oauth_token (str): The OAuth token to used for authorised requests
+            session (OAuth2Session): The OAuth2 session used for authorised requests.
+
+                .. versionadded:: 0.4.0
+            oauth_token (str): The OAuth token to used for authorised requests.
 
                 .. versionadded:: 0.4.0
             use_oauth (bool): Whether to use the oauth token over the api key.
@@ -58,7 +61,8 @@ class AsyncYoutubeAPI:
         """
         self._key = yt_api_key
         self.api_version = api_version
-        self._token = oauth_token
+        self.session = session
+        self._token = session.access_token if session else oauth_token
         if (not self._key) and (not self._token):
             raise NoAuth()
         self.call_url_prefix = self.URL_PREFIX.format(version=self.api_version)
@@ -277,7 +281,7 @@ class AsyncYoutubeAPI:
             ) as post_response:
                 if post_response.ok and post_response.content_type == "application/json":
                     content = await post_response.json()
-                    return cls(None, api_version, timeout, ignore_ssl, content['access_token'])
+                    return cls(None, api_version, timeout, ignore_ssl, OAuth2Session(**content))
                 error_data = None
                 if post_response.content_type == "application/json":
                     error_data = await post_response.json()
@@ -361,7 +365,9 @@ class AsyncYoutubeAPI:
             try:
                 headers = {}
                 if oauth:
-                    headers = {"Authorization": f"Bearer {self._token}"}
+                    headers = {
+                        "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}"
+                    }
                 async with yt_api_session.get(call_url, headers=headers) as yt_api_response:
                     if yt_api_response.ok:
                         res_data = await yt_api_response.json()

@@ -2122,3 +2122,38 @@ class YoutubeVideoCategory:
             f"YoutubeVideoCategory({{'id': '{self.id}', 'snippet': {{'title': '{self.title}', 'channelId': "
             f"'{self.channel_id}', 'assignable': {self.assignable}}}}}, '{self.call_url}', {self._call_data})"
         )
+
+
+class OAuth2Session:
+    """
+    Represents an oauth2 session
+
+    Attributes:
+        access_token (str): The OAuth2 access token used to authorise requests.
+        expires_in (int): The time in seconds before the access token expires.
+        refresh_token (str): The token used to refresh the session.
+        scope (str): The scope of the access token.
+        token_type (str): The authorisation type.
+        expires_in (datetime.datedelta): The time the token should expire at.
+        approx_expires_at (datatime.datetime): The approximate time the token should expire at
+    """
+    def __init__(self, access_token: str, expires_in: int, refresh_token: str, scope: str, token_type: str):
+        self.access_token: str = access_token
+        self.expires_in = datetime.timedelta(seconds=expires_in)
+        self.refresh_token: str = refresh_token
+        self.scope: str = scope
+        self.token_type: str = token_type
+        self.approx_expires_at = datetime.datetime.now() + self.expires_in
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(access_token='{self.access_token}', "
+            f"expires_in={int(self.expires_in.total_seconds())}, refresh_token='{self.refresh_token}', "
+            f"'scope={self.scope}', 'token_type{self.token_type}'"
+        )
+
+    def __str__(self):
+        return (
+            f"OAuth2Session: Expires in {self.expires_in} at approximately {self.approx_expires_at}, "
+            f"Token Type: {self.token_type}"
+        )
