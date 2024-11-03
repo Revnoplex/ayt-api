@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([032e817](https://github.com/Revnoplex/ayt-api/commit/032e8174eb26ce222952c58246d8eaef70ea6f12))
 - Exception `NoAuth` which raises when neither an API key nor OAuth token is passed to `AsyncYoutubeAPI`. 
 ([b7a188d#diff-3f857ff](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788))
+- Exception `NoSession` which raises when performing an operation that needs an `OAuth2Session` instance when there isn't one. 
+([99df448](https://github.com/Revnoplex/ayt-api/commit/99df44827b75e999ed2f040dcb8004d4e484e7de))
 - Base Exception `AuthException` which is the base for authorisation related errors.
 ([fedeb89#diff-3f857ff-R16](https://github.com/Revnoplex/ayt-api/commit/fedeb89a67e1455ccef0c5337dfd21f4523f314b#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788R16))
 - Base Exception `OAuth2Exception` which is the base for OAuth2 related errors.
