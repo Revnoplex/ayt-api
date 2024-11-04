@@ -2156,6 +2156,15 @@ class OAuth2Session:
         self.client_id: str = client_id
         self.client_secret: str = client_secret
 
+    def is_expired(self):
+        """
+        An approximate check to see if the access token could be expired
+
+        Returns:
+            bool: Is the access token expired?
+        """
+        return self.approx_expires_at < datetime.datetime.now()
+
     def __repr__(self):
         return (
             f"{self.__class__.__name__}(access_token='{self.access_token}', "
