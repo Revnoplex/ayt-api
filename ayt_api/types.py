@@ -2132,11 +2132,10 @@ class OAuth2Session:
 
     Attributes:
         access_token (str): The OAuth2 access token used to authorise requests.
-        expires_in (int): The time in seconds before the access token expires.
         refresh_token (str): The token used to refresh the session.
         scope (str): The scope of the access token.
         token_type (str): The authorisation type.
-        expires_in (datetime.timedelta): The time the token should expire at.
+        expiry_length (datetime.timedelta): The total time the token is valid before it expires
         approx_expires_at (datetime.datetime): The approximate time the token should expire at
         client_id (str): A client id as part of OAuth client credentials created at
                 https://console.cloud.google.com/apis/credentials.
@@ -2148,13 +2147,23 @@ class OAuth2Session:
             scope: str, token_type: str, client_id: str, client_secret: str
     ):
         self.access_token: str = access_token
-        self.expires_in = datetime.timedelta(seconds=expires_in)
+        self.expiry_length = datetime.timedelta(seconds=expires_in)
         self.refresh_token: str = refresh_token
         self.scope: str = scope
         self.token_type: str = token_type
-        self.approx_expires_at = datetime.datetime.now() + self.expires_in
+        self.approx_expires_at = datetime.datetime.now() + self.expiry_length
         self.client_id: str = client_id
         self.client_secret: str = client_secret
+
+    @property
+    def expires_in(self) -> datetime.timedelta:
+        """
+        The approximate time the token should expire in.
+
+        Returns:
+            datetime.timedelta: The time the token should expire in.
+        """
+        return self.approx_expires_at - datetime.datetime.now()
 
     def is_expired(self):
         """
@@ -2175,6 +2184,6 @@ class OAuth2Session:
 
     def __str__(self):
         return (
-            f"OAuth2Session: Expires in {self.expires_in} at approximately {self.approx_expires_at}, "
+            f"OAuth2Session: Expires in approximately {self.expires_in} at {self.approx_expires_at}, "
             f"Token Type: {self.token_type}"
         )
