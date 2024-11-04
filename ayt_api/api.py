@@ -348,9 +348,8 @@ class AsyncYoutubeAPI:
     async def _call_api(
             self, call_type: str, query: Optional[str], ids: Union[str, list[str], None], parts: list[str],
             return_type: Union[type, Callable], exception_type: type[ResourceNotFound], max_results: int = None,
-            max_items: int = None,
-            multi_resp=False, next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
-            other_queries: str = None, return_args: dict = None
+            max_items: int = None, multi_resp=False, next_page: str = None, next_list: list[str] = None,
+            current_count=0, expected_count=1, other_queries: str = None, return_args: dict = None, auth_retry=False
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
 
@@ -373,6 +372,9 @@ class AsyncYoutubeAPI:
             return_args (dict): Extra arguments that are passed to the object passed to ``return_type``
 
                 .. versionadded:: 0.4.0
+            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``
+
+                .. versionadded:: 0.4.0
 
         Returns:
             Union[Any, list]: The object specified in ``return_type``.
@@ -384,6 +386,14 @@ class AsyncYoutubeAPI:
             InvalidInput: The query was empty.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
+        # check if session has probably expired
+        if self.session and self.session.is_expired():
+            await self.refresh_session()
+            return await self._call_api(
+                call_type, query, ids, parts, return_type, exception_type, max_results,
+                max_items, multi_resp, next_page, next_list, current_count, expected_count,
+                other_queries, return_args, True
+            )
         # use OAuth token if no api key was provided
         oauth = self.use_oauth or (not self._key)
         return_args = return_args or {}
@@ -467,11 +477,18 @@ class AsyncYoutubeAPI:
                         if yt_api_response.content_type == "application/json":
                             res_data = await yt_api_response.json()
                             if "error" in res_data:
-                                check = [error.get("reason") for error in res_data["error"]["errors"]
-                                         if error.get("reason").endswith("NotFound")]
-                                if check:
-                                    raise exception_type(ids)
                                 error_data = res_data["error"]
+                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                                not_found_check = [reason for reason in error_reasons if reason.endswith("NotFound")]
+                                if not_found_check:
+                                    raise exception_type(ids)
+                                if "authError" in error_reasons and self.session and (not auth_retry):
+                                    await self.refresh_session()
+                                    return await self._call_api(
+                                        call_type, query, ids, parts, return_type, exception_type, max_results,
+                                        max_items, multi_resp, next_page, next_list, current_count, expected_count,
+                                        other_queries, return_args, True
+                                    )
                                 message = error_data.get("message")
                         raise HTTPException(yt_api_response, message, error_data)
             except asyncio.TimeoutError:
