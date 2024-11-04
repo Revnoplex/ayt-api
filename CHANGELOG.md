@@ -63,6 +63,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([baa7b9d](https://github.com/Revnoplex/ayt-api/commit/baa7b9d8c6aeb543847ea08bd6b9cea242804178))
 - Function `refresh_session` which refreshes the OAuth2 token for a session. 
 ([4e210fd](https://github.com/Revnoplex/ayt-api/commit/4e210fd62c5287566d92c1fef5ec3cc5e11c4d9d))
+- Checker function `is_expired` to class `OAuth2Session`. 
+([3ce06f7](https://github.com/Revnoplex/ayt-api/commit/3ce06f7a28a6903381c77c00a05607217e8d445c))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
@@ -109,6 +111,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([90e1ad1#diff-cbbc953-R92](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R92))
 - `InvalidKey` now inherits from the new class `AuthException`.
 ([fedeb89#diff-3f857ff-R174](https://github.com/Revnoplex/ayt-api/commit/fedeb89a67e1455ccef0c5337dfd21f4523f314b#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788R174))
+- OAuth2 session expiry checks are automatically done before completing api calls.
+([1da9164](https://github.com/Revnoplex/ayt-api/commit/1da916473d1dc62ec56f24fb17842da4bf80481a))
 - *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
 ([3af95cd](https://github.com/Revnoplex/ayt-api/commit/3af95cd89ba922de30ef7070f3b9811636851075))
 
