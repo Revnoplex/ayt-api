@@ -9,7 +9,7 @@
 
 A Basic, Asynchronous, Object-Oriented YouTube API Wrapper Written in Python.
 
-The library is designed towards being used in python based discord bots that use an asynchronous discord api wrapper
+This library is designed towards being used in python based discord bots that use an asynchronous discord api wrapper
 
 # API
 ```{toctree}
