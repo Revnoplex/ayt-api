@@ -2136,7 +2136,7 @@ class OAuth2Session:
         scope (str): The scope of the access token.
         token_type (str): The authorisation type.
         expiry_length (datetime.timedelta): The total time the token is valid before it expires
-        approx_expires_at (datetime.datetime): The approximate time the token should expire at
+        expires_at (datetime.datetime): The time the token will expire at
         client_id (str): A client id as part of OAuth client credentials created at
                 https://console.cloud.google.com/apis/credentials.
         client_secret (str): The client secret as part of OAuth client credentials created at
@@ -2144,35 +2144,35 @@ class OAuth2Session:
     """
     def __init__(
             self, access_token: str, expires_in: int, refresh_token: str,
-            scope: str, token_type: str, client_id: str, client_secret: str
+            scope: str, token_type: str, client_id: str, client_secret: str, http_date: datetime.datetime
     ):
         self.access_token: str = access_token
         self.expiry_length = datetime.timedelta(seconds=expires_in)
         self.refresh_token: str = refresh_token
         self.scope: str = scope
         self.token_type: str = token_type
-        self.approx_expires_at = datetime.datetime.now() + self.expiry_length
+        self.expires_at = http_date + self.expiry_length
         self.client_id: str = client_id
         self.client_secret: str = client_secret
 
     @property
     def expires_in(self) -> datetime.timedelta:
         """
-        The approximate time the token should expire in.
+        The time the token will expire in.
 
         Returns:
-            datetime.timedelta: The time the token should expire in.
+            datetime.timedelta: The time the token will expire in.
         """
-        return self.approx_expires_at - datetime.datetime.now()
+        return self.expires_at - datetime.datetime.now(datetime.UTC)
 
     def is_expired(self):
         """
-        An approximate check to see if the access token could be expired
+        A check to see if the access token has expired
 
         Returns:
-            bool: Is the access token expired?
+            bool: Has the access token expired?
         """
-        return self.approx_expires_at < datetime.datetime.now()
+        return self.expires_at < datetime.datetime.now(datetime.UTC)
 
     def __repr__(self):
         return (
@@ -2184,6 +2184,6 @@ class OAuth2Session:
 
     def __str__(self):
         return (
-            f"OAuth2Session: Expires in approximately {self.expires_in} at {self.approx_expires_at}, "
+            f"OAuth2Session: Expires in {self.expires_in} at {self.expires_at}, "
             f"Token Type: {self.token_type}"
         )

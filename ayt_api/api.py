@@ -5,6 +5,7 @@ import json
 import os
 import pathlib
 import socket
+from email.utils import parsedate_to_datetime
 from typing import Optional, Union, Any, AsyncGenerator, Callable
 from urllib import parse
 
@@ -283,7 +284,10 @@ class AsyncYoutubeAPI:
                     content = await post_response.json()
                     return cls(
                         None, api_version, timeout, ignore_ssl,
-                        OAuth2Session(client_id=client_id, client_secret=client_secret, **content)
+                        OAuth2Session(
+                            http_date=parsedate_to_datetime(post_response.headers.get("Date")),
+                            client_id=client_id, client_secret=client_secret, **content
+                        )
                     )
                 error_data = None
                 if post_response.content_type == "application/json":
