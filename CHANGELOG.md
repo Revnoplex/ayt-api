@@ -65,6 +65,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([4e210fd](https://github.com/Revnoplex/ayt-api/commit/4e210fd62c5287566d92c1fef5ec3cc5e11c4d9d))
 - Checker function `is_expired` to class `OAuth2Session`. 
 ([3ce06f7](https://github.com/Revnoplex/ayt-api/commit/3ce06f7a28a6903381c77c00a05607217e8d445c))
+- `podcast_status` attribute to `YoutubePlaylist` and enum. 
+([5c85d35](https://github.com/Revnoplex/ayt-api/commit/5c85d353d00cd0a40c7d5ccd22dc00160fe7a5bc))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
