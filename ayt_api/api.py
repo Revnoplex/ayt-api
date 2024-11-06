@@ -74,22 +74,26 @@ class AsyncYoutubeAPI:
         self.ignore_ssl = ignore_ssl
 
     @classmethod
-    def generate_url_and_socket(cls, client_id: str) -> tuple[str, socket.socket]:
+    def generate_url_and_socket(
+            cls, client_id: str, scopes: list[str] = None
+    ) -> tuple[str, socket.socket]:
         """
         Sets up a consent url and a socket to use with oauth2 authentication.
 
         .. versionadded:: 0.4.0
 
         Args:
-            client_id (str): The client_id to use in the consent url
+            client_id (str): The client_id to use in the consent url.
+            scopes (list[str]): The list of oauth2 scopes to include in the url.
         Returns:
             tuple[str, socket.socket]: The consent url and internal socket to use later with
                 :func:`with_authcode_receiver`.
         Raises:
             OSError: Setting up the socket failed
         """
+        scopes = scopes or ["https://www.googleapis.com/auth/youtube"]
         consent_url = (
-            "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.googleapis.com/auth/youtube"
+            f"https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope={'%20'.join(scopes)}"
             "&response_type=code&redirect_uri={redirect_uri}&client_id={client_id}&service=lso&o2v=1&ddm=0"
             "&flowName=GeneralOAuthFlow"
         )
@@ -338,6 +342,7 @@ class AsyncYoutubeAPI:
                 if post_response.ok and post_response.content_type == "application/json":
                     content = await post_response.json()
                     self.session = OAuth2Session(
+                        http_date=parsedate_to_datetime(post_response.headers.get("Date")),
                         client_id=self.session.client_id, client_secret=self.session.client_secret,
                         refresh_token=self.session.refresh_token, **content
                     )
@@ -717,7 +722,9 @@ class AsyncYoutubeAPI:
             AuthorisedYoutubeVideo if authorised else YoutubeVideo, VideoNotFound, 50,
         )
 
-    async def fetch_channel(self, channel_id: Union[str, list[str]]) -> Union[YoutubeChannel, list[YoutubeChannel]]:
+    async def fetch_channel(
+            self, channel_id: Union[str, list[str]], authorised=False
+    ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
         """Fetches information on a channel using a channel id.
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
@@ -725,6 +732,10 @@ class AsyncYoutubeAPI:
 
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
+            authorised (bool): Whether to fetch additional owner side information about a channel e.g. audit details
+                (Needs OAuth token).
+
+                .. versionadded:: 0.4.0
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -741,7 +752,7 @@ class AsyncYoutubeAPI:
             [
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
-            ],
+            ] + (["auditDetails"] if authorised else []),
             YoutubeChannel, ChannelNotFound, 50
         )
 
