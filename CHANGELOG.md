@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ([b7a188d#diff-cbbc953-R33](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R33))
 - Parameter `authorised` to `fetch_video()` which prompts the return of `AuthorisedYoutubeVideo` over a `YoutubeVideo`. 
 ([032e817](https://github.com/Revnoplex/ayt-api/commit/032e8174eb26ce222952c58246d8eaef70ea6f12))
+- Parameter `authorised` to `fetch_channel()` which makes `YoutubeChannel` class include audit details.
+([14957f3#diff-cbbc953-R726](https://github.com/Revnoplex/ayt-api/commit/14957f396152de262b187f90c9dd5f6f4316a7c2#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R726))
 - Exception `NoAuth` which raises when neither an API key nor OAuth token is passed to `AsyncYoutubeAPI`. 
 ([b7a188d#diff-3f857ff](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788))
 - Exception `NoSession` which raises when performing an operation that needs an `OAuth2Session` instance when there isn't one. 
