@@ -1105,6 +1105,9 @@ class YoutubePlaylist:
         localized (Optional[LocalName]): an alias of :attr:`localised`.
         visibility (Optional[PrivacyStatus]): The video's privacy status. Can be :attr:`PrivacyStatus.private`,
             :attr:`PrivacyStatus.public` or :attr:`PrivacyStatus.unlisted`.
+        podcast_status (Optional[PodcastStatus]): The playlist's podcast status.
+
+            .. versionadded:: 0.4.0
         item_count (Optional[int]): The number of items in the playlist.
         embed_html (Optional[str]): An <iframe> tag that embeds a player that plays the video.
         localisations (Optional[list[LocalName]]): contains translations of the video's metadata.

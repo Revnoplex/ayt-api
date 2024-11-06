@@ -216,6 +216,8 @@ class PodcastStatus(Enum):
     """
     A playlist's podcast status.
 
+    .. versionadded:: 0.4.0
+
     Attributes:
         enabled
         disabled
