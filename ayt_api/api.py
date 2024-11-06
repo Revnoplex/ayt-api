@@ -84,7 +84,8 @@ class AsyncYoutubeAPI:
 
         Args:
             client_id (str): The client_id to use in the consent url.
-            scopes (list[str]): The list of oauth2 scopes to include in the url.
+            scopes (Optional[list[str]]): The list of oauth2 scopes to include in the url.
+                Defaults to ``["https://www.googleapis.com/auth/youtube"]``
         Returns:
             tuple[str, socket.socket]: The consent url and internal socket to use later with
                 :func:`with_authcode_receiver`.
