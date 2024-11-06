@@ -212,6 +212,24 @@ class PrivacyStatus(Enum):
         return self.value
 
 
+class PodcastStatus(Enum):
+    """
+    A playlist's podcast status.
+
+    Attributes:
+        enabled
+        disabled
+        unspecified
+    """
+
+    enabled = "enabled"
+    disabled = "disabled"
+    unspecified = "unspecified"
+
+    def __str__(self):
+        return self.value
+
+
 class License(Enum):
     """
     The video's license.

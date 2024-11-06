@@ -1150,6 +1150,10 @@ class YoutubePlaylist:
             self.localized = self.localised
             self.visibility: Optional[PrivacyStatus] = PrivacyStatus(camel_to_snake(self.status["privacyStatus"])) if \
                 self.status.get("privacyStatus") else None
+            self.podcast_status: Optional[PodcastStatus] = (
+                PodcastStatus(camel_to_snake(self.status["podcastStatus"]))
+                if self.status.get("podcastStatus") else None
+            )
             self.item_count: Optional[int] = self.content_details.get("itemCount")
             self.embed_html: Optional[str] = self.player.get("embedHtml")
             if self.raw_localisations is None:
