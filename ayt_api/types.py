@@ -18,6 +18,118 @@ HIGHLIGHT_URL = "{0}&lc={1}"
 HIGHLIGHT_URL_ID = VIDEO_URL.format("{0}") + "&lc={1}"
 
 
+class OAuth2Scope:
+    """
+    A list of OAuth2 scopes when using OAuth2 with the library
+
+    Attributes:
+        id (str): The id of the scope used in the Google API scope URL.
+        url (str): The full Google API scope url of the scope.
+
+    """
+    def __init__(self, scope_id: str):
+        self.id = scope_id
+        self.url = f"https://www.googleapis.com/auth/{self.id}"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}('{self.id}')"
+
+    @classmethod
+    def youtube(cls) -> OAuth2Scope:
+        """
+        Manage your YouTube account.
+
+        Returns:
+            OAuth2Scope: The data class for this scope
+        """
+        return cls("youtube")
+
+    @classmethod
+    def youtube_channel_memberships_creator(cls) -> OAuth2Scope:
+        """
+        See a list of your current active channel members, their current level, and when they became a member.
+
+        Returns:
+            OAuth2Scope: The data class for this scope
+        """
+        return cls("youtube.channel-memberships.creator")
+
+    @classmethod
+    def youtube_force_ssl(cls) -> OAuth2Scope:
+        """
+        See, edit, and permanently delete your YouTube videos, ratings, comments and captions.
+
+        Returns:
+            OAuth2Scope: The data class for this scope
+        """
+        return cls("youtube.force-ssl")
+
+    @classmethod
+    def youtube_readonly(cls) -> OAuth2Scope:
+        """
+        View your YouTube account.
+
+        Returns:
+            OAuth2Scope: The data class for this scope
+        """
+        return cls("youtube.readonly")
+
+    @classmethod
+    def youtube_upload(cls) -> OAuth2Scope:
+        """
+        Manage your YouTube videos.
+
+        Returns:
+            OAuth2Scope: The data class for this scope
+        """
+        return cls("youtube.upload")
+
+    @classmethod
+    def youtube_partner(cls) -> OAuth2Scope:
+        """
+        View and manage your assets and associated content on YouTube.
+
+        Returns:
+            OAuth2Scope: The data class for this scope
+        """
+        # noinspection SpellCheckingInspection
+        return cls("youtubepartner")
+
+    @classmethod
+    def youtube_partner_channel_audit(cls) -> OAuth2Scope:
+        """
+        View private information of your YouTube channel relevant during the audit process with a YouTube partner.
+
+        Returns:
+            OAuth2Scope: The data class for this scope
+        """
+        # noinspection SpellCheckingInspection
+        return cls("youtubepartner-channel-audit")
+
+    @classmethod
+    def list_all(cls) -> list[OAuth2Scope]:
+        """
+        A list of all the available scopes related to the YouTube data api.
+
+        Returns:
+            list[OAuth2Scope]: A list of all the scopes
+        """
+        return [
+            cls.youtube(), cls.youtube_channel_memberships_creator(), cls.youtube_force_ssl(), cls.youtube_readonly(),
+            cls.youtube_upload(), cls.youtube_partner(), cls.youtube_partner_channel_audit()
+        ]
+
+    @classmethod
+    def list_default(cls) -> list[OAuth2Scope]:
+        """
+        A list of scopes used by this library by default.
+
+        Returns:
+            list[OAuth2Scope]: A list of all the scopes
+        """
+        return [cls.youtube()]
+
+
 @dataclass
 class YoutubeThumbnail:
     """Data for an individual YouTube thumbnail.
