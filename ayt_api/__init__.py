@@ -5,7 +5,6 @@ from .filters import SearchFilter
 from . import utils
 from . import filters
 from .enums import *
-from .types import OAuth2Scope
 
 __title__ = "ayt-api"
 __author__ = "Revnoplex"

@@ -1,4 +1,5 @@
-from enum import Enum
+from __future__ import annotations
+from enum import Enum, StrEnum
 
 
 class LongUploadsStatus(Enum):
@@ -513,3 +514,53 @@ class EditorSuggestion(Enum):
 
     def __str__(self):
         return self.value
+
+
+class OAuth2Scope(StrEnum):
+    """
+    OAuth2 scopes when using OAuth2 with the library.
+
+    Attributes:
+        youtube: Manage your YouTube account.
+        youtube_channel_memberships_creator: See a list of your current active channel members, their current level,
+            and when they became a member.
+        youtube_force_ssl: See, edit, and permanently delete your YouTube videos, ratings, comments and captions.
+        youtube_readonly: View your YouTube account.
+        youtube_upload: Manage your YouTube videos.
+        youtube_partner: View and manage your assets and associated content on YouTube.
+        youtube_partner_channel_audit: View private information of your YouTube channel relevant during the audit
+            process with a YouTube partner.
+    """
+    youtube = "https://www.googleapis.com/auth/youtube"
+    youtube_channel_memberships_creator = "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
+    youtube_force_ssl = "https://www.googleapis.com/auth/youtube.force-ssl"
+    youtube_readonly = "https://www.googleapis.com/auth/youtube.readonly"
+    youtube_upload = "https://www.googleapis.com/auth/youtube.upload"
+    youtube_partner = "https://www.googleapis.com/auth/youtubepartner"
+    youtube_partner_channel_audit = "https://www.googleapis.com/auth/youtubepartner-channel-audit"
+
+    def __str__(self):
+        return self.value
+
+    @classmethod
+    def all(cls) -> list[OAuth2Scope]:
+        """
+        A list of all the available scopes related to the YouTube data api.
+
+        Returns:
+            list[OAuth2Scope]: A list of all the scopes
+        """
+        return [
+            cls.youtube, cls.youtube_channel_memberships_creator, cls.youtube_force_ssl, cls.youtube_readonly,
+            cls.youtube_upload, cls.youtube_partner, cls.youtube_partner_channel_audit
+        ]
+
+    @classmethod
+    def default(cls) -> list[OAuth2Scope]:
+        """
+        A list of scopes used by this library by default.
+
+        Returns:
+            list[OAuth2Scope]: A list of all the scopes
+        """
+        return [cls.youtube]

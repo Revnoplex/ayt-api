@@ -15,7 +15,8 @@ from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPExcep
     CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
-    YoutubeVideoCategory, OAuth2Session, OAuth2Scope
+    YoutubeVideoCategory, OAuth2Session
+from .enums import OAuth2Scope
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page
 
@@ -85,7 +86,7 @@ class AsyncYoutubeAPI:
         Args:
             client_id (str): The client_id to use in the consent url.
             scopes (Optional[list[OAuth2Scope]]): The list of oauth2 scopes to include in the url.
-                Defaults to :func:`ayt_api.types.OAuth2Scope.list_default`
+                Defaults to :func:`ayt_api.enums.OAuth2Scope.default`
 
         Returns:
             tuple[str, socket.socket]: The consent url and internal socket to use later with
@@ -93,10 +94,10 @@ class AsyncYoutubeAPI:
         Raises:
             OSError: Setting up the socket failed
         """
-        scopes = scopes or OAuth2Scope.list_default()
+        scopes = scopes or OAuth2Scope.default()
         consent_url = (
             f"https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope="
-            f"{'%20'.join([scope.url for scope in scopes])}"
+            f"{'%20'.join([str(scope.value) for scope in scopes])}"
             "&response_type=code&redirect_uri={redirect_uri}&client_id={client_id}&service=lso&o2v=1&ddm=0"
             "&flowName=GeneralOAuthFlow"
         )
