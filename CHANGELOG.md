@@ -69,8 +69,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([3ce06f7](https://github.com/Revnoplex/ayt-api/commit/3ce06f7a28a6903381c77c00a05607217e8d445c))
 - `podcast_status` attribute to `YoutubePlaylist` and enum. 
 ([5c85d35](https://github.com/Revnoplex/ayt-api/commit/5c85d353d00cd0a40c7d5ccd22dc00160fe7a5bc))
-- Class `OAuth2Scope` and implementations into `AsyncYoutubeAPI.generate_url_and_socket()`. 
-([ac292fb](https://github.com/Revnoplex/ayt-api/commit/ac292fb6977fbdba51db32b0eaeca6f433c3f5f3))
+- Enum `OAuth2Scope` and implementations into `AsyncYoutubeAPI.generate_url_and_socket()`. 
+([3bd435a](https://github.com/Revnoplex/ayt-api/commit/3bd435a1079ffae33cb717f38b26df8e216fd1b8))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
