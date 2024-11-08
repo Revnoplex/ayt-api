@@ -760,7 +760,7 @@ class AsyncYoutubeAPI:
         )
 
     async def fetch_channel_from_handle(
-            self, handle: Union[str, list[str]]
+            self, handle: Union[str, list[str]], authorised=False
     ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
         """Fetches information on a channel using a channel's handle.
 
@@ -771,6 +771,10 @@ class AsyncYoutubeAPI:
 
         Args:
             handle (str): The handle of the channel to use. e.g. **@Revnoplex**.
+            authorised (bool): Whether to fetch additional owner side information about a channel e.g. audit details
+                (Needs OAuth token).
+
+                .. versionadded:: 0.4.0
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -787,7 +791,7 @@ class AsyncYoutubeAPI:
             [
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
-             ],
+             ] + (["auditDetails"] if authorised else []),
             YoutubeChannel, ChannelNotFound, 50
         )
 
