@@ -1,5 +1,5 @@
 from __future__ import annotations
-from enum import Enum, StrEnum
+from enum import Enum
 
 
 class LongUploadsStatus(Enum):
@@ -516,7 +516,7 @@ class EditorSuggestion(Enum):
         return self.value
 
 
-class OAuth2Scope(StrEnum):
+class OAuth2Scope(Enum):
     """
     OAuth2 scopes when using OAuth2 with the library.
 
