@@ -73,6 +73,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([3bd435a](https://github.com/Revnoplex/ayt-api/commit/3bd435a1079ffae33cb717f38b26df8e216fd1b8))
 - Attribute `has_paid_product_placement` to class `YoutubeVideo`.
 ([e012a58](https://github.com/Revnoplex/ayt-api/commit/e012a5819b828132467e7e57d19f52e001ddf4eb))
+- Attribute `contains_synthetic_media` to `YoutubeVideo` as a settable value when updating the instance. 
+([10881c0#diff-7363042-R745](https://github.com/Revnoplex/ayt-api/commit/10881c08f8689da24cf2cc4062c7c15aa2240dbf#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R745))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
@@ -103,6 +105,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([b7a188d#diff-7363042](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834))
 - `YoutubeChannel.likes_id` returning an invalid ID. 
 ([90e1ad1#diff-7363042-L1420](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L1420))
+- `VideoStream` and `AudioStream` raising errors when certain values weren't set. 
+([10881c0](https://github.com/Revnoplex/ayt-api/commit/10881c08f8689da24cf2cc4062c7c15aa2240dbf))
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 - *Documentation*: Formatting error in docstring for `exceptions.APITimeout`. 
