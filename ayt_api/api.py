@@ -721,7 +721,7 @@ class AsyncYoutubeAPI:
             "videos", "id", video_id,
             [
                 "snippet", "status", "contentDetails", "statistics", "player", "topicDetails",
-                "recordingDetails", "liveStreamingDetails", "localizations"
+                "recordingDetails", "liveStreamingDetails", "localizations", "paidProductPlacementDetails"
             ] + (["fileDetails", "processingDetails", "suggestions",] if authorised else []),
             AuthorisedYoutubeVideo if authorised else YoutubeVideo, VideoNotFound, 50,
         )

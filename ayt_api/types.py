@@ -578,6 +578,8 @@ class YoutubeVideo(BaseVideo):
         topic_details (Optional[dict]): The raw topic details used to construct part of this class.
         raw_recording_details (dict): The raw recording details used to construct part of this class.
         raw_localisations (Optional[dict]): The raw localisation data used to construct part of this class.
+        paid_product_placement_details (dict): The paid product placement details data used to construct part of this
+            class.
         url (str): The URL of the video.
         title (str): The title of the video.
         description (str): The description of the video.
@@ -650,6 +652,8 @@ class YoutubeVideo(BaseVideo):
         stream_active_live_chat_id (Optional[str]): The ID of the currently active live chat attached to this video.
         localisations (Optional[list[LocalName]]): Contains translations of the video's metadata.
         localizations (Optional[list[LocalName]]): An alias of localisations.
+        has_paid_product_placement (bool): Set to ``True`` if the content uses paid product placement.
+            Defaults to ``False``.
         """
     def __init__(self, metadata: dict, call_url: str, call_data):
         """
@@ -675,6 +679,7 @@ class YoutubeVideo(BaseVideo):
             self.live_streaming_details: dict = metadata.get("liveStreamingDetails")
             self.raw_localisations: Optional[dict] = metadata.get("localizations")
             self.id: str = metadata["id"]
+            self.paid_product_placement_details: dict = metadata["paidProductPlacementDetails"]
             self.url = VIDEO_URL.format(self.id)
             self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.channel_id: Optional[str] = self.snippet.get("channelId")
@@ -776,7 +781,7 @@ class YoutubeVideo(BaseVideo):
                 for localisation in self.raw_localisations.items():
                     self.localisations.append(LocalName(**localisation[1], language=localisation[0]))
             self.localizations = self.localisations
-
+            self.has_paid_product_placement: bool = self.paid_product_placement_details["hasPaidProductPlacement"]
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
         except TypeError as missing_snippet_data:
