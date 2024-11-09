@@ -391,10 +391,10 @@ class VideoStream:
         aspect_ratio (float): The video content's display aspect ratio.
         codec (str): The video codec that the stream uses.
         bitrate (int): The video stream's bitrate, in bits per second.
-        rotation (str): The amount that YouTube needs to rotate the original source content to properly display the
-            video.
-        vendor (str): A value that uniquely identifies a video vendor. Typically, the value is a four-letter vendor
-            code.
+        rotation (Optional[str]): The amount that YouTube needs to rotate the original source content to properly
+            display the video.
+        vendor (Optional[str]): A value that uniquely identifies a video vendor. Typically, the value is a four-letter
+            vendor code.
     """
     def __init__(self, data: dict):
         """
@@ -410,8 +410,8 @@ class VideoStream:
             self.aspect_ratio: float = data["aspectRatio"]
             self.codec: str = data["codec"]
             self.bitrate: int = data["bitrateBps"]
-            self.rotation: str = data["rotation"]
-            self.vendor: str = data["vendor"]
+            self.rotation: Optional[str] = data.get("rotation")
+            self.vendor: Optional[str] = data.get("vendor")
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), data, missing_snippet_data)
 
@@ -424,7 +424,7 @@ class AudioStream:
         channel_count (int): The number of audio channels that the stream contains.
         codec (str): The audio codec that the stream uses.
         bitrate (int): The audio stream's bitrate, in bits per second.
-        vendor (str): A value that uniquely identifies a video vendor. Typically, the value is a four-letter
+        vendor (Optional[str]): A value that uniquely identifies a video vendor. Typically, the value is a four-letter
             vendor code.
 
     """
@@ -438,7 +438,7 @@ class AudioStream:
             self.channel_count: int = data["channelCount"]
             self.codec: str = data["codec"]
             self.bitrate: int = data["bitrateBps"]
-            self.vendor: str = data["vendor"]
+            self.vendor: Optional[str] = data.get("vendor")
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), data, missing_snippet_data)
 
@@ -631,6 +631,10 @@ class YoutubeVideo(BaseVideo):
             publicly viewable.
         made_for_kids (bool): Indicates whether the video is designated as child-directed, and it contains the
             current "made for kids" status of the video.
+        contains_synthetic_media (Optional[bool]): If the video contain realistic Altered or Synthetic (A/S) content.
+
+            Note:
+                This attribute will not be set unless setting the value via updating this class.
         view_count (int): The number of times the video has been viewed.
         like_count (Optional[int]): The number of users who have indicated that they liked the video.
         comment_count (Optional[int]): The number of comments on the video. This attribute is ``None`` if disabled
@@ -738,6 +742,7 @@ class YoutubeVideo(BaseVideo):
             self.embeddable: bool = self.status["embeddable"]
             self.public_stats_viewable: bool = self.status["publicStatsViewable"]
             self.made_for_kids: bool = self.status["madeForKids"]
+            self.contains_synthetic_media: Optional[bool] = self.status.get("containsSyntheticMedia")
             self.view_count: int = self.statistics["viewCount"]
             self.like_count: Optional[int] = self.statistics.get("likeCount")
             self.comment_count: Optional[int] = self.statistics.get("commentCount")
