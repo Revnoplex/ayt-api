@@ -71,6 +71,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([5c85d35](https://github.com/Revnoplex/ayt-api/commit/5c85d353d00cd0a40c7d5ccd22dc00160fe7a5bc))
 - Enum `OAuth2Scope` and implementations into `AsyncYoutubeAPI.generate_url_and_socket()`. 
 ([3bd435a](https://github.com/Revnoplex/ayt-api/commit/3bd435a1079ffae33cb717f38b26df8e216fd1b8))
+- Attribute `has_paid_product_placement` to class `YoutubeVideo`.
+([e012a58](https://github.com/Revnoplex/ayt-api/commit/e012a5819b828132467e7e57d19f52e001ddf4eb))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
