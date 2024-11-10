@@ -15,10 +15,10 @@ from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPExcep
     CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
-    YoutubeVideoCategory, OAuth2Session
-from .enums import OAuth2Scope
+    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName
+from .enums import OAuth2Scope, License, PrivacyStatus
 from .filters import SearchFilter
-from .utils import censor_key, snake_to_camel, basic_html_page
+from .utils import censor_key, snake_to_camel, basic_html_page, use_existing
 
 
 class AsyncYoutubeAPI:
@@ -501,6 +501,163 @@ class AsyncYoutubeAPI:
                                         call_type, query, ids, parts, return_type, exception_type, max_results,
                                         max_items, multi_resp, next_page, next_list, current_count, expected_count,
                                         other_queries, return_args, True
+                                    )
+                                message = error_data.get("message")
+                        raise HTTPException(yt_api_response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+
+    async def _update_api(
+            self, call_type: str, query: Optional[str], ids: Union[str, list[str], None], parts: list[str],
+            return_type: Union[type, Callable], new_values: dict,
+            exception_type: type[ResourceNotFound], max_results: int = None, max_items: int = None, multi_resp=False,
+            next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
+            other_queries: str = None, return_args: dict = None, auth_retry=False
+    ) -> Union[Any, list]:
+        """A centralised function for sending update requests to the api.
+
+        Args:
+            call_type (str): The type of request to make to the YouTube api.
+            query (Optional[str]): The variable name for the ``ids`` (identifier keywords).
+            ids (Union[str, list[str], None]): The identifier keywords (usually IDs to look for).
+            parts (list[str]): A list of parts to request of the main request.
+            return_type (Union[type, Callable]): The object to return the results in.
+            new_values: (dict): The editable values of the object populated with the existing ones and once to edit.
+            exception_type (type[ResourceNotFound]): The exception to raise if the item wanted was not found.
+            max_results (Optional[int]): The maximum results per page.
+            max_items (Optional[int]): The exact maximum of items to finally return.
+            multi_resp (bool): Whether the type of api call is always expected to return multiple items.
+            next_page (Optional[str]): The page token used to get the items in a followup api call.
+            next_list (Optional[list[str]]): The identifier keywords remaining (if over 50) to use in a followup api
+                call.
+            current_count (int): The sum of items returned each api request.
+            expected_count (int): The number of items expected to be returned by the api that were requested.
+            other_queries (Optional[str]): Additional query strings to use in the call url.
+            return_args (dict): Extra arguments that are passed to the object passed to ``return_type``
+
+                .. versionadded:: 0.4.0
+            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``
+
+                .. versionadded:: 0.4.0
+
+        Returns:
+            Union[Any, list]: The object specified in ``return_type``.
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            ResourceNotFound: The requested item was not found.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The query was empty.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        # check if session has probably expired
+        if self.session and self.session.is_expired():
+            await self.refresh_session()
+            return await self._update_api(
+                call_type, query, ids, parts, return_type, new_values, exception_type, max_results,
+                max_items, multi_resp, next_page, next_list, current_count, expected_count,
+                other_queries, return_args, True
+            )
+        # use OAuth token if no api key was provided
+        return_args = return_args or {}
+        if ids is None:
+            multi = False
+        else:
+            if len(ids) < 1:
+                raise InvalidInput(ids)
+            if isinstance(ids, str):
+                multi = False
+            elif isinstance(ids, list):
+                multi = True
+                expected_count = len(ids)
+            else:
+                raise InvalidInput(ids)
+        if multi and len(ids) > 50:
+            next_list = ids[50:]
+            ids = ids[:50]
+        async with aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout) \
+                as yt_api_session:
+            id_object = ",".join(ids) if multi else ids
+            next_page_query = "" if next_page is None else f'&pageToken={next_page}'
+            max_results_query = "" if max_results is None else f'&maxResults={max_results}'
+            x_queries = "" if other_queries is None else other_queries
+            call_url = self._skeleton_url.format(
+                kind=call_type, parts=",".join(parts),
+                queries=f"&{query}={id_object}{x_queries}{next_page_query}{max_results_query}"
+            )
+            try:
+                headers = {
+                    "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                    "content-type": "application/json"
+                }
+                async with yt_api_session.put(
+                        call_url,
+                        data=json.dumps(new_values),
+                        headers=headers
+                ) as yt_api_response:
+                    if yt_api_response.ok:
+                        res_data = await yt_api_response.json()
+                        if "error" in res_data:
+                            check = [error.get("reason") for error in res_data["error"]["errors"]
+                                     if error.get("reason").endswith("NotFound")]
+                            if check:
+                                raise exception_type(ids)
+                            raise HTTPException(yt_api_response, f'{res_data["error"].get("code")}: '
+                                                                 f'{res_data["error"].get("message")}')
+                        items = [res_data]
+                        returned_items = [item.get("id") if isinstance(item.get("id"), str) else None for item in items]
+                        difference = list(set(ids).difference(set(returned_items))) if ids is not None else None
+                        if (
+                            (difference and multi) or (not multi_resp and len(items) < 1)
+                                or (ids is None and len(items) < 1)
+                        ):
+                            raise exception_type(difference if multi else ids)
+                        else:
+                            if multi or multi_resp:
+                                items_next_page = []
+                                if res_data.get("nextPageToken") is not None:
+                                    current_count += len(res_data.get("items"))
+                                    if not max_items or current_count < max_items:
+                                        items_next_page = await self._update_api(
+                                            call_type, query, ids, parts, return_type, new_values,
+                                            exception_type, max_results, max_items, multi_resp,
+                                            res_data["nextPageToken"], current_count=current_count,
+                                            expected_count=expected_count, return_args=return_args
+                                        )
+                                items_next_list = []
+                                if next_list:
+                                    items_next_list = await self._update_api(
+                                        call_type, query, next_list, parts, return_type, new_values,
+                                        exception_type, max_results, max_items, multi_resp,
+                                        expected_count=expected_count, return_args=return_args
+                                    )
+                                items = [
+                                   return_type(
+                                       item, censor_key(call_url), self, **return_args
+                                   ) for item in items
+                                ]
+                                return (items + items_next_page + items_next_list)[:max_items]
+                            else:
+                                res_json = res_data
+                                return return_type(res_json, censor_key(call_url), self, **return_args)
+                    else:
+                        message = f'The youtube API returned the following error code: ' \
+                                  f'{yt_api_response.status}'
+                        error_data = None
+                        if yt_api_response.content_type == "application/json":
+                            res_data = await yt_api_response.json()
+                            if "error" in res_data:
+                                error_data = res_data["error"]
+                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                                not_found_check = [reason for reason in error_reasons if reason.endswith("NotFound")]
+                                if not_found_check:
+                                    raise exception_type(ids)
+                                if "authError" in error_reasons and self.session and (not auth_retry):
+                                    await self.refresh_session()
+                                    return await self._update_api(
+                                        call_type, query, ids, parts, return_type, new_values,
+                                        exception_type, max_results, max_items, multi_resp, next_page, next_list,
+                                        current_count, expected_count, other_queries, return_args, True
                                     )
                                 message = error_data.get("message")
                         raise HTTPException(yt_api_response, message, error_data)
@@ -1089,3 +1246,127 @@ class AsyncYoutubeAPI:
             lambda metadata, _, _2: metadata["snippet"], ResourceNotFound, 50, multi_resp=True
         )
         return {entry["hl"]: entry["name"] for entry in to_parse}
+
+    async def update_video(
+            self, video: Union[AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]], *,
+            title: Union[str, EXISTING] = EXISTING,
+            category_id: Union[str, EXISTING] = EXISTING, default_language: Union[str, EXISTING, None] = EXISTING,
+            description: Union[str, EXISTING, None] = EXISTING,
+            tags: Union[list[str], EXISTING, None] = EXISTING, embeddable: Union[bool, EXISTING, None] = EXISTING,
+            video_license: Union[License, EXISTING, None] = EXISTING,
+            visibility: Union[PrivacyStatus, EXISTING, None] = EXISTING,
+            public_stats_viewable: Union[bool, EXISTING, None] = EXISTING,
+            publish_at: Union[datetime.datetime, EXISTING, None] = EXISTING,
+            made_for_kids: Union[bool, EXISTING, None] = EXISTING,
+            contains_synthetic_media: Union[bool, EXISTING, None] = EXISTING,
+            recording_date: Union[datetime.datetime, EXISTING, None] = EXISTING,
+            localisations: Union[list[LocalName], EXISTING, None] = EXISTING
+
+    ) -> Union[AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
+        """Updates metadata for a video.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            video (Union[YoutubeVideo, list[YoutubeVideo]]): The YouTube video instance to be updated
+            title (Union[str, EXISTING]): The title of the video to set.
+
+                .. note::
+                    This value cannot be set to `None` or an empty string as YouTube forbids this.
+
+            category_id (Union[str, EXISTING]): The category id to set for the video.
+
+                .. note::
+                    This value cannot be set to `None` or an empty string as YouTube forbids this.
+
+            default_language (Union[str, EXISTING, None]): The YouTube video category associated with the video
+            description (Union[str, EXISTING, None]): The description of the video to set.
+            tags (Union[list[str], EXISTING, None]): The tags the to set to make the video appear in search results
+                relating to it.
+            embeddable (embeddable: Union[bool, EXISTING, None]): Set whether the video can be embedded on another
+                website.
+            video_license (Union[License, EXISTING, None]): The YouTube license to set for the video.
+            visibility (Union[PrivacyStatus, EXISTING, None]): Set the video's privacy status.
+            public_stats_viewable (Union[bool, EXISTING, None]): Set whether the extended video statistics on the
+                video's watch page are publicly viewable.
+            publish_at (Union[datetime.datetime, EXISTING, None]): Set the date and time when the video is scheduled to
+                publish.
+
+                .. note::
+                    If you set a value other for this property, you must also set the ``visibility`` property to
+                        :class:`ayt_api.enums.PrivacyStatus.private`.
+
+            made_for_kids (Union[bool, EXISTING, None]): Designate the video as being child-directed.
+            contains_synthetic_media (Union[bool, EXISTING, None]): Tell YouTube if the video contain realistic
+                Altered or Synthetic (A/S) content.
+            recording_date (Union[datetime.datetime, EXISTING, None]): Set the date and time when the video was
+                recorded.
+            localisations (Union[list[LocalName], EXISTING, None]): Specify translations of the video's metadata.
+
+        Returns:
+            Union[AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
+                The updated video object.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        edit_mapping = {
+            "id": video.id,
+            "snippet": {
+                "title": title or video.title,
+                "categoryId": category_id or video.category_id,
+                "defaultLanguage": use_existing(video.default_language, default_language),
+                "description": use_existing(video.description, description),
+                "tags": use_existing(video.tags, tags),
+            },
+            "status": {
+                "embeddable": use_existing(video.embeddable, embeddable),
+                "license": use_existing(
+                    snake_to_camel(video.license.__str__()) if video.license else None,
+                    snake_to_camel(video_license.__str__()) if video_license else video_license
+                ),
+                "privacyStatus": use_existing(
+                    snake_to_camel(video.visibility.__str__()),
+                    snake_to_camel(visibility.__str__()) if visibility else visibility
+                ),
+                "publicStatsViewable": use_existing(video.public_stats_viewable, public_stats_viewable),
+                "publishAt": use_existing(
+                    video.publish_set_at.isoformat() if video.publish_set_at else None,
+                    publish_at.isoformat() if publish_at else publish_at
+                ),
+                "selfDeclaredMadeForKids": use_existing(video.self_declared_made_for_kids, made_for_kids),
+                "containsSyntheticMedia": use_existing(video.contains_synthetic_media, contains_synthetic_media)
+            },
+            "recordingDetails": {
+                "recordingDate": use_existing(
+                    video.recording_details.date.isoformat() if video.recording_details.date else None,
+                    recording_date.isoformat() if recording_date else recording_date
+                )
+            },
+            "localizations": {
+                local_name.language: {
+                    "title": local_name.title,
+                    "description": local_name.description
+                } for local_name in use_existing(video.localisations, localisations) if local_name.language
+            } if use_existing(video.localisations, localisations) else {}
+        }
+        updated_metadata = video.metadata.copy()
+        updated_metadata.update(edit_mapping)
+        return await self._update_api(
+            "videos", "id", video.id,
+            [
+                "snippet", "status", "contentDetails", "statistics", "player", "topicDetails",
+                "recordingDetails", "liveStreamingDetails", "localizations", "paidProductPlacementDetails",
+                "fileDetails", "processingDetails", "suggestions", "id"],
+            AuthorisedYoutubeVideo, updated_metadata, VideoNotFound, None,
+        )

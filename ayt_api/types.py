@@ -629,7 +629,7 @@ class YoutubeVideo(BaseVideo):
         embeddable (bool): Indicates whether the video can be embedded on another website.
         public_stats_viewable (bool): Indicates whether the extended video statistics on the video's watch page are
             publicly viewable.
-        made_for_kids (bool): Indicates whether the video is designated as child-directed, and it contains the
+        made_for_kids (Optional[bool]): Indicates whether the video is designated as child-directed, and it contains the
             current "made for kids" status of the video.
         contains_synthetic_media (Optional[bool]): If the video contain realistic Altered or Synthetic (A/S) content.
 
@@ -741,7 +741,7 @@ class YoutubeVideo(BaseVideo):
                 if self.status.get("license") else None
             self.embeddable: bool = self.status["embeddable"]
             self.public_stats_viewable: bool = self.status["publicStatsViewable"]
-            self.made_for_kids: bool = self.status["madeForKids"]
+            self.made_for_kids: Optional[bool] = self.status.get("madeForKids")
             self.contains_synthetic_media: Optional[bool] = self.status.get("containsSyntheticMedia")
             self.view_count: int = self.statistics["viewCount"]
             self.like_count: Optional[int] = self.statistics.get("likeCount")
@@ -2204,3 +2204,15 @@ class OAuth2Session:
             f"OAuth2Session: Expires in {self.expires_in} at {self.expires_at}, "
             f"Token Type: {self.token_type}"
         )
+
+
+class UseExisting:
+    """A dummy class that is used to indicate when updating an object to use the previous existing values"""
+    def __bool__(self):
+        return False
+
+    def __repr__(self) -> str:
+        return "EXISTING"
+
+
+EXISTING: Any = UseExisting()

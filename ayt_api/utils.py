@@ -1,6 +1,6 @@
 import pathlib
 import warnings
-from typing import Optional
+from typing import Optional, Any
 from urllib import parse
 
 
@@ -241,3 +241,8 @@ def basic_html_page(title: str, description: str) -> str:
         </body>
         </html>\
     """
+
+
+def use_existing(existing_value: Any, argument: Any):
+    from ayt_api.types import EXISTING
+    return existing_value if argument is EXISTING else argument
