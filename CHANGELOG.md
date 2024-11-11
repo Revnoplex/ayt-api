@@ -75,6 +75,12 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([e012a58](https://github.com/Revnoplex/ayt-api/commit/e012a5819b828132467e7e57d19f52e001ddf4eb))
 - Attribute `contains_synthetic_media` to `YoutubeVideo` as a settable value when updating the instance. 
 ([10881c0#diff-7363042-R745](https://github.com/Revnoplex/ayt-api/commit/10881c08f8689da24cf2cc4062c7c15aa2240dbf#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R745))
+- API call `update_video` which can update metadata for a video. 
+([4bfb5d1#cbbc953-R1250](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R1250))
+- Class `UseExisting` and constant `EXISTING` for new update methods as an indicator to use the existing values. 
+([4bfb5d1#diff-7363042-R2209](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R2209))
+- Util `use_existing` which is used in update methods to determine if the existing value should be used.
+([4bfb5d1#diff-920c31e](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-920c31e8df6efd41a120b70811f3494522b1587fe3bd4cc389823cb5b004e407))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
@@ -125,6 +131,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([fedeb89#diff-3f857ff-R174](https://github.com/Revnoplex/ayt-api/commit/fedeb89a67e1455ccef0c5337dfd21f4523f314b#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788R174))
 - OAuth2 session expiry checks are automatically done before completing api calls.
 ([1da9164](https://github.com/Revnoplex/ayt-api/commit/1da916473d1dc62ec56f24fb17842da4bf80481a))
+- `YoutubeVideo` attribute `made_for_kids` can now be `None`. 
+([4bfb5d1#diff-7363042-L744](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L744))
 - *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
 ([3af95cd](https://github.com/Revnoplex/ayt-api/commit/3af95cd89ba922de30ef7070f3b9811636851075))
 
