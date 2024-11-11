@@ -18,6 +18,22 @@ HIGHLIGHT_URL = "{0}&lc={1}"
 HIGHLIGHT_URL_ID = VIDEO_URL.format("{0}") + "&lc={1}"
 
 
+class UseExisting:
+    """
+    A dummy class that is used to indicate when updating an object to use the previous existing values
+
+    .. versionadded:: 0.4.0
+    """
+    def __bool__(self):
+        return False
+
+    def __repr__(self) -> str:
+        return "EXISTING"
+
+
+EXISTING: Any = UseExisting()
+
+
 @dataclass
 class YoutubeThumbnail:
     """Data for an individual YouTube thumbnail.
@@ -1388,6 +1404,87 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
+    async def update(
+            self, *,
+            title: Union[str, EXISTING] = EXISTING,
+            category_id: Union[str, EXISTING] = EXISTING, default_language: Union[str, EXISTING, None] = EXISTING,
+            description: Union[str, EXISTING, None] = EXISTING,
+            tags: Union[list[str], EXISTING, None] = EXISTING, embeddable: Union[bool, EXISTING, None] = EXISTING,
+            video_license: Union[License, EXISTING, None] = EXISTING,
+            visibility: Union[PrivacyStatus, EXISTING, None] = EXISTING,
+            public_stats_viewable: Union[bool, EXISTING, None] = EXISTING,
+            publish_at: Union[datetime.datetime, EXISTING, None] = EXISTING,
+            made_for_kids: Union[bool, EXISTING, None] = EXISTING,
+            contains_synthetic_media: Union[bool, EXISTING, None] = EXISTING,
+            recording_date: Union[datetime.datetime, EXISTING, None] = EXISTING,
+            localisations: Union[list[LocalName], EXISTING, None] = EXISTING
+    ):
+        """Updates metadata for the video.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            title (Union[str, EXISTING]): The title of the video to set.
+
+                .. note::
+                    This value cannot be set to `None` or an empty string as YouTube forbids this.
+
+            category_id (Union[str, EXISTING]): The category id to set for the video.
+
+                .. note::
+                    This value cannot be set to `None` or an empty string as YouTube forbids this.
+
+            default_language (Union[str, EXISTING, None]): The YouTube video category associated with the video
+            description (Union[str, EXISTING, None]): The description of the video to set.
+            tags (Union[list[str], EXISTING, None]): The tags the to set to make the video appear in search results
+                relating to it.
+            embeddable (embeddable: Union[bool, EXISTING, None]): Set whether the video can be embedded on another
+                website.
+            video_license (Union[License, EXISTING, None]): The YouTube license to set for the video.
+            visibility (Union[PrivacyStatus, EXISTING, None]): Set the video's privacy status.
+            public_stats_viewable (Union[bool, EXISTING, None]): Set whether the extended video statistics on the
+                video's watch page are publicly viewable.
+            publish_at (Union[datetime.datetime, EXISTING, None]): Set the date and time when the video is scheduled to
+                publish.
+
+                .. note::
+                    If you set a value other for this property, you must also set the ``visibility`` property to
+                        :class:`ayt_api.enums.PrivacyStatus.private`.
+
+            made_for_kids (Union[bool, EXISTING, None]): Designate the video as being child-directed.
+            contains_synthetic_media (Union[bool, EXISTING, None]): Tell YouTube if the video contain realistic
+                Altered or Synthetic (A/S) content.
+            recording_date (Union[datetime.datetime, EXISTING, None]): Set the date and time when the video was
+                recorded.
+            localisations (Union[list[LocalName], EXISTING, None]): Specify translations of the video's metadata.
+
+        Returns:
+            AuthorisedYoutubeVideo:
+                The updated instance of this class.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            VideoNotFound: The video does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a video id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.update_video(
+            self, title=title, category_id=category_id, default_language=default_language, description=description,
+            tags=tags, embeddable=embeddable, video_license=video_license, visibility=visibility,
+            public_stats_viewable=public_stats_viewable, publish_at=publish_at, made_for_kids=made_for_kids,
+            contains_synthetic_media=contains_synthetic_media, recording_date=recording_date,
+            localisations=localisations
+        )
+
 
 class YoutubeChannel:
     """
@@ -2204,15 +2301,3 @@ class OAuth2Session:
             f"OAuth2Session: Expires in {self.expires_in} at {self.expires_at}, "
             f"Token Type: {self.token_type}"
         )
-
-
-class UseExisting:
-    """A dummy class that is used to indicate when updating an object to use the previous existing values"""
-    def __bool__(self):
-        return False
-
-    def __repr__(self) -> str:
-        return "EXISTING"
-
-
-EXISTING: Any = UseExisting()
