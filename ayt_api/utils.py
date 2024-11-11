@@ -219,6 +219,8 @@ def basic_html_page(title: str, description: str) -> str:
     """
     Builds a basic html page
 
+    .. versionadded:: 0.4.0
+
     This is used in :func:`ayt_api.api.AsyncYoutubeAPI.with_oauth_flow_generator`
 
     Args:
@@ -243,6 +245,19 @@ def basic_html_page(title: str, description: str) -> str:
     """
 
 
-def use_existing(existing_value: Any, argument: Any):
+def use_existing(existing_value: Any, argument: Any) -> Any:
+    """
+    A check used in the updated functions to decide when to use the existing value if the argument has a value of
+    ``EXISTING`` or use the value of the argument.
+
+    .. versionadded:: 0.4.0
+
+    Args:
+        existing_value (Any): The existing value that will be used if ``argument`` is ``EXISTING``.
+        argument (Any): The value to overwrite ``existing_value`` if not ``EXISTING``.
+
+    Returns:
+        Any: The existing value or argument.
+    """
     from ayt_api.types import EXISTING
     return existing_value if argument is EXISTING else argument
