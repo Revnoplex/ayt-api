@@ -770,6 +770,10 @@ class AsyncYoutubeAPI:
         Playlist metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubePlaylist` object.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
+
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
 
@@ -793,6 +797,10 @@ class AsyncYoutubeAPI:
 
         Playlist video metadata is fetched using a GET request which the response is then concentrated into a list of
         :class:`PlaylistItem` objects.
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
 
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
@@ -826,6 +834,10 @@ class AsyncYoutubeAPI:
         Playlist videos are fetched using a GET request which the response is then concentrated into a list of
         :class:`YoutubeVideo` objects.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **2** units.
+
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
             exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
@@ -852,6 +864,10 @@ class AsyncYoutubeAPI:
 
         Video metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeVideo` object if one ID was specified if more, it returns a list of them.
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
 
         Args:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
@@ -891,6 +907,10 @@ class AsyncYoutubeAPI:
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
+
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
             authorised (bool): Whether to fetch additional owner side information about a channel e.g. audit details
@@ -924,6 +944,10 @@ class AsyncYoutubeAPI:
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
 
         .. versionadded:: 0.4.0
 
@@ -959,6 +983,10 @@ class AsyncYoutubeAPI:
         A list of comment threads are fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeCommentThread` object.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
+
         Args:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
@@ -989,6 +1017,10 @@ class AsyncYoutubeAPI:
         A list of comment threads are fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeCommentThread` object.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
+
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
             max_comments (int): The maximum number of comments to fetch. Specify ``None`` to fetch all comments.
@@ -1018,6 +1050,10 @@ class AsyncYoutubeAPI:
         comments are fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeComment` object or a list if a list of ids were specified.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
+
         Args:
             comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
 
@@ -1038,6 +1074,10 @@ class AsyncYoutubeAPI:
 
         comments are fetched using a GET request which the response is then concentrated into a
         :class:`list[YoutubeComment]` object.
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
 
         Args:
             comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
@@ -1064,6 +1104,10 @@ class AsyncYoutubeAPI:
     async def search(self, query: str, max_results=10, search_filter: SearchFilter = None) -> list[YoutubeSearchResult]:
         """Sends a search request to the api and returns a list of videos and/or channels and/or playlists depending
         on the query provided and the filters used.
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **100** units.
 
         Args:
             query (str): The keywords to search for
@@ -1105,6 +1149,10 @@ class AsyncYoutubeAPI:
         A list of available captions are fetched using a GET request which the response is then concentrated into a
         :class:`list[VideoCaptions]` object.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **50** units.
+
         Args:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
 
@@ -1125,6 +1173,10 @@ class AsyncYoutubeAPI:
     async def resolve_handle(self, username: str) -> str:
         """
         Resolve a channel's handle name into a channel id.
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
 
         .. versionadded:: 0.4.0
 
@@ -1149,6 +1201,10 @@ class AsyncYoutubeAPI:
     async def fetch_subscriptions(self, channel_id: str, max_items: int = 50) -> list[YoutubeSubscription]:
         """
         Fetch subscriptions a specified channel has
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
 
         .. versionadded:: 0.4.0
 
@@ -1182,6 +1238,10 @@ class AsyncYoutubeAPI:
         """
         Fetches a category that has been or could be associated with uploaded videos.
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
+
         .. versionadded:: 0.4.0
 
         Args:
@@ -1205,6 +1265,10 @@ class AsyncYoutubeAPI:
         """
         Fetches a dictionary containing the names of regions listed by YouTube
 
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
+
         .. versionadded:: 0.4.0
 
         Args:
@@ -1227,6 +1291,10 @@ class AsyncYoutubeAPI:
     async def fetch_youtube_languages(self, language: str) -> dict[str, str]:
         """
         Fetches a dictionary containing the names of languages listed by YouTube
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **1** unit.
 
         .. versionadded:: 0.4.0
 
@@ -1269,6 +1337,10 @@ class AsyncYoutubeAPI:
 
         Values default to a special constant called ``EXISTING`` which is from the class
         :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        .. admonition:: Quota impact
+
+            A call to this method has a quota cost of **50** units.
 
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
