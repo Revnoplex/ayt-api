@@ -81,6 +81,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([4bfb5d1#diff-7363042-R2209](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834R2209))
 - Util `use_existing` which is used in update methods to determine if the existing value should be used.
 ([4bfb5d1#diff-920c31e](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-920c31e8df6efd41a120b70811f3494522b1587fe3bd4cc389823cb5b004e407))
+- Update method to `YoutubeVideo`. 
+([c2bbd8d](https://github.com/Revnoplex/ayt-api/commit/c2bbd8d28b7f886acf19a6c098e512ed48cfdda5))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
