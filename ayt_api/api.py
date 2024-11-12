@@ -24,7 +24,7 @@ from .utils import censor_key, snake_to_camel, basic_html_page, use_existing
 class AsyncYoutubeAPI:
     """Represents the main class for running all the tools.
 
-    .. versionchanged:: 0.4.0
+    .. versionadded:: 0.4.0
         Supports OAuth2 methods for running privileged api calls.
 
     Attributes:
