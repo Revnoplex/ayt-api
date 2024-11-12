@@ -549,6 +549,7 @@ class BaseVideo:
         metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
                          debugging purposes.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         id (str): The ID of the video. Example: "dQw4w9WgXcQ" from the url:
                   "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
         url (str): The URL of the video.
@@ -561,6 +562,7 @@ class BaseVideo:
     """
     metadata: dict
     call_url: str
+    etag: str
     id: str
     url: str
     title: str
@@ -584,6 +586,7 @@ class YoutubeVideo(BaseVideo):
         metadata (dict): The raw metadata from the API response used to construct this class. Intended use is for
                      debugging purposes.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         id (str): The ID of the video. Example: "dQw4w9WgXcQ" from the url:
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
         snippet (dict): The raw snippet data used to construct part this class.
@@ -689,6 +692,7 @@ class YoutubeVideo(BaseVideo):
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.snippet: dict = metadata["snippet"]
             self.content_details: dict = metadata["contentDetails"]
             self.status: dict = metadata["status"]
@@ -958,6 +962,7 @@ class PlaylistItem(BaseVideo):
     Attributes:
         metadata (dict): The raw metadata from the API call used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
         position (int): The position in the playlist the video is in.
@@ -992,6 +997,7 @@ class PlaylistItem(BaseVideo):
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.snippet: dict = metadata["snippet"]
             self.content_details: dict = metadata["contentDetails"]
             self.status: dict = metadata["status"]
@@ -1147,6 +1153,7 @@ class YoutubePlaylist:
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         id (str): The ID of the playlist. Example: "PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp" from the url:
             "https://www.youtube.com/playlist?list=PLwZcI0zn-Jhemx2m_gpYqQfnc3l4xA4fp".
         url (str): The URL of the playlist.
@@ -1189,6 +1196,7 @@ class YoutubePlaylist:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.id: str = metadata["id"]
             self.url = PLAYLIST_URL.format(self.id)
             self.snippet: dict = metadata["snippet"]
@@ -1545,6 +1553,7 @@ class YoutubeChannel:
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         branding_settings (dict): encapsulates information about the branding of the channel.
         content_details (dict): encapsulates information about the channel's content.
         content_owner_details (dict): encapsulates channel data that is visible only to the YouTube Partner that has
@@ -1628,6 +1637,7 @@ class YoutubeChannel:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.id: str = metadata["id"]
             if partial:
                 return
@@ -1837,6 +1847,7 @@ class YoutubeComment:
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         snippet (dict): The raw snippet data used to construct part this class.
         id (str): The ID of the comment.
         author_display_name (str): The display name of the author (this is not their handle).
@@ -1876,6 +1887,7 @@ class YoutubeComment:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.snippet: dict = self.metadata['snippet']
             self.id: str = self.metadata['id']
             self.author_display_name: str = self.snippet['authorDisplayName']
@@ -1940,6 +1952,7 @@ class YoutubeCommentThread:
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         snippet (dict): The raw snippet data used to construct part this class.
         id (str): The ID of the comment.
         channel_id (Optional[str]): The id of the channel that the video belongs to.
@@ -1970,6 +1983,7 @@ class YoutubeCommentThread:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.snippet: dict = self.metadata['snippet']
             self.id: str = self.metadata['id']
             self.channel_id: Optional[str] = self.snippet.get('channelId')
@@ -2064,6 +2078,7 @@ class VideoCaption:
     """Represents data of an individual caption track on a video.
 
     Attributes:
+        etag (str): The Etag of this resource.
         id (str): The ID of the caption track.
         snippet (dict): The raw snippet data used to construct part this class.
         video_id (str): The ID of the video that the caption track refer to.
@@ -2095,6 +2110,7 @@ class VideoCaption:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.id: str = self.metadata["id"]
             self.snippet: dict = self.metadata["snippet"]
             self.video_id: str = self.snippet["videoId"]
@@ -2124,6 +2140,7 @@ class YoutubeSubscription:
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         subscription_id (str): The ID that YouTube uses to uniquely identify the subscription.
         id (str): Alias of :attr:`subscription_id`.
         snippet (dict): The raw snippet data used to construct part this class.
@@ -2170,6 +2187,7 @@ class YoutubeSubscription:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.subscription_id: str = self.metadata["id"]
             self.id = self.subscription_id
             self.snippet: dict = self.metadata["snippet"]
@@ -2261,6 +2279,7 @@ class YoutubeVideoCategory:
     Attributes:
         metadata (dict): The raw API response used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        etag (str): The Etag of this resource.
         id (str): The ID that YouTube uses to uniquely identify the video category.
         snippet (dict): The raw snippet data used to construct part this class.
         title (str): The video category's title.
@@ -2282,6 +2301,7 @@ class YoutubeVideoCategory:
             self.metadata = metadata
             self.call_url = call_url
             self._call_data = call_data
+            self.etag: str = metadata['etag']
             self.id: str = self.metadata["id"]
             self.snippet: dict = self.metadata["snippet"]
             self.title: str = self.snippet["title"]
