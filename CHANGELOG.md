@@ -87,6 +87,10 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([e8c42c8](https://github.com/Revnoplex/ayt-api/commit/e8c42c811b3a2ab99028c450d9d080cddd6d75f7))
 - Etag attributes to classes of API calls. 
 ([d44b5a3](https://github.com/Revnoplex/ayt-api/commit/d44b5a37e3201bb6e19640232a7da989de1cf450))
+- Enum `CaptionFormat` as a list of caption track formats supported by YouTube. 
+([7e912bc](https://github.com/Revnoplex/ayt-api/commit/7e912bc752e21fdc2dc15ba8424bffdde4f14347))
+- API method `download_caption()` to download captions if you are the owner of the captions. 
+([af49fe6](https://github.com/Revnoplex/ayt-api/commit/af49fe6b8838a16aebe89d6f2e89b9219471a8d0))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
