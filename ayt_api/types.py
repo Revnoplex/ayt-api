@@ -816,9 +816,9 @@ class YoutubeVideo(BaseVideo):
         This ia an api call which then returns a
         :class:`YoutubeChannel` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             Optional[YoutubeChannel]: The channel object containing data of the channel.
@@ -841,9 +841,9 @@ class YoutubeVideo(BaseVideo):
         This ia an api call which then returns a
         :class:`list[YoutubeCommentThread]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Returns:
             list[YoutubeCommentThread]: A list of comments on the video.
@@ -865,9 +865,9 @@ class YoutubeVideo(BaseVideo):
         This ia an api call which then returns a
         :class:`list[VideoCaption]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **50** units.
+            A call to this method has a quota cost of **50** units per call or **per 50 captions fetched**.
 
         Returns:
             list[VideoCaption]: A list of captions on the video.
@@ -887,9 +887,9 @@ class YoutubeVideo(BaseVideo):
         """
         Fetches the category that has been or could be associated with the video.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         .. versionadded:: 0.4.0
 
@@ -1025,9 +1025,9 @@ class PlaylistItem(BaseVideo):
         This ia an api call which then returns a
         :class:`YoutubeVideo` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             YoutubeVideo: The video object containing data of the video.
@@ -1049,9 +1049,9 @@ class PlaylistItem(BaseVideo):
         This ia an api call which then returns a
         :class:`YoutubePlaylist` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             YoutubePlaylist: The playlist object containing data of the playlist.
@@ -1073,9 +1073,9 @@ class PlaylistItem(BaseVideo):
         This ia an api call which then returns a
         :class:`YoutubeChannel` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             Optional[YoutubeChannel]: The channel object containing data of the channel.
@@ -1098,9 +1098,9 @@ class PlaylistItem(BaseVideo):
         This ia an api call which then returns a
         :class:`list[YoutubeCommentThread]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Returns:
             list[YoutubeCommentThread]: A list of comments on the video.
@@ -1122,9 +1122,9 @@ class PlaylistItem(BaseVideo):
         This ia an api call which then returns a
         :class:`list[VideoCaption]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **50** units.
+            A call to this method has a quota cost of **50** units per call or **per 50 captions fetched**.
 
         Returns:
             list[VideoCaption]: A list of comments on the video.
@@ -1238,9 +1238,9 @@ class YoutubePlaylist:
         This is an api call which returns a list of
         :class:`PlaylistItem` objects.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 items fetched**.
 
         Returns:
             list[PlaylistItem]: A list containing playlist video objects.
@@ -1263,9 +1263,9 @@ class YoutubePlaylist:
         This is an api call which returns a list of
         :class:`YoutubeVideo` objects.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **2** units.
+            A call to this method has a quota cost of **2** units per call or **per 50 videos fetched**.
 
         Args:
             exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
@@ -1290,9 +1290,9 @@ class YoutubePlaylist:
         This ia an api call which then returns a
         :class:`YoutubeChannel` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             Optional[YoutubeChannel]: The channel object containing data of the channel.
@@ -1474,9 +1474,9 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
         Values default to a special constant called ``EXISTING`` which is from the class
         :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **50** units per call.
 
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
@@ -1710,9 +1710,9 @@ class YoutubeChannel:
         This ia an api call which then returns a
         :class:`PlaylistItem` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 items fetched**.
 
         Returns:
             Optional[list[PlaylistItem]]: A list containing playlist video objects of the channel's public uploads.
@@ -1735,9 +1735,9 @@ class YoutubeChannel:
         This ia an api call which then returns a
         :class:`PlaylistItem` object if public, otherwise ``None``.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 items fetched**.
 
         Args:
             max_items (Optional[int]): The maximum number of playlist items to fetch. Defaults to ``None`` which
@@ -1770,9 +1770,9 @@ class YoutubeChannel:
         This ia an api call which then returns a
         :class:`YoutubeVideo` object if the channel has a trailer, otherwise ``None``.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             Optional[YoutubeVideo]: The video object containing data of the channel trailer.
@@ -1795,9 +1795,9 @@ class YoutubeChannel:
         This ia an api call which then returns a
         :class:`list[YoutubeCommentThread]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Args:
             max_comments (Optional[int]): The maximum number of comments to fetch. Defaults to 50.
@@ -1908,9 +1908,9 @@ class YoutubeComment:
         This ia an api call which then returns a
         :class:`list[YoutubeComment]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Args:
             max_comments (Optional[int]): The maximum number of comments to fetch. Defaults to 50.
@@ -2040,9 +2040,9 @@ class YoutubeSearchResult:
     async def expand(self) -> Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]:
         """Expand the search result into its appropriate type.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             Union[YoutubeVideo, YoutubeChannel, YoutubePlaylist]: The proper object of the search result.
@@ -2209,9 +2209,9 @@ class YoutubeSubscription:
         This ia an api call which then returns a
         :class:`YoutubeChannel` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             YoutubeChannel: The channel object containing data of the channel.
@@ -2233,9 +2233,9 @@ class YoutubeSubscription:
         This ia an api call which then returns a
         :class:`YoutubeChannel` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             YoutubeChannel: The channel object containing data of the channel.
@@ -2298,9 +2298,9 @@ class YoutubeVideoCategory:
         This ia an api call which then returns a
         :class:`YoutubeChannel` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         Returns:
             YoutubeChannel: The channel object containing data of the channel.

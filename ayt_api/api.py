@@ -770,9 +770,9 @@ class AsyncYoutubeAPI:
         Playlist metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubePlaylist` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 playlists fetched**.
 
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
@@ -798,9 +798,9 @@ class AsyncYoutubeAPI:
         Playlist video metadata is fetched using a GET request which the response is then concentrated into a list of
         :class:`PlaylistItem` objects.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 items fetched**.
 
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
@@ -834,9 +834,9 @@ class AsyncYoutubeAPI:
         Playlist videos are fetched using a GET request which the response is then concentrated into a list of
         :class:`YoutubeVideo` objects.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **2** units.
+            A call to this method has a quota cost of **2** units per call or **per 50 videos fetched**.
 
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
@@ -865,9 +865,9 @@ class AsyncYoutubeAPI:
         Video metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeVideo` object if one ID was specified if more, it returns a list of them.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 videos fetched**.
 
         Args:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
@@ -907,9 +907,9 @@ class AsyncYoutubeAPI:
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 channels fetched**.
 
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
@@ -945,9 +945,9 @@ class AsyncYoutubeAPI:
         Channel metadata is fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeChannel` object or a list if multiple IDs were specified.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 channels fetched**.
 
         .. versionadded:: 0.4.0
 
@@ -983,9 +983,9 @@ class AsyncYoutubeAPI:
         A list of comment threads are fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeCommentThread` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Args:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
@@ -1017,9 +1017,9 @@ class AsyncYoutubeAPI:
         A list of comment threads are fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeCommentThread` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
@@ -1050,9 +1050,9 @@ class AsyncYoutubeAPI:
         comments are fetched using a GET request which the response is then concentrated into a
         :class:`YoutubeComment` object or a list if a list of ids were specified.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Args:
             comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
@@ -1075,9 +1075,9 @@ class AsyncYoutubeAPI:
         comments are fetched using a GET request which the response is then concentrated into a
         :class:`list[YoutubeComment]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 comments fetched**.
 
         Args:
             comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
@@ -1105,9 +1105,9 @@ class AsyncYoutubeAPI:
         """Sends a search request to the api and returns a list of videos and/or channels and/or playlists depending
         on the query provided and the filters used.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **100** units.
+            A call to this method has a quota cost of **100** units per call or **per 50 results fetched**.
 
         Args:
             query (str): The keywords to search for
@@ -1149,9 +1149,9 @@ class AsyncYoutubeAPI:
         A list of available captions are fetched using a GET request which the response is then concentrated into a
         :class:`list[VideoCaptions]` object.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **50** units.
+            A call to this method has a quota cost of **50** units per call or **per 50 captions fetched**.
 
         Args:
             video_id (str): The id of the video to use. e.g. ``dQw4w9WgXcQ``. Look familiar?
@@ -1174,9 +1174,9 @@ class AsyncYoutubeAPI:
         """
         Resolve a channel's handle name into a channel id.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call.
 
         .. versionadded:: 0.4.0
 
@@ -1202,9 +1202,9 @@ class AsyncYoutubeAPI:
         """
         Fetch subscriptions a specified channel has
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 subscriptions fetched**.
 
         .. versionadded:: 0.4.0
 
@@ -1238,9 +1238,9 @@ class AsyncYoutubeAPI:
         """
         Fetches a category that has been or could be associated with uploaded videos.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 categories fetched**.
 
         .. versionadded:: 0.4.0
 
@@ -1265,9 +1265,9 @@ class AsyncYoutubeAPI:
         """
         Fetches a dictionary containing the names of regions listed by YouTube
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 regions fetched**.
 
         .. versionadded:: 0.4.0
 
@@ -1292,9 +1292,9 @@ class AsyncYoutubeAPI:
         """
         Fetches a dictionary containing the names of languages listed by YouTube
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **1** unit.
+            A call to this method has a quota cost of **1** unit per call or **per 50 languages fetched**.
 
         .. versionadded:: 0.4.0
 
@@ -1338,9 +1338,9 @@ class AsyncYoutubeAPI:
         Values default to a special constant called ``EXISTING`` which is from the class
         :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
 
-        .. admonition:: Quota impact
+        .. admonition:: Quota Impact
 
-            A call to this method has a quota cost of **50** units.
+            A call to this method has a quota cost of **50** units per call.
 
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
