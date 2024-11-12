@@ -85,6 +85,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([c2bbd8d](https://github.com/Revnoplex/ayt-api/commit/c2bbd8d28b7f886acf19a6c098e512ed48cfdda5))
 - Quota usage is now kept track of per session and is accessible via `AsyncYoutubeAPI.quota_usage`. 
 ([e8c42c8](https://github.com/Revnoplex/ayt-api/commit/e8c42c811b3a2ab99028c450d9d080cddd6d75f7))
+- Etag attributes to classes of API calls. 
+([d44b5a3](https://github.com/Revnoplex/ayt-api/commit/d44b5a37e3201bb6e19640232a7da989de1cf450))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
