@@ -33,6 +33,7 @@ class AsyncYoutubeAPI:
         timeout (aiohttp.ClientTimeout): The timeout if the api does not respond.
         ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
             This is useful for using the api on a restricted network.
+        quota_usage (int): The number of YouTube API quota that have units used this session.
     """
     URL_PREFIX = "https://www.googleapis.com/youtube/v{version}"
 
@@ -73,6 +74,7 @@ class AsyncYoutubeAPI:
         self.use_oauth = use_oauth
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.ignore_ssl = ignore_ssl
+        self.quota_usage = 0
 
     @classmethod
     def generate_url_and_socket(
@@ -362,7 +364,8 @@ class AsyncYoutubeAPI:
             self, call_type: str, query: Optional[str], ids: Union[str, list[str], None], parts: list[str],
             return_type: Union[type, Callable], exception_type: type[ResourceNotFound], max_results: int = None,
             max_items: int = None, multi_resp=False, next_page: str = None, next_list: list[str] = None,
-            current_count=0, expected_count=1, other_queries: str = None, return_args: dict = None, auth_retry=False
+            current_count=0, expected_count=1, other_queries: str = None, return_args: dict = None, auth_retry=False,
+            quota_rate: int = 1
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
 
@@ -405,7 +408,7 @@ class AsyncYoutubeAPI:
             return await self._call_api(
                 call_type, query, ids, parts, return_type, exception_type, max_results,
                 max_items, multi_resp, next_page, next_list, current_count, expected_count,
-                other_queries, return_args, True
+                other_queries, return_args, True, quota_rate
             )
         # use OAuth token if no api key was provided
         oauth = self.use_oauth or (not self._key)
@@ -442,6 +445,7 @@ class AsyncYoutubeAPI:
                         "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}"
                     }
                 async with yt_api_session.get(call_url, headers=headers) as yt_api_response:
+                    self.quota_usage += quota_rate
                     if yt_api_response.ok:
                         res_data = await yt_api_response.json()
                         if "error" in res_data:
@@ -469,14 +473,14 @@ class AsyncYoutubeAPI:
                                             call_type, query, ids, parts, return_type, exception_type, max_results,
                                             max_items, multi_resp, res_data["nextPageToken"],
                                             current_count=current_count, expected_count=expected_count,
-                                            return_args=return_args
+                                            return_args=return_args, quota_rate=quota_rate
                                         )
                                 items_next_list = []
                                 if next_list:
                                     items_next_list = await self._call_api(
                                         call_type, query, next_list, parts, return_type, exception_type, max_results,
                                         max_items, multi_resp, expected_count=expected_count,
-                                        return_args=return_args
+                                        return_args=return_args, quota_rate=quota_rate
                                     )
                                 items = [return_type(item, censor_key(call_url), self, **return_args) for item in items]
                                 return (items + items_next_page + items_next_list)[:max_items]
@@ -500,7 +504,7 @@ class AsyncYoutubeAPI:
                                     return await self._call_api(
                                         call_type, query, ids, parts, return_type, exception_type, max_results,
                                         max_items, multi_resp, next_page, next_list, current_count, expected_count,
-                                        other_queries, return_args, True
+                                        other_queries, return_args, True, quota_rate
                                     )
                                 message = error_data.get("message")
                         raise HTTPException(yt_api_response, message, error_data)
@@ -512,7 +516,7 @@ class AsyncYoutubeAPI:
             return_type: Union[type, Callable], new_values: dict,
             exception_type: type[ResourceNotFound], max_results: int = None, max_items: int = None, multi_resp=False,
             next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
-            other_queries: str = None, return_args: dict = None, auth_retry=False
+            other_queries: str = None, return_args: dict = None, auth_retry=False, quota_rate: int = 50
     ) -> Union[Any, list]:
         """A centralised function for sending update requests to the api.
 
@@ -556,7 +560,7 @@ class AsyncYoutubeAPI:
             return await self._update_api(
                 call_type, query, ids, parts, return_type, new_values, exception_type, max_results,
                 max_items, multi_resp, next_page, next_list, current_count, expected_count,
-                other_queries, return_args, True
+                other_queries, return_args, True, quota_rate
             )
         # use OAuth token if no api key was provided
         return_args = return_args or {}
@@ -595,6 +599,7 @@ class AsyncYoutubeAPI:
                         data=json.dumps(new_values),
                         headers=headers
                 ) as yt_api_response:
+                    self.quota_usage += quota_rate
                     if yt_api_response.ok:
                         res_data = await yt_api_response.json()
                         if "error" in res_data:
@@ -622,14 +627,15 @@ class AsyncYoutubeAPI:
                                             call_type, query, ids, parts, return_type, new_values,
                                             exception_type, max_results, max_items, multi_resp,
                                             res_data["nextPageToken"], current_count=current_count,
-                                            expected_count=expected_count, return_args=return_args
+                                            expected_count=expected_count, return_args=return_args,
+                                            quota_rate=quota_rate
                                         )
                                 items_next_list = []
                                 if next_list:
                                     items_next_list = await self._update_api(
                                         call_type, query, next_list, parts, return_type, new_values,
                                         exception_type, max_results, max_items, multi_resp,
-                                        expected_count=expected_count, return_args=return_args
+                                        expected_count=expected_count, return_args=return_args, quota_rate=quota_rate
                                     )
                                 items = [
                                    return_type(
@@ -657,7 +663,7 @@ class AsyncYoutubeAPI:
                                     return await self._update_api(
                                         call_type, query, ids, parts, return_type, new_values,
                                         exception_type, max_results, max_items, multi_resp, next_page, next_list,
-                                        current_count, expected_count, other_queries, return_args, True
+                                        current_count, expected_count, other_queries, return_args, True, quota_rate
                                     )
                                 message = error_data.get("message")
                         raise HTTPException(yt_api_response, message, error_data)
@@ -1139,9 +1145,11 @@ class AsyncYoutubeAPI:
             datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
             active_filters = [f"{snake_to_camel(key)}={process_filters(value)}" for key, value in
                               search_filter.__dict__.items() if value is not None]
-        return await self._call_api("search", "q", parse.quote(query), ["snippet"], YoutubeSearchResult,
-                                    ResourceNotFound, max_results if max_results < 50 else 50, max_results, True,
-                                    other_queries="&"+("&".join(active_filters)))
+        return await self._call_api(
+            "search", "q", parse.quote(query), ["snippet"], YoutubeSearchResult, ResourceNotFound,
+            max_results if max_results < 50 else 50, max_results, True, other_queries="&"+("&".join(active_filters)),
+            quota_rate=100
+        )
 
     async def fetch_video_captions(self, video_id: str) -> list[VideoCaption]:
         """Fetches captions on a video.
@@ -1166,9 +1174,10 @@ class AsyncYoutubeAPI:
             InvalidInput: The input is not a video id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        return await self._call_api("captions", "videoId", video_id,
-                                    ["snippet", "id"], VideoCaption,
-                                    VideoNotFound, None, None, True)
+        return await self._call_api(
+            "captions", "videoId", video_id, ["snippet", "id"], VideoCaption, VideoNotFound, None, None, True,
+            quota_rate=50
+        )
 
     async def resolve_handle(self, username: str) -> str:
         """
