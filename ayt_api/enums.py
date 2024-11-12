@@ -564,3 +564,26 @@ class OAuth2Scope(Enum):
             list[OAuth2Scope]: A list of all the scopes
         """
         return [cls.youtube]
+
+
+class CaptionFormat(Enum):
+    """
+    The available caption formats YouTube support.
+
+    Attributes:
+        sbv: SubViewer subtitle.
+        scc: Scenarist Closed Caption format.
+        srt: SubRip subtitle.
+        ttml: Timed Text Markup Language caption.
+        vtt: Web Video Text Tracks caption.
+
+    """
+
+    sbv = "sbv"
+    scc = "scc"
+    srt = "srt"
+    ttml = "ttml"
+    vtt = "vtt"
+
+    def __str__(self):
+        return self.value
