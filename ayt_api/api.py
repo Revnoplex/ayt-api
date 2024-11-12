@@ -16,7 +16,7 @@ from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPExcep
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
     YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName
-from .enums import OAuth2Scope, License, PrivacyStatus
+from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page, use_existing
 
@@ -769,6 +769,57 @@ class AsyncYoutubeAPI:
             path = path.joinpath(default_filename)
         with open(path, "wb") as thumbnail_file:
             thumbnail_file.write(banner)
+
+    async def download_caption(
+            self, track_id: str, track_format: CaptionFormat = None, track_lang: str = None
+    ) -> bytes:
+        """Downloads the caption track from the ID specified and stores it as a :class:`bytes` object
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **200** units per call.
+
+        Args:
+            track_id (str): The ID of the caption track
+            track_format (CaptionFormat): The format YouTube should return the captions in.
+            track_lang (str): The alpha-2 language code to translate the caption track into.
+
+        Returns:
+            bytes: The caption track as a :class:`bytes` object.
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            RuntimeError: The contents was not a jpeg image
+            asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+        """
+        queries = []
+        if track_format:
+            queries.append(f"tfmt={track_format.__str__()}")
+        if track_lang:
+            queries.append(f"tlang={track_lang}")
+        url = (
+            self.call_url_prefix + "/captions/" + track_id +
+            (("?" + "&".join(queries)) if queries else "")
+        )
+        async with (aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout)
+                    as thumbnail_session):
+            headers = {
+                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}"
+            }
+            async with thumbnail_session.get(url, headers=headers) as thumbnail_response:
+                self.quota_usage += 200
+                if not thumbnail_response.ok:
+                    content = None
+                    if thumbnail_response.content_type == "application/json":
+                        content = await thumbnail_response.json()
+                    raise HTTPException(
+                        thumbnail_response, content['error'].get("message") if content else None, content
+                    )
+                else:
+                    return await thumbnail_response.read()
 
     async def fetch_playlist(self, playlist_id: Union[str, list[str]]) -> Union[YoutubePlaylist, list[YoutubePlaylist]]:
         """Fetches playlist metadata using a playlist id.
