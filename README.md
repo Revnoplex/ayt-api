@@ -47,6 +47,7 @@ pip3 install -U git+https://github.com/Revnoplex/ayt-api.git
 ```
 
 ## Usage
+
 First of all to use this library, you will need an API key. To get one, [see here for instructions](https://ayt-api-docs.revnoplex.xyz/en/latest/usage/obtaining-credentials.html)
 
 ### Basic video data fetching:
