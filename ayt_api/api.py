@@ -771,7 +771,7 @@ class AsyncYoutubeAPI:
             thumbnail_file.write(banner)
 
     async def download_caption(
-            self, track_id: str, track_format: Optional[CaptionFormat] = None, track_lang: Optional[str] = None
+            self, track_id: str, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None
     ) -> bytes:
         """Downloads the caption track from the ID specified and stores it as a :class:`bytes` object
 
@@ -791,7 +791,7 @@ class AsyncYoutubeAPI:
         Args:
             track_id (str): The ID of the caption track
             track_format (Optional[CaptionFormat]): The format YouTube should return the captions in.
-            track_lang (Optional[str]): The alpha-2 language code to translate the caption track into.
+            language (Optional[str]): The alpha-2 language code to translate the caption track into.
 
         Returns:
             bytes: The caption track as a :class:`bytes` object.
@@ -799,14 +799,13 @@ class AsyncYoutubeAPI:
         Raises:
             HTTPException: Fetching the request failed.
             aiohttp.ClientError: There was a problem sending the request to the api.
-            RuntimeError: The contents was not a jpeg image
-            asyncio.TimeoutError: The i.ytimg.com server did not respond within the timeout period set.
+            asyncio.TimeoutError: The API server did not respond within the timeout period set.
         """
         queries = []
         if track_format:
             queries.append(f"tfmt={track_format.__str__()}")
-        if track_lang:
-            queries.append(f"tlang={track_lang}")
+        if language:
+            queries.append(f"tlang={language}")
         url = (
             self.call_url_prefix + "/captions/" + track_id +
             (("?" + "&".join(queries)) if queries else "")
@@ -827,6 +826,50 @@ class AsyncYoutubeAPI:
                     )
                 else:
                     return await thumbnail_response.read()
+
+    async def save_caption(
+            self, track_id: str, *, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None,
+            fp: Union[os.PathLike, str, None] = None
+    ):
+        """Downloads the caption track from the ID specified and saves it to a specified location
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **200** units per call.
+
+        Note:
+            You must be the owner of the video of the captions and use OAuth authentication to call this method with
+            one of the following scopes:
+
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_force_ssl`
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_partner`
+
+        Args:
+            track_id (str): The ID of the caption track
+            track_format (Optional[CaptionFormat]): The format YouTube should return the captions in.
+            language (Optional[str]): The alpha-2 language code to translate the caption track into.
+            fp (Union[os.PathLike, str, None]): The path and/or filename to save the file to.
+                Defaults to current working directory with the filename format: ``{track_id}.{file_extension (if any)}``
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            asyncio.TimeoutError: The API did not respond within the timeout period set.
+        """
+        caption_track = await self.download_caption(track_id, track_format, language)
+        default_filename = (
+                track_id + (f"-{language}" if language else "") +
+                (f".{track_format.__str__()}" if track_format else "")
+        )
+        if isinstance(fp, str):
+            fp = pathlib.Path(fp)
+        path = (fp or pathlib.Path(default_filename)).expanduser()
+        if path.is_dir():
+            path = path.joinpath(default_filename)
+        with open(path, "wb") as thumbnail_file:
+            thumbnail_file.write(caption_track)
 
     async def fetch_playlist(self, playlist_id: Union[str, list[str]]) -> Union[YoutubePlaylist, list[YoutubePlaylist]]:
         """Fetches playlist metadata using a playlist id.
