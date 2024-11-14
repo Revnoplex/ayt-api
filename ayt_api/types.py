@@ -2130,6 +2130,73 @@ class VideoCaption:
         except KeyError as missing_snippet_data:
             raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
 
+    async def download(self, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None) -> bytes:
+        """
+        Downloads the caption track and stores it as a :class:`bytes` object
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **200** units per call.
+
+        Note:
+            You must be the owner of the video of the captions and use OAuth authentication to call this method with
+            one of the following scopes:
+
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_force_ssl`
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_partner`
+
+        Args:
+            track_format (Optional[CaptionFormat]): The format YouTube should return the captions in.
+            language (Optional[str]): The alpha-2 language code to translate the caption track into.
+
+        Returns:
+            bytes: The caption track as a :class:`bytes` object.
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            asyncio.TimeoutError: The API server did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.download_caption(self.id, track_format, language)
+
+    async def save(
+            self, *, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None,
+            fp: Union[os.PathLike, str, None] = None
+    ):
+        """Downloads the caption track and saves it to a specified location
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **200** units per call.
+
+        Note:
+            You must be the owner of the video of the captions and use OAuth authentication to call this method with
+            one of the following scopes:
+
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_force_ssl`
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_partner`
+
+        Args:
+            track_format (Optional[CaptionFormat]): The format YouTube should return the captions in.
+            language (Optional[str]): The alpha-2 language code to translate the caption track into.
+            fp (Union[os.PathLike, str, None]): The path and/or filename to save the file to.
+                Defaults to current working directory with the filename format: ``{track_id}.{file_extension (if any)}``
+
+        Raises:
+            HTTPException: Fetching the request failed.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            asyncio.TimeoutError: The API did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.save_caption(self.id, track_format=track_format, language=language, fp=fp)
+
 
 class YoutubeSubscription:
     """
