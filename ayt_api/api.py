@@ -771,7 +771,7 @@ class AsyncYoutubeAPI:
             thumbnail_file.write(banner)
 
     async def download_caption(
-            self, track_id: str, track_format: CaptionFormat = None, track_lang: str = None
+            self, track_id: str, track_format: Optional[CaptionFormat] = None, track_lang: Optional[str] = None
     ) -> bytes:
         """Downloads the caption track from the ID specified and stores it as a :class:`bytes` object
 
@@ -781,10 +781,17 @@ class AsyncYoutubeAPI:
 
             A call to this method has a quota cost of **200** units per call.
 
+        Note:
+            You must be the owner of the video of the captions and use OAuth authentication to call this method with
+            one of the following scopes:
+
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_force_ssl`
+            - :class:`ayt_api.enums.OAuth2Scope.youtube_partner`
+
         Args:
             track_id (str): The ID of the caption track
-            track_format (CaptionFormat): The format YouTube should return the captions in.
-            track_lang (str): The alpha-2 language code to translate the caption track into.
+            track_format (Optional[CaptionFormat]): The format YouTube should return the captions in.
+            track_lang (Optional[str]): The alpha-2 language code to translate the caption track into.
 
         Returns:
             bytes: The caption track as a :class:`bytes` object.
