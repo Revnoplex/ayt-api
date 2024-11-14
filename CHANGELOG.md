@@ -93,6 +93,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([af49fe6](https://github.com/Revnoplex/ayt-api/commit/af49fe6b8838a16aebe89d6f2e89b9219471a8d0))
 - API method `save_caption()` to download **and save** captions if you are the owner of the captions. 
 ([482ff7c](https://github.com/Revnoplex/ayt-api/commit/482ff7cfc674066318038661ea4f77cdc075941d))
+- Added `download()` and `save()` API methods to `VideoCaption`. 
+([0e3c0ea](https://github.com/Revnoplex/ayt-api/commit/0e3c0ea25d261aa12d4fa5545725a76b06f25bbe))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
