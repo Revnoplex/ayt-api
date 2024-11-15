@@ -127,6 +127,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([90e1ad1#diff-7363042-L1420](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L1420))
 - `VideoStream` and `AudioStream` raising errors when certain values weren't set. 
 ([10881c0](https://github.com/Revnoplex/ayt-api/commit/10881c08f8689da24cf2cc4062c7c15aa2240dbf))
+- `HTTPException` raising its own error when `error_data` is `None`. 
+([2b3b18a](https://github.com/Revnoplex/ayt-api/commit/2b3b18afd76a0b962d9aec5d0b44fab4127768fc)) 
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 - *Documentation*: Formatting error in docstring for `exceptions.APITimeout`. 
@@ -147,6 +149,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([1da9164](https://github.com/Revnoplex/ayt-api/commit/1da916473d1dc62ec56f24fb17842da4bf80481a))
 - `YoutubeVideo` attribute `made_for_kids` can now be `None`. 
 ([4bfb5d1#diff-7363042-L744](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L744))
+- `extract_video_id` supports all `*.ytimg.com` urls. 
+([5cda291](https://github.com/Revnoplex/ayt-api/commit/5cda2915bc3f7d75bef3429342929cfab23967e7))
 - *Documentation*: `__init__` docstring included in `AsyncYoutubeAPI` class. 
 ([3af95cd](https://github.com/Revnoplex/ayt-api/commit/3af95cd89ba922de30ef7070f3b9811636851075))
 
