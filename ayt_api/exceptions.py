@@ -256,7 +256,7 @@ class HTTPException(YoutubeExceptions):
         self.details = error_data.get("details") if error_data else None
         if self.details is not None:
             self.reason = self.details[0].get("reason")
-        elif error_data.get("errors"):
+        elif error_data and error_data.get("errors"):
             self.reason = error_data["errors"][0].get("reason") if error_data else None
         else:
             self.reason = None
