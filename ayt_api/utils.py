@@ -23,7 +23,7 @@ def extract_video_id(url: str) -> Optional[str]:
         return queries["v"][0]
     elif encoded_query_matches:
         return extract_video_id(parse.unquote(queries[encoded_query_matches.pop()][0]))
-    elif components.netloc == "i.ytimg.com":
+    elif components.hostname.endswith("ytimg.com"):
         return pathlib.Path(components.path).parts[2]
     elif pathlib.Path(components.path).name not in ["playlist"]:
         return pathlib.Path(components.path).name
