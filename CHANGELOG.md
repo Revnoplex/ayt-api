@@ -95,6 +95,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([482ff7c](https://github.com/Revnoplex/ayt-api/commit/482ff7cfc674066318038661ea4f77cdc075941d))
 - `download()` and `save()` API methods to `VideoCaption`. 
 ([0e3c0ea](https://github.com/Revnoplex/ayt-api/commit/0e3c0ea25d261aa12d4fa5545725a76b06f25bbe))
+- API method `set_video_thumbnail()` which uploads and sets thumbnails for a video. 
+([ce864de](https://github.com/Revnoplex/ayt-api/commit/ce864defb5eb4d0871be00863850a6671e3d69d8))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
