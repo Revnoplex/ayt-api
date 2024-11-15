@@ -15,7 +15,7 @@ from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPExcep
     CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
-    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName
+    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName, YoutubeThumbnailMetadata
 from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page, use_existing
@@ -385,10 +385,10 @@ class AsyncYoutubeAPI:
             current_count (int): The sum of items returned each api request.
             expected_count (int): The number of items expected to be returned by the api that were requested.
             other_queries (Optional[str]): Additional query strings to use in the call url.
-            return_args (dict): Extra arguments that are passed to the object passed to ``return_type``
+            return_args (dict): Extra arguments that are passed to the object passed to ``return_type``.
 
                 .. versionadded:: 0.4.0
-            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``
+            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
 
                 .. versionadded:: 0.4.0
 
@@ -403,7 +403,7 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         # check if session has probably expired
-        if self.session and self.session.is_expired():
+        if self.session and self.session.is_expired() and (not auth_retry):
             await self.refresh_session()
             return await self._call_api(
                 call_type, query, ids, parts, return_type, exception_type, max_results,
@@ -537,10 +537,10 @@ class AsyncYoutubeAPI:
             current_count (int): The sum of items returned each api request.
             expected_count (int): The number of items expected to be returned by the api that were requested.
             other_queries (Optional[str]): Additional query strings to use in the call url.
-            return_args (dict): Extra arguments that are passed to the object passed to ``return_type``
+            return_args (dict): Extra arguments that are passed to the object passed to ``return_type``.
 
                 .. versionadded:: 0.4.0
-            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``
+            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
 
                 .. versionadded:: 0.4.0
 
@@ -555,7 +555,7 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         # check if session has probably expired
-        if self.session and self.session.is_expired():
+        if self.session and self.session.is_expired() and (not auth_retry):
             await self.refresh_session()
             return await self._update_api(
                 call_type, query, ids, parts, return_type, new_values, exception_type, max_results,
@@ -771,7 +771,8 @@ class AsyncYoutubeAPI:
             thumbnail_file.write(banner)
 
     async def download_caption(
-            self, track_id: str, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None
+            self, track_id: str, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None,
+            _auth_retry=False
     ) -> bytes:
         """Downloads the caption track from the ID specified and stores it as a :class:`bytes` object
 
@@ -792,6 +793,7 @@ class AsyncYoutubeAPI:
             track_id (str): The ID of the caption track
             track_format (Optional[CaptionFormat]): The format YouTube should return the captions in.
             language (Optional[str]): The alpha-2 language code to translate the caption track into.
+            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
 
         Returns:
             bytes: The caption track as a :class:`bytes` object.
@@ -801,6 +803,9 @@ class AsyncYoutubeAPI:
             aiohttp.ClientError: There was a problem sending the request to the api.
             asyncio.TimeoutError: The API server did not respond within the timeout period set.
         """
+        if self.session and self.session.is_expired() and (not _auth_retry):
+            await self.refresh_session()
+            return await self.download_caption(track_id, track_format, language, True)
         queries = []
         if track_format:
             queries.append(f"tfmt={track_format.__str__()}")
@@ -818,12 +823,19 @@ class AsyncYoutubeAPI:
             async with thumbnail_session.get(url, headers=headers) as thumbnail_response:
                 self.quota_usage += 200
                 if not thumbnail_response.ok:
-                    content = None
+                    message = f'The youtube API returned the following error code: ' \
+                              f'{thumbnail_response.status}'
+                    error_data = None
                     if thumbnail_response.content_type == "application/json":
-                        content = await thumbnail_response.json()
-                    raise HTTPException(
-                        thumbnail_response, content['error'].get("message") if content else None, content
-                    )
+                        res_data = await thumbnail_response.json()
+                        if "error" in res_data:
+                            error_data = res_data["error"]
+                            error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                            if "authError" in error_reasons and self.session and (not _auth_retry):
+                                await self.refresh_session()
+                                return await self.download_caption(track_id, track_format, language)
+                            message = error_data.get("message")
+                    raise HTTPException(thumbnail_response, message, error_data)
                 else:
                     return await thumbnail_response.read()
 
@@ -1552,3 +1564,79 @@ class AsyncYoutubeAPI:
                 "fileDetails", "processingDetails", "suggestions", "id"],
             AuthorisedYoutubeVideo, updated_metadata, VideoNotFound, None,
         )
+
+    async def set_video_thumbnail(self, video_id: str, image: bytes, _auth_retry=False) -> YoutubeThumbnailMetadata:
+        """
+        Upload and set the thumbnail for a video.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Args:
+            video_id (str): The ID of the video to set the thumbnail of.
+            image (bytes): The thumbnail image to upload.
+            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
+
+        Returns:
+            YoutubeThumbnailMetadata: The metadata of the uploaded thumbnail.
+
+        Raises:
+            HTTPException: Uploading the thumbnail failed.
+            ResourceNotFound: The API didn't return any thumbnail metadata.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        if self.session and self.session.is_expired() and (not _auth_retry):
+            await self.refresh_session()
+            return await self.set_video_thumbnail(video_id, image)
+        supported_formats = {
+            "png": b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
+            "jpeg": b'\xFF\xD8\xFF'
+        }
+        content_type = "application/octet-stream"
+        for format_name, signature in supported_formats.items():
+            if image.startswith(signature):
+                content_type = f"image/{format_name}"
+        async with aiohttp.ClientSession(
+                connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
+        ) as session:
+            headers = {
+                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Content-Type": content_type,
+                "Content-Length": str(len(image))
+            }
+            try:
+                async with session.post(
+                    f"https://www.googleapis.com/upload/youtube/v{self.api_version}/thumbnails/set"
+                    f"?videoId={video_id}&uploadType=media", headers=headers, data=image
+                ) as response:
+                    self.quota_usage += 50
+                    if response.ok:
+                        res_data = await response.json()
+                        if "error" in res_data:
+                            raise HTTPException(
+                                response, f'{res_data["error"].get("code")}: {res_data["error"].get("message")}')
+                        items = res_data.get("items") or []
+                        if not items:
+                            raise ResourceNotFound("The API didn't return any thumbnail metadata")
+                        else:
+                            return YoutubeThumbnailMetadata(items[0], self)
+                    else:
+                        message = f'The youtube API returned the following error code: ' \
+                                  f'{response.status}'
+                        error_data = None
+                        if response.content_type == "application/json":
+                            res_data = await response.json()
+                            if "error" in res_data:
+                                error_data = res_data["error"]
+                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                                if "authError" in error_reasons and self.session and (not _auth_retry):
+                                    await self.refresh_session()
+                                    return await self.set_video_thumbnail(video_id, image)
+                                message = error_data.get("message")
+                        raise HTTPException(response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
