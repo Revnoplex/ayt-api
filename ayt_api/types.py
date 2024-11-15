@@ -1545,6 +1545,29 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
             localisations=localisations
         )
 
+    async def set_thumbnail(self, image: bytes):
+        """
+        Upload and set the video's thumbnail.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Args:
+            image (bytes): The thumbnail image to upload.
+
+        Raises:
+            HTTPException: Uploading the thumbnail failed.
+            ResourceNotFound: The API didn't return any thumbnail metadata.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        self.thumbnails = await self._call_data.set_video_thumbnail(self.id, image)
+
 
 class YoutubeChannel:
     """
