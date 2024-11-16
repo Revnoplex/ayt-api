@@ -1440,9 +1440,11 @@ class AsyncYoutubeAPI:
     async def update_video(
             self, video: Union[AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]], *,
             title: Union[str, EXISTING] = EXISTING,
-            category_id: Union[str, EXISTING] = EXISTING, default_language: Union[str, EXISTING, None] = EXISTING,
+            category_id: Union[str, EXISTING] = EXISTING,
+            default_language: Union[str, EXISTING, None] = EXISTING,
             description: Union[str, EXISTING, None] = EXISTING,
-            tags: Union[list[str], EXISTING, None] = EXISTING, embeddable: Union[bool, EXISTING, None] = EXISTING,
+            tags: Union[list[str], EXISTING, None] = EXISTING,
+            embeddable: Union[bool, EXISTING, None] = EXISTING,
             video_license: Union[License, EXISTING, None] = EXISTING,
             visibility: Union[PrivacyStatus, EXISTING, None] = EXISTING,
             public_stats_viewable: Union[bool, EXISTING, None] = EXISTING,
@@ -1468,22 +1470,23 @@ class AsyncYoutubeAPI:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
 
         Args:
-            video (Union[YoutubeVideo, list[YoutubeVideo]]): The YouTube video instance to be updated
+            video (Union[YoutubeVideo, list[YoutubeVideo]]): The YouTube video instance to be updated.
             title (Union[str, EXISTING]): The title of the video to set.
 
                 .. note::
-                    This value cannot be set to `None` or an empty string as YouTube forbids this.
+                    This value cannot be set to ``None`` or an empty string as YouTube forbids this.
 
             category_id (Union[str, EXISTING]): The category id to set for the video.
 
                 .. note::
-                    This value cannot be set to `None` or an empty string as YouTube forbids this.
+                    This value cannot be set to ``None`` or an empty string as YouTube forbids this.
 
-            default_language (Union[str, EXISTING, None]): The YouTube video category associated with the video
+            default_language (Union[str, EXISTING, None]): The default language the video should be set in.
+                The value should be a BCP-47 language code.
             description (Union[str, EXISTING, None]): The description of the video to set.
             tags (Union[list[str], EXISTING, None]): The tags the to set to make the video appear in search results
                 relating to it.
-            embeddable (embeddable: Union[bool, EXISTING, None]): Set whether the video can be embedded on another
+            embeddable (Union[bool, EXISTING, None]): Set whether the video can be embedded on another
                 website.
             video_license (Union[License, EXISTING, None]): The YouTube license to set for the video.
             visibility (Union[PrivacyStatus, EXISTING, None]): Set the video's privacy status.
@@ -1493,8 +1496,8 @@ class AsyncYoutubeAPI:
                 publish.
 
                 .. note::
-                    If you set a value other for this property, you must also set the ``visibility`` property to
-                        :class:`ayt_api.enums.PrivacyStatus.private`.
+                    If you set a value for this property, you must also set the ``visibility`` property to
+                    :class:`ayt_api.enums.PrivacyStatus.private`.
 
             made_for_kids (Union[bool, EXISTING, None]): Designate the video as being child-directed.
             contains_synthetic_media (Union[bool, EXISTING, None]): Tell YouTube if the video contain realistic
@@ -1510,9 +1513,9 @@ class AsyncYoutubeAPI:
         Raises:
             HTTPException: Fetching the metadata failed.
             VideoNotFound: The video does not exist.
-            aiohttp.ClientError: There was a problem sending the request to the api.
-            InvalidInput: The input is not a video id.
-            APITimeout: The YouTube api did not respond within the timeout period set.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            InvalidInput: The input is not a video ID.
+            APITimeout: The YouTube API did not respond within the timeout period set.
         """
         edit_mapping = {
             "id": video.id,
