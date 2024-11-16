@@ -148,16 +148,19 @@ class YoutubeThumbnailMetadata:
 
     Attributes:
         metadata (dict): The raw thumbnail metadata to construct the class.
+        etag (Optional[str]). The Etag to keep track of this instance if created from its own API call.
         available (tuple[str]): Tells what thumbnails are available with the video
     """
 
-    def __init__(self, thumbnail_metadata: dict, call_data):
+    def __init__(self, thumbnail_metadata: dict, call_data, etag: Optional[str] = None):
         """
         Args:
             thumbnail_metadata (dict): The raw thumbnail metadata to construct the class.
             call_data (AsyncYoutubeAPI): Call data used for fetch functions.
+            etag (Optional[str]): The Etag to keep track of the version of this instance.
         """
         self.metadata = thumbnail_metadata
+        self.etag = etag
         self.available = tuple(self.metadata.keys())
         self._call_data = call_data
 

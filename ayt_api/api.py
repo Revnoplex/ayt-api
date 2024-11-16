@@ -1626,7 +1626,7 @@ class AsyncYoutubeAPI:
                         if not items:
                             raise ResourceNotFound("The API didn't return any thumbnail metadata")
                         else:
-                            return YoutubeThumbnailMetadata(items[0], self)
+                            return YoutubeThumbnailMetadata(items[0], self, res_data.get("etag"))
                     else:
                         message = f'The youtube API returned the following error code: ' \
                                   f'{response.status}'
