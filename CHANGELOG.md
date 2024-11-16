@@ -86,7 +86,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 - Quota usage is now kept track of per session and is accessible via `AsyncYoutubeAPI.quota_usage`. 
 ([e8c42c8](https://github.com/Revnoplex/ayt-api/commit/e8c42c811b3a2ab99028c450d9d080cddd6d75f7))
 - Etag attributes to classes of API calls. 
-([d44b5a3](https://github.com/Revnoplex/ayt-api/commit/d44b5a37e3201bb6e19640232a7da989de1cf450))
+([d44b5a3](https://github.com/Revnoplex/ayt-api/commit/d44b5a37e3201bb6e19640232a7da989de1cf450),
+[d2e3bcb](https://github.com/Revnoplex/ayt-api/commit/d2e3bcb1d482ec9f710946bd6ff88f91183bf03f))
 - Enum `CaptionFormat` as a list of caption track formats supported by YouTube. 
 ([7e912bc](https://github.com/Revnoplex/ayt-api/commit/7e912bc752e21fdc2dc15ba8424bffdde4f14347))
 - API method `download_caption()` to download captions if you are the owner of the captions. 
