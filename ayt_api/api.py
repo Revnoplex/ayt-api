@@ -833,7 +833,7 @@ class AsyncYoutubeAPI:
                             error_reasons = [error.get("reason") for error in error_data["errors"] if error]
                             if "authError" in error_reasons and self.session and (not _auth_retry):
                                 await self.refresh_session()
-                                return await self.download_caption(track_id, track_format, language)
+                                return await self.download_caption(track_id, track_format, language, True)
                             message = error_data.get("message")
                     raise HTTPException(thumbnail_response, message, error_data)
                 else:
@@ -1594,7 +1594,7 @@ class AsyncYoutubeAPI:
         """
         if self.session and self.session.is_expired() and (not _auth_retry):
             await self.refresh_session()
-            return await self.set_video_thumbnail(video_id, image)
+            return await self.set_video_thumbnail(video_id, image, True)
         supported_formats = {
             "png": b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
             "jpeg": b'\xFF\xD8\xFF'
@@ -1638,7 +1638,7 @@ class AsyncYoutubeAPI:
                                 error_reasons = [error.get("reason") for error in error_data["errors"] if error]
                                 if "authError" in error_reasons and self.session and (not _auth_retry):
                                     await self.refresh_session()
-                                    return await self.set_video_thumbnail(video_id, image)
+                                    return await self.set_video_thumbnail(video_id, image, True)
                                 message = error_data.get("message")
                         raise HTTPException(response, message, error_data)
             except asyncio.TimeoutError:
