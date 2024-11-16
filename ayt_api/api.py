@@ -1316,8 +1316,8 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         return (await self._call_api(
-            "channels", "forHandle", username, ["snippet"], YoutubeChannel, ChannelNotFound,
-            return_args={"partial": True}
+            "channels", "forHandle", username, ["id"], YoutubeChannel, ChannelNotFound,
+            return_args={"partial": True},
         )).id
 
     async def fetch_subscriptions(self, channel_id: str, max_items: int = 50) -> list[YoutubeSubscription]:
