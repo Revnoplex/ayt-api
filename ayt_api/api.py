@@ -28,7 +28,7 @@ class AsyncYoutubeAPI:
         Supports OAuth2 methods for running privileged api calls.
 
     Attributes:
-        api_version (str): The API version to use. defaults to 3.
+        api_version (str): The API version to use. Defaults to 3.
         call_url_prefix (str): The start of the YouTube API call url to use.
         timeout (aiohttp.ClientTimeout): The timeout if the api does not respond.
         ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
@@ -45,7 +45,7 @@ class AsyncYoutubeAPI:
         Args:
             yt_api_key (str): The API key used to access the YouTube API. to get an API key.
                 See instructions here: https://developers.google.com/youtube/v3/getting-started
-            api_version (str): The API version to use. defaults to 3.
+            api_version (str): The API version to use. Defaults to 3.
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
@@ -124,7 +124,7 @@ class AsyncYoutubeAPI:
             sock (socket.socket): The socket to listen on that the redirect uri leads to
             client_secret (str): The client secret as part of OAuth client credentials created at
                 https://console.cloud.google.com/apis/credentials.
-            api_version (str): The API version to use. defaults to 3.
+            api_version (str): The API version to use. Defaults to 3.
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
@@ -229,7 +229,7 @@ class AsyncYoutubeAPI:
                 https://console.cloud.google.com/apis/credentials.
             client_secret (str): The client secret as part of OAuth client credentials created at
                 https://console.cloud.google.com/apis/credentials.
-            api_version (str): The API version to use. defaults to 3.
+            api_version (str): The API version to use. Defaults to 3.
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
@@ -263,7 +263,7 @@ class AsyncYoutubeAPI:
             client_secret (str): The client secret as part of OAuth client credentials created at
                 https://console.cloud.google.com/apis/credentials.
             redirect_uri (str): The URI that was sent after the OAuth consent screen was completed
-            api_version (str): The API version to use. defaults to 3.
+            api_version (str): The API version to use. Defaults to 3.
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
                 This is useful for using the api on a restricted network.
