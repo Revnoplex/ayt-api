@@ -261,3 +261,28 @@ def use_existing(existing_value: Any, argument: Any) -> Any:
     """
     from ayt_api.types import EXISTING
     return existing_value if argument is EXISTING else argument
+
+
+def ensure_missing_keys(original: dict, minimised: dict) -> dict:
+    """
+    Ensure a dictionary with possible missing keys from the first dictionary includes them if the value for the key
+    was ``None`` or an empty value.
+
+    .. versionadded:: 0.4.0
+
+    Note:
+        This util will only check the first layer of keys and will not check any deeper nested keys.
+
+    Args:
+        original (dict): The original dictionary with the full set of keys.
+        minimised (dict): The version of the dictionary that had keys with empty values removed.
+
+    Returns:
+        dict: The ``minimised`` version of the dictionary with values added back from the original depending on if they
+            were empty values.
+    """
+    updated = minimised.copy()
+    for key, value in original.items():
+        if key not in minimised and (not value):
+            updated[key] = value
+    return updated
