@@ -100,6 +100,10 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([ce864de](https://github.com/Revnoplex/ayt-api/commit/ce864defb5eb4d0871be00863850a6671e3d69d8))
 - `set_thumbnnail()` API method to `AuthorisedYoutubeVideo`. 
 ([b292720](https://github.com/Revnoplex/ayt-api/commit/b292720fb00a11b3c9d969a4930bb06aef10d535))
+- Util `ensure_missing_keys()`. See documentation for details. 
+([088166f](https://github.com/Revnoplex/ayt-api/commit/088166f8ad6914e1deafc3475a54469e33eaea48))
+- API call `update_channel()` which can update some metadata for a channel. 
+([41c37d3](https://github.com/Revnoplex/ayt-api/commit/41c37d329f7758cd6a236dcd98f844b73daeeb1d))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
