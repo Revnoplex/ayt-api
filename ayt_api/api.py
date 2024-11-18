@@ -15,10 +15,10 @@ from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPExcep
     CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
-    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName, YoutubeThumbnailMetadata
+    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName, YoutubeThumbnailMetadata, BaseVideo
 from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat
 from .filters import SearchFilter
-from .utils import censor_key, snake_to_camel, basic_html_page, use_existing
+from .utils import censor_key, snake_to_camel, basic_html_page, use_existing, ensure_missing_keys
 
 
 class AsyncYoutubeAPI:
@@ -1437,6 +1437,8 @@ class AsyncYoutubeAPI:
         )
         return {entry["hl"]: entry["name"] for entry in to_parse}
 
+    # The following noinspection is to stop a false warning caused by the syntax of the notes.
+    # noinspection PyIncorrectDocstring
     async def update_video(
             self, video: Union[AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]], *,
             title: Union[str, EXISTING] = EXISTING,
@@ -1473,12 +1475,12 @@ class AsyncYoutubeAPI:
             video (Union[YoutubeVideo, list[YoutubeVideo]]): The YouTube video instance to be updated.
             title (Union[str, EXISTING]): The title of the video to set.
 
-                .. note::
+                Note:
                     This value cannot be set to ``None`` or an empty string as YouTube forbids this.
 
             category_id (Union[str, EXISTING]): The category id to set for the video.
 
-                .. note::
+                Note:
                     This value cannot be set to ``None`` or an empty string as YouTube forbids this.
 
             default_language (Union[str, EXISTING, None]): The default language the video should be set in.
@@ -1495,7 +1497,7 @@ class AsyncYoutubeAPI:
             publish_at (Union[datetime.datetime, EXISTING, None]): Set the date and time when the video is scheduled to
                 publish.
 
-                .. note::
+                Note:
                     If you set a value for this property, you must also set the ``visibility`` property to
                     :class:`ayt_api.enums.PrivacyStatus.private`.
 
@@ -1643,3 +1645,165 @@ class AsyncYoutubeAPI:
                         raise HTTPException(response, message, error_data)
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
+
+    # the noinspection is for the same issue as update_video()
+    # noinspection PyIncorrectDocstring
+    async def update_channel(
+            self, channel: Union[YoutubeChannel, list[YoutubeChannel]], *,
+            country: Union[str, EXISTING, None] = EXISTING,
+            description: Union[str, EXISTING, None] = EXISTING,
+            default_language: Union[str, EXISTING, None] = EXISTING,
+            keywords: Union[list[str], EXISTING, None] = EXISTING,
+            tracking_analytics_account_id: Union[str, EXISTING, None] = EXISTING,
+            unsubscribed_trailer: Union[str, BaseVideo, EXISTING, None] = EXISTING,
+            localisations: Union[list[LocalName], EXISTING, None] = EXISTING,
+            made_for_kids: Union[bool, EXISTING] = EXISTING
+
+    ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
+        """Updates metadata for a channel.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of between **0-150** units.
+            As updating ``localisations`` and ``made_for_kids`` cost an extra 50 units each
+            and not updating anything costs nothing as no API call is actually made.
+
+        Note:
+            If no arguments after ``channel`` are specified or are all set to ``EXISTING``, no API call is made and
+            hence no quota units will be used. The function will just return the :class:`YoutubeChannel` as it is.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            channel (Union[YoutubeVideo, list[YoutubeVideo]]): The YouTube channel instance to be updated.
+            country (Union[str, EXISTING, None]): The country to set which the channel is associated.
+            description (Union[str, EXISTING, None]): The description of the channel to set.
+            default_language (Union[str, EXISTING, None]): The default language the video should be set in.
+                The value should be a BCP-47 language code.
+            keywords (Union[list[str], EXISTING, None]): Keywords to set associated with your channel.
+            tracking_analytics_account_id (Union[str, EXISTING, None]): The ID to set for a Google Analytics account
+                used to track and measure traffic to the channel.
+            unsubscribed_trailer (Union[str, BaseVideo, EXISTING, None]): The ID or :class:`BaseVideo` to set of the
+                video that should play in the featured video module in the channel page's browse view for unsubscribed
+                viewers.
+            localisations (Union[list[LocalName], EXISTING, None]): Specify translations of the video's metadata.
+
+                Note:
+                    This value cannot be set to ``None`` or an empty list as YouTube forbids this.
+
+            made_for_kids (Union[bool, EXISTING]): Designate the channel as being child-directed.
+
+                Note:
+                    This value cannot be set to ``None`` as YouTube forbids this.
+
+
+        Returns:
+            Union[YoutubeChannel, list[YoutubeChannel]]:
+                The updated channel object.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            InvalidInput: The input is not a channel ID.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        branding_settings_mapping = [
+            {
+                "id": channel.id,
+                "brandingSettings": {"channel": {
+                    "country": use_existing(channel.country, country),
+                    "description": use_existing(channel.description, description),
+                    "defaultLanguage": use_existing(channel.default_language, default_language),
+                    "keywords": " ".join(
+                        [
+                            f"\"{keyword}\"" if " " in keyword else keyword
+                            for keyword in use_existing(channel.keywords, keywords) or []
+                        ]
+                    ),
+                    "trackingAnalyticsAccountId": use_existing(
+                        channel.tracking_analytics_account_id, tracking_analytics_account_id
+                    ),
+                    "unsubscribedTrailer": use_existing(
+                        channel.unsubscribed_trailer_id,
+                        unsubscribed_trailer.id if isinstance(unsubscribed_trailer, BaseVideo) else unsubscribed_trailer
+                    )
+                }}
+            },
+        ]
+        made_for_kids_mapping = [
+            {
+                "id": channel.id,
+                "status": {
+                    "selfDeclaredMadeForKids": use_existing(channel.self_declared_made_for_kids, made_for_kids),
+                },
+            },
+        ]
+        localisations_mapping = [
+            {
+                "id": channel.id,
+                "localizations": {
+                    local_name.language: {
+                        "title": local_name.title,
+                        "description": local_name.description
+                    } for local_name in use_existing(channel.localisations, localisations) if local_name.language
+                } if use_existing(channel.localisations, localisations) else {}
+            }
+        ]
+        contains_branding_settings = any([
+            country is not EXISTING,
+            description is not EXISTING,
+            default_language is not EXISTING,
+            keywords is not EXISTING,
+            tracking_analytics_account_id is not EXISTING,
+            unsubscribed_trailer is not EXISTING,
+        ])
+        edit_mappings = (
+            (branding_settings_mapping if contains_branding_settings else [])
+            +
+            (made_for_kids_mapping if made_for_kids is not EXISTING else [])
+            +
+            (localisations_mapping if localisations is not EXISTING else [])
+        )
+        new_metadata = {}
+        other_data = (channel.call_url, self)
+        for edit_mapping in edit_mappings:
+            part = await self._update_api(
+                "channels", "id", channel.id, [list(edit_mapping.keys())[1]],
+                lambda metadata, call_url, call_data: (metadata, call_url, call_data),
+                edit_mapping, ChannelNotFound, None,
+            )
+            new_metadata.update(part[0])
+            other_data = part[1:]
+        updated_metadata = channel.metadata.copy()
+        if new_metadata.get("brandingSettings") and new_metadata["brandingSettings"].get("channel"):
+            updated_metadata["brandingSettings"]["channel"].update(
+                ensure_missing_keys(
+                    branding_settings_mapping[0]["brandingSettings"]["channel"],
+                    new_metadata["brandingSettings"]["channel"]
+                )
+            )
+            updated_metadata["snippet"].update({
+                "country": new_metadata["brandingSettings"]["channel"].get("country"),
+                "description": new_metadata["brandingSettings"]["channel"].get("description"),
+                "defaultLanguage": new_metadata["brandingSettings"]["channel"].get("defaultLanguage")
+            })
+        if new_metadata.get("status"):
+            updated_metadata["status"].update(
+                ensure_missing_keys(made_for_kids_mapping[0]["status"], new_metadata["status"])
+            )
+        if new_metadata.get("localizations"):
+            new_version = ensure_missing_keys(localisations_mapping[0]["localizations"], new_metadata["localizations"])
+            updated_metadata["localizations"].update(
+                new_version
+            )
+            for key in updated_metadata["localizations"].copy():
+                if key not in new_version:
+                    del updated_metadata["localizations"][key]
+        return YoutubeChannel(updated_metadata, other_data[0], other_data[1])
