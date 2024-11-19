@@ -1858,6 +1858,86 @@ class YoutubeChannel:
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_channel_comments(self.id, max_comments)
 
+    # the noinspection is copied from AsyncYoutubeAPI.update_channel()
+    # noinspection PyIncorrectDocstring
+    async def update(
+            self, *,
+            country: Union[str, EXISTING, None] = EXISTING,
+            description: Union[str, EXISTING, None] = EXISTING,
+            default_language: Union[str, EXISTING, None] = EXISTING,
+            keywords: Union[list[str], EXISTING, None] = EXISTING,
+            tracking_analytics_account_id: Union[str, EXISTING, None] = EXISTING,
+            unsubscribed_trailer: Union[str, BaseVideo, EXISTING, None] = EXISTING,
+            localisations: Union[list[LocalName], EXISTING, None] = EXISTING,
+            made_for_kids: Union[bool, EXISTING] = EXISTING
+
+    ) -> YoutubeChannel:
+        """Updates metadata for the channel.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of between **0-150** units.
+            As updating ``localisations`` and ``made_for_kids`` cost an extra 50 units each
+            and not updating anything costs nothing as no API call is actually made.
+
+        Note:
+            If no arguments are specified or are all set to ``EXISTING``, no API call is made and
+            hence no quota units will be used. The function will just return the :class:`YoutubeChannel` as it is.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            country (Union[str, EXISTING, None]): The country to set which the channel is associated.
+            description (Union[str, EXISTING, None]): The description of the channel to set.
+            default_language (Union[str, EXISTING, None]): The default language the video should be set in.
+                The value should be a BCP-47 language code.
+            keywords (Union[list[str], EXISTING, None]): Keywords to set associated with your channel.
+            tracking_analytics_account_id (Union[str, EXISTING, None]): The ID to set for a Google Analytics account
+                used to track and measure traffic to the channel.
+            unsubscribed_trailer (Union[str, BaseVideo, EXISTING, None]): The ID or :class:`BaseVideo` to set of the
+                video that should play in the featured video module in the channel page's browse view for unsubscribed
+                viewers.
+            localisations (Union[list[LocalName], EXISTING, None]): Specify translations of the video's metadata.
+
+                Note:
+                    This value cannot be set to ``None`` or an empty list as YouTube forbids this.
+
+            made_for_kids (Union[bool, EXISTING]): Designate the channel as being child-directed.
+
+                Note:
+                    This value cannot be set to ``None`` as YouTube forbids this.
+
+
+        Returns:
+            YoutubeChannel:
+                The updated channel object.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            InvalidInput: The input is not a channel ID.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.update_channel(
+            self, country=country,
+            description=description,
+            default_language=default_language,
+            keywords=keywords,
+            tracking_analytics_account_id=tracking_analytics_account_id,
+            unsubscribed_trailer=unsubscribed_trailer,
+            localisations=localisations,
+            made_for_kids=made_for_kids
+        )
+
 
 REFERENCE_TABLE = {
     "video": [VIDEO_URL, YoutubeVideo],
