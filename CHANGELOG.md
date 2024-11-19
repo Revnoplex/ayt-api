@@ -144,6 +144,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 - *Documentation*: Formatting error in docstring for `exceptions.APITimeout`. 
 ([9ac4776](https://github.com/Revnoplex/ayt-api/commit/9ac4776e7b2c9759a26c1d2371f8dc35f15a3674))
+- *Documentation*: wrong term used in `YoutubeBanner`. 
+([e4ca4c3](https://github.com/Revnoplex/ayt-api/commit/e4ca4c3a6a14ab0d8a77a9c094e59c373a7e34cd))
 
 ### Changed
 - **Breaking**: Renamed attribute `_type` to `kind` in `filters.SearchFilter`. 
