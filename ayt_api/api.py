@@ -733,7 +733,7 @@ class AsyncYoutubeAPI:
 
         Raises:
             HTTPException: Fetching the request failed.
-            aiohttp.ClientError: There was a problem sending the request to the api.
+            aiohttp.ClientError: There was a problem sending the request to the server.
             asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
                 timeout period set.
         """
@@ -751,11 +751,11 @@ class AsyncYoutubeAPI:
         Args:
             banner_url (str): The yt3.ggpht.com or yt3.googleusercontent.com asset url of the thumbnail
             fp (Union[os.PathLike, str, None]): The path and/or filename to save the file to.
-                Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
+                Defaults to current working directory with the filename format: ``{banner_id}.{extension}``
 
         Raises:
             HTTPException: Fetching the request failed.
-            aiohttp.ClientError: There was a problem sending the request to the api.
+            aiohttp.ClientError: There was a problem sending the request to the server.
             asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
                 timeout period set.
         """

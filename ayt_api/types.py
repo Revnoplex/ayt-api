@@ -104,9 +104,12 @@ class YoutubeBanner:
     def __str__(self):
         return self.url
 
-    async def download(self) -> tuple[bytes, str]:
+    async def download(self, width: Optional[int] = None) -> tuple[bytes, str]:
         # noinspection SpellCheckingInspection
         """Downloads the banner and stores it as a :class:`bytes` object
+
+        Args:
+            width (Optional[int]): The width or number of horizontal pixels the downloaded image should have.
 
         Returns:
             tuple[bytes, str]: A list containing the image as a :class:`bytes` object and the file extension of
@@ -114,32 +117,45 @@ class YoutubeBanner:
 
         Raises:
             HTTPException: Fetching the request failed.
-            aiohttp.ClientError: There was a problem sending the request to the api.
+            aiohttp.ClientError: There was a problem sending the request to the server.
             RuntimeError: The contents was not a jpeg image
             asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
             timeout period set.
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.download_banner(self.url)
+        return await self._call_data.download_banner(self.url + (("=w" + str(width)) if width else ""))
 
-    async def save(self, fp: str | os.PathLike | None = None):
+    async def save(self, fp: str | os.PathLike | None = None, width: int = None):
         """Downloads the banner specified and saves it to a specified location
 
         Args:
             fp (os.PathLike | str): The path and/or filename to save the file to.
-                Defaults to current working directory with the filename format: ``{video_id}-{quality}.png``
+                Defaults to current working directory with the filename format: ``{banner_id}.{extension}``
+            width (Optional[int]): The width or number of horizontal pixels the downloaded image should have.
 
         Raises:
             HTTPException: Fetching the request failed.
-            aiohttp.ClientError: There was a problem sending the request to the api.
+            aiohttp.ClientError: There was a problem sending the request to the server.
             RuntimeError: The contents was not a jpeg image
             asyncio.TimeoutError: The yt3.ggpht.com or yt3.googleusercontent.com server did not respond within the
                 timeout period set.
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        await self._call_data.save_banner(self.url, fp)
+        await self._call_data.save_banner(self.url + (("=w" + str(width)) if width else ""), fp)
+
+    def sized_url(self, width: int) -> str:
+        """
+        Return a URL which will give the size specified.
+
+        Args:
+            width (int): The width or number of horizontal pixels the downloaded image should have.
+
+        Returns:
+            str: The url with the width argument.
+        """
+        return self.url + "=w" + str(width)
 
 
 class YoutubeThumbnailMetadata:
