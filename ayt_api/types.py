@@ -1938,6 +1938,33 @@ class YoutubeChannel:
             made_for_kids=made_for_kids
         )
 
+    async def set_banner(self, image: bytes):
+        """
+        Upload and set the banner for the channel.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **100** units per call.
+
+        Args:
+            image (bytes): The banner image to upload.
+
+                Note:
+                    The image must have a 16:9 aspect ratio and be at least 2048x1152 pixels. YouTube recommends
+                    uploading a 2560px by 1440px image.
+
+        Raises:
+            HTTPException: Uploading the banner failed.
+            ResourceNotFound: The API didn't return any banner or channel metadata.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        self.banner_external, self.etag = await self._call_data.set_channel_banner(self, image)
+
 
 REFERENCE_TABLE = {
     "video": [VIDEO_URL, YoutubeVideo],

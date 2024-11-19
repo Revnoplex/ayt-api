@@ -15,7 +15,7 @@ from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPExcep
     CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
-    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName, YoutubeThumbnailMetadata, BaseVideo
+    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName, YoutubeThumbnailMetadata, BaseVideo, YoutubeBanner
 from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page, use_existing, ensure_missing_keys
@@ -1807,3 +1807,114 @@ class AsyncYoutubeAPI:
                 if key not in new_version:
                     del updated_metadata["localizations"][key]
         return YoutubeChannel(updated_metadata, other_data[0], other_data[1])
+
+    # noinspection PyIncorrectDocstring
+    async def set_channel_banner(
+            self, channel: YoutubeChannel, image: bytes, _auth_retry=False
+    ) -> tuple[YoutubeBanner, str]:
+        """
+        Upload and set the banner for a channel.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **100** units per call.
+
+        Args:
+            channel (YoutubeChannel): The channel to set the banner of.
+            image (bytes): The banner image to upload.
+
+                Note:
+                    The image must have a 16:9 aspect ratio and be at least 2048x1152 pixels. YouTube recommends
+                    uploading a 2560px by 1440px image.
+
+            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
+
+        Returns:
+            tuple[YoutubeBanner, str]: The metadata of the uploaded banner and the etag of the updated YoutubeChannel
+            instance.
+
+        Raises:
+            HTTPException: Uploading the banner failed.
+            ResourceNotFound: The API didn't return any banner or channel metadata.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        if self.session and self.session.is_expired() and (not _auth_retry):
+            await self.refresh_session()
+            return await self.set_channel_banner(channel, image, True)
+        supported_formats = {
+            "png": b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
+            "jpeg": b'\xFF\xD8\xFF'
+        }
+        content_type = "application/octet-stream"
+        for format_name, signature in supported_formats.items():
+            if image.startswith(signature):
+                content_type = f"image/{format_name}"
+        async with aiohttp.ClientSession(
+                connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
+        ) as session:
+            headers = {
+                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Content-Type": content_type,
+                "Content-Length": str(len(image))
+            }
+            try:
+                async with session.post(
+                    f"https://www.googleapis.com/upload/youtube/v{self.api_version}/channelBanners/insert"
+                    f"?uploadType=media", headers=headers, data=image
+                ) as response:
+                    self.quota_usage += 50
+                    if response.ok:
+                        res_data = await response.json()
+                        if "error" in res_data:
+                            raise HTTPException(
+                                response, f'{res_data["error"].get("code")}: {res_data["error"].get("message")}')
+                        if not res_data:
+                            raise ResourceNotFound("The API didn't return any thumbnail metadata")
+                        else:
+                            banner_url = res_data.get("url")
+                    else:
+                        message = f'The youtube API returned the following error code: ' \
+                                  f'{response.status}'
+                        error_data = None
+                        if response.content_type == "application/json":
+                            res_data = await response.json()
+                            if "error" in res_data:
+                                error_data = res_data["error"]
+                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                                if "authError" in error_reasons and self.session and (not _auth_retry):
+                                    await self.refresh_session()
+                                    return await self.set_channel_banner(channel, image, True)
+                                message = error_data.get("message")
+                        raise HTTPException(response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+        edit_mapping = {
+            "id": channel.id,
+            "brandingSettings": {
+                "image": {
+                    "bannerExternalUrl": banner_url
+                },
+                "channel": {
+                    "country": channel.country,
+                    "description": channel.description,
+                    "defaultLanguage": channel.default_language,
+                    "keywords": " ".join(
+                        [
+                            f"\"{keyword}\"" if " " in keyword else keyword
+                            for keyword in channel.keywords or []
+                        ]
+                    ),
+                    "trackingAnalyticsAccountId": channel.tracking_analytics_account_id,
+                    "unsubscribedTrailer": channel.unsubscribed_trailer_id,
+                }
+            }
+        }
+        partial = await self._update_api(
+            "channels", "id", channel.id, ["brandingSettings"],
+            lambda metadata, call_url, call_data: (metadata, call_url, call_data),
+            edit_mapping, ChannelNotFound, None,
+        )
+        return YoutubeBanner(partial[0]["brandingSettings"]["image"]["bannerExternalUrl"], self), partial[0].get("etag")
