@@ -106,6 +106,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([41c37d3](https://github.com/Revnoplex/ayt-api/commit/41c37d329f7758cd6a236dcd98f844b73daeeb1d))
 - Update method to `YoutubeChannel`. 
 ([2a4eb75](https://github.com/Revnoplex/ayt-api/commit/2a4eb751ec5df5ff6b5fdffe801c113ba69770e0))
+- Methods to set the banner image of a channel. 
+([15d2e26](https://github.com/Revnoplex/ayt-api/commit/15d2e266bab23dfce1e34cb5eb5fae29b7e43162))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
