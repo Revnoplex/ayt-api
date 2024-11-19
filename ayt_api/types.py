@@ -93,7 +93,7 @@ class YoutubeThumbnail:
 
 @dataclass
 class YoutubeBanner:
-    """Data for an individual YouTube thumbnail.
+    """Data for an individual YouTube banner.
 
     Attributes:
         url (Optional[str]): The file url for the banner.
