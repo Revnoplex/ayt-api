@@ -47,3 +47,7 @@
 ## Fetching Comments from a Video
 ```{literalinclude} ../../../examples/video-comments.py
 ```
+
+## Updating Metadata for a Video
+```{literalinclude} ../../../examples/update-video.py
+```
