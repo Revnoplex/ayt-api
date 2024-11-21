@@ -1,6 +1,9 @@
 import sys
+sys.path.append('./')
+from prebuild import autogen_examples
 sys.path.append('../../')
 from setup import get_version
+
 
 # Configuration file for the Sphinx documentation builder.
 
@@ -47,3 +50,6 @@ html_favicon = html_logo
 epub_show_urls = 'footnote'
 
 source_suffix = ['.rst', '.md']
+
+# run pre build scripts
+autogen_examples.main()
