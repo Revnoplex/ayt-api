@@ -10,11 +10,10 @@ specific_title_mapping = {
 
 
 def main():
+    print("prebuild [autogen_examples]: Generating examples page from examples list...")
     with open("usage/examples.md", "w") as examples:
         examples.write("# Examples\n\n")
-        print(os.listdir("../../examples"))
         for example in sorted(os.listdir("../../examples")):
-            print(example)
             example_name = example.split(".")[0]
             example_title = f"Fetching Information on a {example_name.replace('-', ' ').title()}"
             if "-" in example_name:
@@ -30,3 +29,4 @@ def main():
             examples.write(
                 f"## {example_title}\n```{{literalinclude}} ../../../examples/{example}\n```\n\n"
             )
+    print("prebuild [autogen_examples]: Done")

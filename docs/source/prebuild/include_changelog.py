@@ -3,6 +3,7 @@ import copy
 
 # Note: this algorithm only supports changing one link per line.
 def main():
+    print("prebuild [include_changelog]: Converting local references in changelog...")
     with open("../../CHANGELOG.md") as changelog_file:
         changelog_lines = changelog_file.readlines()
     updated_changelog = []
@@ -29,7 +30,8 @@ def main():
                     line[:link_location[0]+str_link.index("(")+1] + "https://github.com/Revnoplex/ayt-api/blob/main/" +
                     line[link_location[0]+str_link.index("(")+1:]
                 )
-                print(line.strip("\n"))
         updated_changelog.append(line)
+    print("prebuild [include_changelog]: Writing changelog...")
     with open("changelog.md", "w") as copied_changelog:
         copied_changelog.writelines(updated_changelog)
+    print("prebuild [include_changelog]: Done")
