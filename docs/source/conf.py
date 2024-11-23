@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from prebuild import autogen_examples
+from prebuild import autogen_examples, include_changelog
 sys.path.append('../../')
 from setup import get_version
 
@@ -53,3 +53,4 @@ source_suffix = ['.rst', '.md']
 
 # run pre build scripts
 autogen_examples.main()
+include_changelog.main()
