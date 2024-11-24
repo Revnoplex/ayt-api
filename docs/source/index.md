@@ -13,7 +13,7 @@ This library is designed towards being used in python based discord bots that us
 
 # API
 ```{toctree}
-:maxdepth: 1
+:maxdepth: 2
 
 api/index.md
 ```
@@ -27,7 +27,7 @@ changelog
 
 # Usage
 ```{toctree}
-:maxdepth: 1
+:maxdepth: 2
 
 usage/index.md
 ```
