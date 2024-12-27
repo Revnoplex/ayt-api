@@ -986,10 +986,6 @@ class AsyncYoutubeAPI:
 
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
-            authorised (bool): Whether to fetch additional owner side information about a channel e.g. audit details
-                (Needs OAuth token).
-
-                .. versionadded:: 0.4.0
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -1006,7 +1002,7 @@ class AsyncYoutubeAPI:
             [
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
-            ] + (["auditDetails"] if authorised else []),
+            ],
             YoutubeChannel, ChannelNotFound, 50
         )
 
@@ -1026,10 +1022,6 @@ class AsyncYoutubeAPI:
 
         Args:
             handle (str): The handle of the channel to use. e.g. **@Revnoplex**.
-            authorised (bool): Whether to fetch additional owner side information about a channel e.g. audit details
-                (Needs OAuth token).
-
-                .. versionadded:: 0.4.0
 
         Returns:
             Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
@@ -1046,7 +1038,7 @@ class AsyncYoutubeAPI:
             [
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
-             ] + (["auditDetails"] if authorised else []),
+            ],
             YoutubeChannel, ChannelNotFound, 50
         )
 
