@@ -364,8 +364,7 @@ class AsyncYoutubeAPI:
             self, call_type: str, query: Optional[str], ids: Union[str, list[str], None], parts: list[str],
             return_type: Union[type, Callable], exception_type: type[ResourceNotFound], max_results: int = None,
             max_items: int = None, multi_resp=False, next_page: str = None, next_list: list[str] = None,
-            current_count=0, expected_count=1, other_queries: str = None, return_args: dict = None, auth_retry=False,
-            quota_rate: int = 1
+            current_count=0, expected_count=1, other_queries: str = None, return_args: dict = None, quota_rate: int = 1
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
 
@@ -388,9 +387,6 @@ class AsyncYoutubeAPI:
             return_args (dict): Extra arguments that are passed to the object passed to ``return_type``.
 
                 .. versionadded:: 0.4.0
-            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
-
-                .. versionadded:: 0.4.0
 
         Returns:
             Union[Any, list]: The object specified in ``return_type``.
@@ -402,14 +398,6 @@ class AsyncYoutubeAPI:
             InvalidInput: The query was empty.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        # check if session has probably expired
-        if self.session and self.session.is_expired() and (not auth_retry):
-            await self.refresh_session()
-            return await self._call_api(
-                call_type, query, ids, parts, return_type, exception_type, max_results,
-                max_items, multi_resp, next_page, next_list, current_count, expected_count,
-                other_queries, return_args, True, quota_rate
-            )
         # use OAuth token if no api key was provided
         oauth = self.use_oauth or (not self._key)
         return_args = return_args or {}
@@ -499,13 +487,6 @@ class AsyncYoutubeAPI:
                                 not_found_check = [reason for reason in error_reasons if reason.endswith("NotFound")]
                                 if not_found_check:
                                     raise exception_type(ids)
-                                if "authError" in error_reasons and self.session and (not auth_retry):
-                                    await self.refresh_session()
-                                    return await self._call_api(
-                                        call_type, query, ids, parts, return_type, exception_type, max_results,
-                                        max_items, multi_resp, next_page, next_list, current_count, expected_count,
-                                        other_queries, return_args, True, quota_rate
-                                    )
                                 message = error_data.get("message")
                         raise HTTPException(yt_api_response, message, error_data)
             except asyncio.TimeoutError:
@@ -516,7 +497,7 @@ class AsyncYoutubeAPI:
             return_type: Union[type, Callable], new_values: dict,
             exception_type: type[ResourceNotFound], max_results: int = None, max_items: int = None, multi_resp=False,
             next_page: str = None, next_list: list[str] = None, current_count=0, expected_count=1,
-            other_queries: str = None, return_args: dict = None, auth_retry=False, quota_rate: int = 50
+            other_queries: str = None, return_args: dict = None, quota_rate: int = 50
     ) -> Union[Any, list]:
         """A centralised function for sending update requests to the api.
 
@@ -540,9 +521,6 @@ class AsyncYoutubeAPI:
             return_args (dict): Extra arguments that are passed to the object passed to ``return_type``.
 
                 .. versionadded:: 0.4.0
-            auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
-
-                .. versionadded:: 0.4.0
 
         Returns:
             Union[Any, list]: The object specified in ``return_type``.
@@ -554,14 +532,6 @@ class AsyncYoutubeAPI:
             InvalidInput: The query was empty.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        # check if session has probably expired
-        if self.session and self.session.is_expired() and (not auth_retry):
-            await self.refresh_session()
-            return await self._update_api(
-                call_type, query, ids, parts, return_type, new_values, exception_type, max_results,
-                max_items, multi_resp, next_page, next_list, current_count, expected_count,
-                other_queries, return_args, True, quota_rate
-            )
         # use OAuth token if no api key was provided
         return_args = return_args or {}
         if ids is None:
@@ -658,13 +628,6 @@ class AsyncYoutubeAPI:
                                 not_found_check = [reason for reason in error_reasons if reason.endswith("NotFound")]
                                 if not_found_check:
                                     raise exception_type(ids)
-                                if "authError" in error_reasons and self.session and (not auth_retry):
-                                    await self.refresh_session()
-                                    return await self._update_api(
-                                        call_type, query, ids, parts, return_type, new_values,
-                                        exception_type, max_results, max_items, multi_resp, next_page, next_list,
-                                        current_count, expected_count, other_queries, return_args, True, quota_rate
-                                    )
                                 message = error_data.get("message")
                         raise HTTPException(yt_api_response, message, error_data)
             except asyncio.TimeoutError:
@@ -771,8 +734,7 @@ class AsyncYoutubeAPI:
             thumbnail_file.write(banner)
 
     async def download_caption(
-            self, track_id: str, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None,
-            _auth_retry=False
+            self, track_id: str, track_format: Optional[CaptionFormat] = None, language: Optional[str] = None
     ) -> bytes:
         """Downloads the caption track from the ID specified and stores it as a :class:`bytes` object
 
@@ -793,7 +755,6 @@ class AsyncYoutubeAPI:
             track_id (str): The ID of the caption track
             track_format (Optional[CaptionFormat]): The format YouTube should return the captions in.
             language (Optional[str]): The alpha-2 language code to translate the caption track into.
-            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
 
         Returns:
             bytes: The caption track as a :class:`bytes` object.
@@ -803,9 +764,6 @@ class AsyncYoutubeAPI:
             aiohttp.ClientError: There was a problem sending the request to the api.
             asyncio.TimeoutError: The API server did not respond within the timeout period set.
         """
-        if self.session and self.session.is_expired() and (not _auth_retry):
-            await self.refresh_session()
-            return await self.download_caption(track_id, track_format, language, True)
         queries = []
         if track_format:
             queries.append(f"tfmt={track_format.__str__()}")
@@ -830,10 +788,6 @@ class AsyncYoutubeAPI:
                         res_data = await thumbnail_response.json()
                         if "error" in res_data:
                             error_data = res_data["error"]
-                            error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                            if "authError" in error_reasons and self.session and (not _auth_retry):
-                                await self.refresh_session()
-                                return await self.download_caption(track_id, track_format, language, True)
                             message = error_data.get("message")
                     raise HTTPException(thumbnail_response, message, error_data)
                 else:
@@ -1570,7 +1524,7 @@ class AsyncYoutubeAPI:
             AuthorisedYoutubeVideo, updated_metadata, VideoNotFound, None,
         )
 
-    async def set_video_thumbnail(self, video_id: str, image: bytes, _auth_retry=False) -> YoutubeThumbnailMetadata:
+    async def set_video_thumbnail(self, video_id: str, image: bytes) -> YoutubeThumbnailMetadata:
         """
         Upload and set the thumbnail for a video.
 
@@ -1583,7 +1537,6 @@ class AsyncYoutubeAPI:
         Args:
             video_id (str): The ID of the video to set the thumbnail of.
             image (bytes): The thumbnail image to upload.
-            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
 
         Returns:
             YoutubeThumbnailMetadata: The metadata of the uploaded thumbnail.
@@ -1594,9 +1547,6 @@ class AsyncYoutubeAPI:
             aiohttp.ClientError: There was a problem sending the request to the API.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        if self.session and self.session.is_expired() and (not _auth_retry):
-            await self.refresh_session()
-            return await self.set_video_thumbnail(video_id, image, True)
         supported_formats = {
             "png": b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
             "jpeg": b'\xFF\xD8\xFF'
@@ -1637,10 +1587,6 @@ class AsyncYoutubeAPI:
                             res_data = await response.json()
                             if "error" in res_data:
                                 error_data = res_data["error"]
-                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                                if "authError" in error_reasons and self.session and (not _auth_retry):
-                                    await self.refresh_session()
-                                    return await self.set_video_thumbnail(video_id, image, True)
                                 message = error_data.get("message")
                         raise HTTPException(response, message, error_data)
             except asyncio.TimeoutError:
@@ -1810,7 +1756,7 @@ class AsyncYoutubeAPI:
 
     # noinspection PyIncorrectDocstring
     async def set_channel_banner(
-            self, channel: YoutubeChannel, image: bytes, _auth_retry=False
+            self, channel: YoutubeChannel, image: bytes
     ) -> tuple[YoutubeBanner, str]:
         """
         Upload and set the banner for a channel.
@@ -1829,8 +1775,6 @@ class AsyncYoutubeAPI:
                     The image must have a 16:9 aspect ratio and be at least 2048x1152 pixels. YouTube recommends
                     uploading a 2560px by 1440px image.
 
-            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
-
         Returns:
             tuple[YoutubeBanner, str]: The metadata of the uploaded banner and the etag of the updated YoutubeChannel
             instance.
@@ -1841,9 +1785,6 @@ class AsyncYoutubeAPI:
             aiohttp.ClientError: There was a problem sending the request to the API.
             APITimeout: The YouTube API did not respond within the timeout period set.
         """
-        if self.session and self.session.is_expired() and (not _auth_retry):
-            await self.refresh_session()
-            return await self.set_channel_banner(channel, image, True)
         supported_formats = {
             "png": b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
             "jpeg": b'\xFF\xD8\xFF'
@@ -1883,10 +1824,6 @@ class AsyncYoutubeAPI:
                             res_data = await response.json()
                             if "error" in res_data:
                                 error_data = res_data["error"]
-                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                                if "authError" in error_reasons and self.session and (not _auth_retry):
-                                    await self.refresh_session()
-                                    return await self.set_channel_banner(channel, image, True)
                                 message = error_data.get("message")
                         raise HTTPException(response, message, error_data)
             except asyncio.TimeoutError:
@@ -1923,7 +1860,7 @@ class AsyncYoutubeAPI:
     async def set_channel_watermark(
         self, channel: YoutubeChannel, image: bytes, timing_type: WatermarkTimingType = None,
         timing_offset: datetime.timedelta = None,
-        duration: datetime.timedelta = None, _auth_retry=False
+        duration: datetime.timedelta = None
     ):
         """
         Upload and set the watermark for a channel.
@@ -1947,7 +1884,6 @@ class AsyncYoutubeAPI:
                 appears during video playbacks. ``timing_type`` Determines if this offset if from the start or end
                 of a video.
             duration (Optional[datatime.timedelta]): The length of time that the watermark image should display.
-            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
 
         Raises:
             HTTPException: Uploading the watermark failed.
@@ -1955,9 +1891,6 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube API did not respond within the timeout period set.
         """
         timing_offset = timing_offset or datetime.timedelta()
-        if self.session and self.session.is_expired() and (not _auth_retry):
-            await self.refresh_session()
-            return await self.set_channel_watermark(channel, image, timing_type, timing_offset, duration, True)
         if not timing_type:
             timing_type = WatermarkTimingType.offset_from_start
             timing_offset = datetime.timedelta()
@@ -2018,19 +1951,13 @@ class AsyncYoutubeAPI:
                             res_data = await response.json()
                             if "error" in res_data:
                                 error_data = res_data["error"]
-                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                                if "authError" in error_reasons and self.session and (not _auth_retry):
-                                    await self.refresh_session()
-                                    return await self.set_channel_watermark(
-                                        channel, image, timing_type, timing_offset, duration, True
-                                    )
                                 message = error_data.get("message")
                         raise HTTPException(response, message, error_data)
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
 
     async def unset_channel_watermark(
-        self, channel: YoutubeChannel, _auth_retry=False
+        self, channel: YoutubeChannel
     ):
         """
         Unset the watermark for a channel.
@@ -2043,7 +1970,6 @@ class AsyncYoutubeAPI:
 
         Args:
             channel (YoutubeChannel): The channel to unset the watermark of.
-            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
 
         Raises:
             HTTPException: Unsetting the watermark failed.
@@ -2051,9 +1977,6 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube API did not respond within the timeout period set.
             WatermarkNotFound: There is no watermark to unset.
         """
-        if self.session and self.session.is_expired() and (not _auth_retry):
-            await self.refresh_session()
-            return await self.unset_channel_watermark(channel, True)
         async with aiohttp.ClientSession(
                 connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
         ) as session:
@@ -2081,11 +2004,6 @@ class AsyncYoutubeAPI:
                             if "error" in res_data:
                                 error_data = res_data["error"]
                                 error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                                if "authError" in error_reasons and self.session and (not _auth_retry):
-                                    await self.refresh_session()
-                                    return await self.unset_channel_watermark(
-                                        channel, True
-                                    )
                                 if "notFound" in error_reasons:
                                     raise WatermarkNotFound("There is no watermark to unset.")
                                 message = error_data.get("message")

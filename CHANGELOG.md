@@ -164,8 +164,6 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([90e1ad1#diff-cbbc953-R92](https://github.com/Revnoplex/ayt-api/commit/90e1ad16e10a38b37fa9b78b4249acb7843f9f14#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R92))
 - `InvalidKey` now inherits from the new class `AuthException`.
 ([fedeb89#diff-3f857ff-R174](https://github.com/Revnoplex/ayt-api/commit/fedeb89a67e1455ccef0c5337dfd21f4523f314b#diff-3f857ff3ed9ca4dc99077beeb478c3f68371dbbfa6b84ede9fd9f3d47d72b788R174))
-- OAuth2 session expiry checks are automatically done before completing api calls.
-([1da9164](https://github.com/Revnoplex/ayt-api/commit/1da916473d1dc62ec56f24fb17842da4bf80481a))
 - `YoutubeVideo` attribute `made_for_kids` can now be `None`. 
 ([4bfb5d1#diff-7363042-L744](https://github.com/Revnoplex/ayt-api/commit/4bfb5d1409ca2fe4092efce070f52d4326608d05#diff-7363042fe6cc65ba3e9f2acdac65360c72c53676f992cc7195e04a9204da5834L744))
 - `extract_video_id` supports all `*.ytimg.com` urls. 
