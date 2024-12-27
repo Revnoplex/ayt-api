@@ -123,6 +123,15 @@ class VideoCategoryNotFound(ResourceNotFound):
         super().__init__(message)
 
 
+class WatermarkNotFound(ResourceNotFound):
+    """Raises if there is no watermark set for a channel
+
+    .. versionadded:: 0.4.0
+    """
+    def __init__(self, message: str = None):
+        super().__init__(message or "No watermark is set for the channel")
+
+
 class InvalidMetadata(YoutubeExceptions):
     """Raises when invalid metadata is given.
 

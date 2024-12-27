@@ -587,3 +587,19 @@ class CaptionFormat(Enum):
 
     def __str__(self):
         return self.value
+
+
+class WatermarkTimingType(Enum):
+    """
+    The timing method that determines when the watermark image is displayed during the video playback.
+
+    Attributes:
+        offset_from_start: The offset is from the start of the video.
+        offset_from_end: The offset is from the end of the video.
+
+    """
+    offset_from_start = "offset_from_start"
+    offset_from_end = "offset_from_end"
+
+    def __str__(self):
+        return self.value

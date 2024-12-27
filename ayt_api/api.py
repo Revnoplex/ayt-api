@@ -12,11 +12,11 @@ from urllib import parse
 import aiohttp
 from aiohttp import TCPConnector, web
 from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
-    CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession
+    CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession, WatermarkNotFound
 from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
     YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
     YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName, YoutubeThumbnailMetadata, BaseVideo, YoutubeBanner
-from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat
+from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat, WatermarkTimingType
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page, use_existing, ensure_missing_keys
 
@@ -1872,7 +1872,7 @@ class AsyncYoutubeAPI:
                             raise HTTPException(
                                 response, f'{res_data["error"].get("code")}: {res_data["error"].get("message")}')
                         if not res_data:
-                            raise ResourceNotFound("The API didn't return any thumbnail metadata")
+                            raise ResourceNotFound("The API didn't return any banner metadata")
                         else:
                             banner_url = res_data.get("url")
                     else:
@@ -1918,3 +1918,177 @@ class AsyncYoutubeAPI:
             edit_mapping, ChannelNotFound, None,
         )
         return YoutubeBanner(partial[0]["brandingSettings"]["image"]["bannerExternalUrl"], self), partial[0].get("etag")
+
+    # noinspection PyIncorrectDocstring
+    async def set_channel_watermark(
+        self, channel: YoutubeChannel, image: bytes, timing_type: WatermarkTimingType = None,
+        timing_offset: datetime.timedelta = None,
+        duration: datetime.timedelta = None, _auth_retry=False
+    ):
+        """
+        Upload and set the watermark for a channel.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Args:
+            channel (YoutubeChannel): The channel to set the watermark of.
+            image (bytes): The watermark image to upload.
+            timing_type (Optional[WatermarkTimingType]): The timing method that determines when the watermark image is
+                displayed during the video playback.
+
+                Note:
+                    Setting this argument to ``None`` will make the watermark appear for the entire video.
+
+            timing_offset (Optional[datetime.timedelta]): The time offset that determines when the promoted item
+                appears during video playbacks. ``timing_type`` Determines if this offset if from the start or end
+                of a video.
+            duration (Optional[datatime.timedelta]): The length of time that the watermark image should display.
+            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
+
+        Raises:
+            HTTPException: Uploading the watermark failed.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        timing_offset = timing_offset or datetime.timedelta()
+        if self.session and self.session.is_expired() and (not _auth_retry):
+            await self.refresh_session()
+            return await self.set_channel_watermark(channel, image, timing_type, timing_offset, duration, True)
+        if not timing_type:
+            timing_type = WatermarkTimingType.offset_from_start
+            timing_offset = datetime.timedelta()
+            duration = None
+        watermark_metadata = {
+            "timing": {
+                "type": snake_to_camel(timing_type.__str__()),
+                "offsetMs": int(timing_offset.total_seconds()*10**3),
+                "durationMs": int(duration.total_seconds()*10**3) if duration else None
+            },
+            "position": {
+                "type": "corner",
+                "cornerPosition": "topRight"
+            },
+            "imageBytes": str(len(image)),
+            "targetChannelId": channel.id
+        }
+        supported_formats = {
+            "png": b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
+            "jpeg": b'\xFF\xD8\xFF'
+        }
+        content_type = "application/octet-stream"
+        for format_name, signature in supported_formats.items():
+            if image.startswith(signature):
+                content_type = f"image/{format_name}"
+        multipart_boundary = "watermark-metadata"
+        with aiohttp.MultipartWriter('related', multipart_boundary) as multipart_body:
+            multipart_body.append_json(
+                watermark_metadata, {"Content-Type": "application/json"}
+            )
+            multipart_body.append(image, {"Content-Type": content_type})
+        async with aiohttp.ClientSession(
+                connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
+        ) as session:
+            headers = {
+                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Content-Type": f"multipart/related; boundary={multipart_boundary}",
+                "Content-Length": str(multipart_body.size)
+            }
+            try:
+                async with session.post(
+                        f"https://www.googleapis.com/upload/youtube/v{self.api_version}/watermarks/set"
+                        f"?channelId={channel.id}&uploadType=multipart", headers=headers, data=multipart_body
+                ) as response:
+                    self.quota_usage += 50
+                    if response.ok:
+                        if response.content_type == "application/json":
+                            res_data = await response.json()
+                            if res_data and "error" in res_data:
+                                raise HTTPException(
+                                    response, f'{res_data["error"].get("code")}: {res_data["error"].get("message")}')
+                        return
+                    else:
+                        message = f'The youtube API returned the following error code: ' \
+                                  f'{response.status}'
+                        error_data = None
+                        if response.content_type == "application/json":
+                            res_data = await response.json()
+                            if "error" in res_data:
+                                error_data = res_data["error"]
+                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                                if "authError" in error_reasons and self.session and (not _auth_retry):
+                                    await self.refresh_session()
+                                    return await self.set_channel_watermark(
+                                        channel, image, timing_type, timing_offset, duration, True
+                                    )
+                                message = error_data.get("message")
+                        raise HTTPException(response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
+
+    async def unset_channel_watermark(
+        self, channel: YoutubeChannel, _auth_retry=False
+    ):
+        """
+        Unset the watermark for a channel.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Args:
+            channel (YoutubeChannel): The channel to unset the watermark of.
+            _auth_retry (bool): Is the function being run again with new credentials. Defaults to ``False``.
+
+        Raises:
+            HTTPException: Unsetting the watermark failed.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+            WatermarkNotFound: There is no watermark to unset.
+        """
+        if self.session and self.session.is_expired() and (not _auth_retry):
+            await self.refresh_session()
+            return await self.unset_channel_watermark(channel, True)
+        async with aiohttp.ClientSession(
+                connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
+        ) as session:
+            headers = {
+                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+            }
+            try:
+                async with session.post(
+                        f"{self.call_url_prefix}/watermarks/unset?channelId={channel.id}", headers=headers
+                ) as response:
+                    self.quota_usage += 50
+                    if response.ok:
+                        if response.content_type == "application/json":
+                            res_data = await response.json()
+                            if res_data and "error" in res_data:
+                                raise HTTPException(
+                                    response, f'{res_data["error"].get("code")}: {res_data["error"].get("message")}')
+                        return
+                    else:
+                        message = f'The youtube API returned the following error code: ' \
+                                  f'{response.status}'
+                        error_data = None
+                        if response.content_type == "application/json":
+                            res_data = await response.json()
+                            if "error" in res_data:
+                                error_data = res_data["error"]
+                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                                if "authError" in error_reasons and self.session and (not _auth_retry):
+                                    await self.refresh_session()
+                                    return await self.unset_channel_watermark(
+                                        channel, True
+                                    )
+                                if "notFound" in error_reasons:
+                                    raise WatermarkNotFound("There is no watermark to unset.")
+                                message = error_data.get("message")
+                        raise HTTPException(response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)

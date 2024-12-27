@@ -1981,6 +1981,62 @@ class YoutubeChannel:
         self._call_data: AsyncYoutubeAPI
         self.banner_external, self.etag = await self._call_data.set_channel_banner(self, image)
 
+    # noinspection PyIncorrectDocstring
+    async def set_watermark(
+            self, image: bytes, timing_type: WatermarkTimingType = None, timing_offset: datetime.timedelta = None,
+            duration: datetime.timedelta = None
+    ):
+        """
+        Upload and set the watermark for a channel.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Args:
+            image (bytes): The watermark image to upload.
+            timing_type (Optional[WatermarkTimingType]): The timing method that determines when the watermark image is
+                displayed during the video playback.
+
+                Note:
+                    Setting this argument to ``None`` will make the watermark appear for the entire video.
+
+            timing_offset (Optional[datetime.timedelta]): The time offset that determines when the promoted item
+                appears during video playbacks. ``timing_type`` Determines if this offset if from the start or end
+                of a video.
+            duration (Optional[datatime.timedelta]): The length of time that the watermark image should display.
+
+        Raises:
+            HTTPException: Uploading the watermark failed.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        await self._call_data.set_channel_watermark(self, image, timing_type, timing_offset, duration)
+
+    async def unset_watermark(self):
+        """
+        Unset the watermark for a channel.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Raises:
+            HTTPException: Unsetting the watermark failed.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+            WatermarkNotFound: There is no watermark to unset.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        await self._call_data.unset_channel_watermark(self)
+
 
 REFERENCE_TABLE = {
     "video": [VIDEO_URL, YoutubeVideo],
