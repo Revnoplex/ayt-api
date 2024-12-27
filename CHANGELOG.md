@@ -110,6 +110,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([15d2e26](https://github.com/Revnoplex/ayt-api/commit/15d2e266bab23dfce1e34cb5eb5fae29b7e43162))
 - Options to set the width of a YouTube channel banner. 
 ([58856d7](https://github.com/Revnoplex/ayt-api/commit/58856d7fcea5c99a4e599d68cd117cf7306c0f6c))
+- Methods, classes and exceptions for watermarks.
+([9c9126b](https://github.com/Revnoplex/ayt-api/commit/9c9126b143bc8b17de7fb571985416bf0a4a7fa5))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
