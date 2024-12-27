@@ -121,6 +121,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([5dcbf3f](https://github.com/Revnoplex/ayt-api/commit/5dcbf3fc8341744028a4349e131069c349edb882), 
 [890d8c7](https://github.com/Revnoplex/ayt-api/commit/890d8c72675916f6b902c7dbb4c99ced624b937d), 
 [ffdd5f1](https://github.com/Revnoplex/ayt-api/commit/ffdd5f117a4a22ec3f883e37af1184b162ba80b0))
+- *Documentation*: Examples for setting video thumbnails, channel banners and watermarks.
+([62f6879](https://github.com/Revnoplex/ayt-api/commit/62f6879770a9426f3270e50e264703e55a6b476a))
 
 ### Removed
 
