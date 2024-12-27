@@ -1960,6 +1960,10 @@ class AsyncYoutubeAPI:
 
             A call to this method has a quota cost of **50** units per call.
 
+        Warning:
+            If the channel currently has no watermark set, this function will raise :class:`WatermarkNotFound`
+            as the API throws a 404 error.
+
         Args:
             channel (YoutubeChannel): The channel to unset the watermark of.
 
