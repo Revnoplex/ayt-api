@@ -973,7 +973,7 @@ class AsyncYoutubeAPI:
         )
 
     async def fetch_channel(
-            self, channel_id: Union[str, list[str]], authorised=False
+            self, channel_id: Union[str, list[str]]
     ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
         """Fetches information on a channel using a channel id.
 
@@ -1007,7 +1007,7 @@ class AsyncYoutubeAPI:
         )
 
     async def fetch_channel_from_handle(
-            self, handle: Union[str, list[str]], authorised=False
+            self, handle: Union[str, list[str]]
     ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
         """Fetches information on a channel using a channel's handle.
 
