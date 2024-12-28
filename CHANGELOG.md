@@ -146,6 +146,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([10881c0](https://github.com/Revnoplex/ayt-api/commit/10881c08f8689da24cf2cc4062c7c15aa2240dbf))
 - `HTTPException` raising its own error when `error_data` is `None`. 
 ([2b3b18a](https://github.com/Revnoplex/ayt-api/commit/2b3b18afd76a0b962d9aec5d0b44fab4127768fc)) 
+- Getting `file_name` in `AuthorisedYoutubeVideo` failing as it is sometimes not set.
+([eacf5cb](https://github.com/Revnoplex/ayt-api/commit/eacf5cb731a7611a86c598d846f95a855ec13a64))
 - *Documentation*: Updated old instances of class names still in documentation.
 ([e41fd3b](https://github.com/Revnoplex/ayt-api/commit/e41fd3b759ee24d30846ccc09b0eb2adf5617d39))
 - *Documentation*: Formatting error in docstring for `exceptions.APITimeout`. 
