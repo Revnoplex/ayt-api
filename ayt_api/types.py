@@ -1614,6 +1614,7 @@ class YoutubeChannel:
             characters.
         custom_url (Optional[str]): The channel's custom URL.
         username (Optional[str]): Alias for :attr:`custom_url`.
+        handle (Optional[str]): Alias for :attr:`custom_url`.
         published_at (datetime.datetime): The date and time that the channel was created.
         created_at (datetime.datetime): Alias for :attr:`published_at`.
         thumbnails (YoutubeThumbnailMetadata): The thumbnail images associated with the channel.
@@ -1698,6 +1699,7 @@ class YoutubeChannel:
             self.description: Optional[str] = self.snippet.get("description")
             self.custom_url: Optional[str] = self.snippet.get("customUrl")
             self.username: Optional[str] = self.custom_url
+            self.handle: Optional[str] = self.custom_url
             self.published_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.created_at = self.published_at
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
