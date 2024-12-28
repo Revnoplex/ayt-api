@@ -1352,7 +1352,7 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
         self_declared_made_for_kids (bool): This Attribute allows the channel owner to designate the video as being
                 child-directed.
         dislike_count (Optional[int]): The number of users who have indicated that they disliked the video.
-        file_name (str): The uploaded file's name.
+        file_name (Optional[str]): The uploaded file's name.
         file_size (Optional[int]): The uploaded file's size in bytes.
         file_type (Optional[UploadFileType]): The uploaded file's type as detected by YouTube's video processing engine.
         file_container (Optional[str]): The uploaded video file's container format.
@@ -1411,7 +1411,7 @@ class AuthorisedYoutubeVideo(YoutubeVideo):
             self.has_custom_thumbnail: bool = self.content_details["hasCustomThumbnail"]
             self.self_declared_made_for_kids: bool = self.status["selfDeclaredMadeForKids"]
             self.dislike_count: Optional[int] = self.statistics.get("dislikeCount")
-            self.file_name: str = self.file_details["fileName"]
+            self.file_name: Optional[str] = self.file_details.get("fileName")
             self.file_size: Optional[int] = self.file_details.get("fileSize")
             self.file_type: Optional[UploadFileType] = (
                 UploadFileType(self.file_details["fileType"]) if self.file_details.get("fileType") else None
