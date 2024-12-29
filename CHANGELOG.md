@@ -112,6 +112,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([9c9126b](https://github.com/Revnoplex/ayt-api/commit/9c9126b143bc8b17de7fb571985416bf0a4a7fa5))
 - Alias of `YoutubeChannel.custom_url`: `handle`.
 ([a5bcc67](https://github.com/Revnoplex/ayt-api/commit/a5bcc6701cefe94fd471ba577d7c1d9855568da2))
+- Methods and classes for metadata on custom playlist cover images. 
+([554ec4d](https://github.com/Revnoplex/ayt-api/commit/554ec4d05761b8d4eacf09fd3cbe625dc88f60a8))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
