@@ -11,11 +11,16 @@ from urllib import parse
 
 import aiohttp
 from aiohttp import TCPConnector, web
-from .exceptions import PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound, \
+from .exceptions import (
+    PlaylistNotFound, InvalidInput, VideoNotFound, HTTPException, APITimeout, ChannelNotFound,
     CommentNotFound, ResourceNotFound, NoAuth, VideoCategoryNotFound, NoSession, WatermarkNotFound
-from .types import YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread, \
-    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo, YoutubeSubscription, \
-    YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName, YoutubeThumbnailMetadata, BaseVideo, YoutubeBanner
+)
+from .types import (
+    YoutubePlaylist, PlaylistItem, YoutubeVideo, YoutubeChannel, YoutubeCommentThread,
+    YoutubeComment, YoutubeSearchResult, REFERENCE_TABLE, VideoCaption, AuthorisedYoutubeVideo,
+    YoutubeSubscription, YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName,
+    YoutubeThumbnailMetadata, BaseVideo, YoutubeBanner, PlaylistImageMetadata
+)
 from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat, WatermarkTimingType
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page, use_existing, ensure_missing_keys
@@ -438,7 +443,7 @@ class AsyncYoutubeAPI:
                         res_data = await yt_api_response.json()
                         if "error" in res_data:
                             check = [error.get("reason") for error in res_data["error"]["errors"]
-                                     if error.get("reason").endswith("NotFound")]
+                                     if error.get("reason").lower().endswith("notfound")]
                             if check:
                                 raise exception_type(ids)
                             raise HTTPException(yt_api_response, f'{res_data["error"].get("code")}: '
@@ -484,7 +489,10 @@ class AsyncYoutubeAPI:
                             if "error" in res_data:
                                 error_data = res_data["error"]
                                 error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                                not_found_check = [reason for reason in error_reasons if reason.endswith("NotFound")]
+                                print(error_reasons)
+                                not_found_check = [
+                                    reason for reason in error_reasons if reason.lower().endswith("notfound")
+                                ]
                                 if not_found_check:
                                     raise exception_type(ids)
                                 message = error_data.get("message")
@@ -574,7 +582,7 @@ class AsyncYoutubeAPI:
                         res_data = await yt_api_response.json()
                         if "error" in res_data:
                             check = [error.get("reason") for error in res_data["error"]["errors"]
-                                     if error.get("reason").endswith("NotFound")]
+                                     if error.get("reason").lower().endswith("notfound")]
                             if check:
                                 raise exception_type(ids)
                             raise HTTPException(yt_api_response, f'{res_data["error"].get("code")}: '
@@ -625,7 +633,9 @@ class AsyncYoutubeAPI:
                             if "error" in res_data:
                                 error_data = res_data["error"]
                                 error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                                not_found_check = [reason for reason in error_reasons if reason.endswith("NotFound")]
+                                not_found_check = [
+                                    reason for reason in error_reasons if reason.lower().endswith("notfound")
+                                ]
                                 if not_found_check:
                                     raise exception_type(ids)
                                 message = error_data.get("message")
@@ -2006,3 +2016,41 @@ class AsyncYoutubeAPI:
                         raise HTTPException(response, message, error_data)
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
+
+    async def fetch_playlist_image_metadata(self, playlist_id: str) -> Optional[PlaylistImageMetadata]:
+        """Fetches metadata on custom playlist cover images if it has one.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **1** unit per call.
+
+        Important:
+            The API endpoint for playlist images is still in early stages and its own documentation currently has bits
+            missing and contains a few errors and inconsistencies. Not everything may work as expected or may change
+            and break this method.
+
+        Note:
+            This method will not fetch the actual image asset due to YouTube limitations.
+
+
+        Args:
+            playlist_id (str): The ID of the playlist to get the custom image information of.
+
+        Returns:
+            Optional[PlaylistImageMetadata]: The metadata of the custom playlist image.
+            Returns ``None`` if the playlist has no custom image set.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        found_image = await self._call_api(
+            "playlistImages", "parent", playlist_id, ["snippet"], PlaylistImageMetadata,
+            PlaylistNotFound, multi_resp=True
+        )
+        return found_image[0] if found_image else None

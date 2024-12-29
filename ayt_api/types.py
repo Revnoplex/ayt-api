@@ -595,7 +595,7 @@ class DummyObject:
     def __init__(self, metadata: dict, call_url: str, call_data):
         self.metadata = metadata
         self.call_url = call_url
-        self.call_data = call_data
+        self._call_data = call_data
 
 
 class YoutubeVideo(BaseVideo):
@@ -1166,6 +1166,75 @@ class PlaylistItem(BaseVideo):
         return await self._call_data.fetch_video_captions(self.id)
 
 
+class PlaylistImageMetadata:
+    """
+    Represents metadata about a custom image for a playlist.
+
+     .. versionadded:: 0.4.0
+
+    Attributes:
+        metadata (dict): The raw API response used to construct this class.
+        call_url (str): The url used to call the API. Intended use is for debugging purposes.
+        id (str): The ID that YouTube uses to uniquely identify the playlist image.
+        snippet (dict): The raw snippet data used to construct this class.
+        playlist_id (str): The playlist ID of the playlist this image is associated with.
+        type (str): The image type.
+        width (int): The amount of horizontal pixels in the image.
+        height (int): The amount of vertical pixels in the image.
+        resolution (str): The Width x Height of the image.
+        size (str): An alias of resolution.
+
+    """
+    def __init__(self, metadata: dict, call_url: str, call_data):
+        """
+        Args:
+            metadata (dict): The raw API response to construct the class.
+            call_url (str): The url used to call the API.
+            call_data (AsyncYoutubeAPI): Call data used for fetch functions.
+
+        Raises:
+            MissingDataFromMetaData: There is malformed data in the metadata provided.
+        """
+        try:
+            self.metadata = metadata
+            self.call_url = call_url
+            self._call_data = call_data
+            self.id: str = metadata["id"]
+            self.snippet: dict = metadata["snippet"]
+            self.playlist_id: str = self.snippet["playlistId"]
+            self.type: str = self.snippet["type"]
+            self.width: int = self.snippet["width"]
+            self.height: int = self.snippet["height"]
+            self.resolution = "{}x{}".format(self.width, self.height)
+            self.size = self.resolution
+        except KeyError as missing_snippet_data:
+            raise MissingDataFromMetadata(str(missing_snippet_data), metadata, missing_snippet_data)
+
+    async def fetch_playlist(self) -> YoutubePlaylist:
+        """Fetches the playlist associated with the image.
+
+        This ia an api call which then returns a
+        :class:`YoutubePlaylist` object.
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **1** unit per call.
+
+        Returns:
+            YoutubePlaylist: The playlist object containing data of the playlist.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_playlist(self.playlist_id)
+
+
 class YoutubePlaylist:
     """Data class for YouTube playlists.
 
@@ -1335,6 +1404,38 @@ class YoutubePlaylist:
             from .api import AsyncYoutubeAPI
             self._call_data: AsyncYoutubeAPI
             return await self._call_data.fetch_channel(self.channel_id)
+
+    async def fetch_image_metadata(self) -> Optional[PlaylistImageMetadata]:
+        """Fetches metadata on the custom cover images if the current playlist has one.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **1** unit per call.
+
+        Important:
+            The API endpoint for playlist images is still in early stages and its own documentation currently has bits
+            missing and contains a few errors and inconsistencies. Not everything may work as expected or may change
+            and break this method.
+
+        Note:
+            This method will not fetch the actual image asset due to YouTube limitations.
+
+        Returns:
+            Optional[PlaylistImageMetadata]: The metadata of the custom playlist image.
+            Returns ``None`` if the playlist has no custom image set.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.fetch_playlist_image_metadata(self.id)
 
 
 class AuthorisedYoutubeVideo(YoutubeVideo):
