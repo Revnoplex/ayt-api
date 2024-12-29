@@ -1170,7 +1170,7 @@ class PlaylistImageMetadata:
     """
     Represents metadata about a custom image for a playlist.
 
-     .. versionadded:: 0.4.0
+    .. versionadded:: 0.4.0
 
     Attributes:
         metadata (dict): The raw API response used to construct this class.
