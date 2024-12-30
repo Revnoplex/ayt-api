@@ -5,6 +5,7 @@ import json
 import os
 import pathlib
 import socket
+import warnings
 from email.utils import parsedate_to_datetime
 from typing import Optional, Union, Any, AsyncGenerator, Callable
 from urllib import parse
@@ -937,6 +938,10 @@ class AsyncYoutubeAPI:
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
             exclude (Optional[list[str]]): A list of videos to not fetch in the playlist.
+
+                .. deprecated:: 0.4.0
+                    Use ``ignore_not_found`` instead.
+
             ignore_not_found (bool): Ignore any videos that were not returned by this method.
 
                 .. versionadded:: 0.4.0
@@ -952,6 +957,13 @@ class AsyncYoutubeAPI:
             InvalidInput: The input is not a playlist id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
+        if exclude is not None:
+            print("why no warning")
+            warnings.warn(
+                "exclude is deprecated since 0.4.0 and is scheduled "
+                "for removal in a later release. Use ignore_not_found instead.",
+                DeprecationWarning
+            )
         plist_items = await self.fetch_playlist_items(playlist_id)
         video_ids = [item.id for item in plist_items if item.id not in (exclude or [])]
         return await self.fetch_video(video_ids, ignore_not_found=ignore_not_found)

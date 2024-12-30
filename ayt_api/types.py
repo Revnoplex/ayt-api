@@ -1365,6 +1365,10 @@ class YoutubePlaylist:
 
         Args:
             exclude (Optional[list[str]]): A list of videos to not fetch in the playlist.
+
+                .. deprecated:: 0.4.0
+                    Use `ignore_not_found` instead.
+
             ignore_not_found (bool): Ignore any videos that were not returned by this method.
 
                 .. versionadded:: 0.4.0
