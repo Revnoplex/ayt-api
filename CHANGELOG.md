@@ -138,6 +138,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ### Deprecated
 - `censor_token` in favour of `censor_key`. 
 ([a4c0258](https://github.com/Revnoplex/ayt-api/commit/a4c02587779aa64e42399d68c2fa65822b40a87a))
+- `exclude` in favor of `ignore_not_found`.
+([b68e1a6](https://github.com/Revnoplex/ayt-api/commit/b68e1a6079832f3b0044b71e667a913adc58c667))
 
 ### Fixed
 - Outdated use of old attribute `banner_external_url` in [channel example](examples/channel.py). 
