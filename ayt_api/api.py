@@ -369,7 +369,8 @@ class AsyncYoutubeAPI:
             self, call_type: str, query: Optional[str], ids: Union[str, list[str], None], parts: list[str],
             return_type: Union[type, Callable], exception_type: type[ResourceNotFound], max_results: int = None,
             max_items: int = None, multi_resp=False, next_page: str = None, next_list: list[str] = None,
-            current_count=0, expected_count=1, other_queries: str = None, return_args: dict = None, quota_rate: int = 1
+            current_count=0, expected_count=1, other_queries: str = None, return_args: dict = None, quota_rate: int = 1,
+            ignore_not_found: bool = False
     ) -> Union[Any, list]:
         """A centralised function for calling the api.
 
@@ -452,11 +453,15 @@ class AsyncYoutubeAPI:
                         returned_items = [item.get("id") if isinstance(item.get("id"), str) else None for item in items]
                         difference = list(set(ids).difference(set(returned_items))) if ids is not None else None
                         if (
-                            (difference and multi) or (not multi_resp and len(items) < 1)
-                                or (ids is None and len(items) < 1)
+                                (not ignore_not_found) and (
+                                    (difference and multi) or (not multi_resp and len(items) < 1)
+                                    or (ids is None and len(items) < 1)
+                                )
                         ):
                             raise exception_type(difference if multi else ids)
                         else:
+                            if (not items) and ignore_not_found:
+                                return items
                             if multi or multi_resp:
                                 items_next_page = []
                                 if res_data.get("nextPageToken") is not None:
@@ -478,7 +483,8 @@ class AsyncYoutubeAPI:
                                 items = [return_type(item, censor_key(call_url), self, **return_args) for item in items]
                                 return (items + items_next_page + items_next_list)[:max_items]
                             else:
-                                res_json = res_data.get("items")[0]
+
+                                res_json = items[0]
                                 return return_type(res_json, censor_key(call_url), self, **return_args)
                     else:
                         message = f'The youtube API returned the following error code: ' \
@@ -847,7 +853,9 @@ class AsyncYoutubeAPI:
         with open(path, "wb") as thumbnail_file:
             thumbnail_file.write(caption_track)
 
-    async def fetch_playlist(self, playlist_id: Union[str, list[str]]) -> Union[YoutubePlaylist, list[YoutubePlaylist]]:
+    async def fetch_playlist(
+            self, playlist_id: Union[str, list[str]], ignore_not_found=False
+    ) -> Union[YoutubePlaylist, list[YoutubePlaylist], list]:
         """Fetches playlist metadata using a playlist id.
 
         Playlist metadata is fetched using a GET request which the response is then concentrated into a
@@ -859,9 +867,12 @@ class AsyncYoutubeAPI:
 
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
+            ignore_not_found (bool): Ignore any playlists that were not returned by this method.
+
+                .. versionadded:: 0.4.0
 
         Returns:
-            Union[YoutubePlaylist, list[YoutubePlaylist]]: The playlist object containing data of the playlist.
+            Union[YoutubePlaylist, list[YoutubePlaylist], list]: The playlist object containing data of the playlist.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -872,7 +883,7 @@ class AsyncYoutubeAPI:
         """
         return await self._call_api(
             "playlists", "id", playlist_id, ["snippet", "status", "contentDetails", "player", "localizations"],
-            YoutubePlaylist, PlaylistNotFound
+            YoutubePlaylist, PlaylistNotFound, ignore_not_found=ignore_not_found
         )
 
     async def fetch_playlist_items(self, playlist_id: str, max_items=None) -> list[PlaylistItem]:
@@ -911,7 +922,9 @@ class AsyncYoutubeAPI:
             PlaylistItem, PlaylistNotFound, 500, max_items, True
         )
 
-    async def fetch_playlist_videos(self, playlist_id, exclude: list[str] = None) -> list[YoutubeVideo]:
+    async def fetch_playlist_videos(
+            self, playlist_id, exclude: list[str] = None, ignore_not_found=False
+    ) -> Union[list[YoutubeVideo], list]:
         """Fetches a list of videos in a playlist using a playlist id.
 
         Playlist videos are fetched using a GET request which the response is then concentrated into a list of
@@ -923,10 +936,13 @@ class AsyncYoutubeAPI:
 
         Args:
             playlist_id (str): The id of the playlist to use. e.g. ``PLwZcI0zn-Jhc-H2CQvoqKvPuC8C9gClIF``.
-            exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
+            exclude (Optional[list[str]]): A list of videos to not fetch in the playlist.
+            ignore_not_found (bool): Ignore any videos that were not returned by this method.
+
+                .. versionadded:: 0.4.0
 
         Returns:
-            list[YoutubeVideo]: A list containing playlist video objects.
+            Union[list[YoutubeVideo], list]: A list containing playlist video objects.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -938,11 +954,11 @@ class AsyncYoutubeAPI:
         """
         plist_items = await self.fetch_playlist_items(playlist_id)
         video_ids = [item.id for item in plist_items if item.id not in (exclude or [])]
-        return await self.fetch_video(video_ids)
+        return await self.fetch_video(video_ids, ignore_not_found=ignore_not_found)
 
     async def fetch_video(
-            self, video_id: Union[str, list[str]], authorised=False
-    ) -> Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
+            self, video_id: Union[str, list[str]], authorised=False, ignore_not_found=False
+    ) -> Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo], list]:
         """Fetches information on a video using a video id.
 
         Video metadata is fetched using a GET request which the response is then concentrated into a
@@ -959,8 +975,12 @@ class AsyncYoutubeAPI:
 
                 .. versionadded:: 0.4.0
 
+            ignore_not_found (bool): Ignore any videos that were not returned by this method.
+
+                .. versionadded:: 0.4.0
+
         Returns:
-            Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo]]:
+            Union[YoutubeVideo, list[YoutubeVideo], AuthorisedYoutubeVideo, list[AuthorisedYoutubeVideo], list]:
                 The video object containing data of the video.
 
                 .. versionchanged:: 0.4.0
@@ -980,11 +1000,12 @@ class AsyncYoutubeAPI:
                 "recordingDetails", "liveStreamingDetails", "localizations", "paidProductPlacementDetails"
             ] + (["fileDetails", "processingDetails", "suggestions",] if authorised else []),
             AuthorisedYoutubeVideo if authorised else YoutubeVideo, VideoNotFound, 50,
+            ignore_not_found=ignore_not_found
         )
 
     async def fetch_channel(
-            self, channel_id: Union[str, list[str]]
-    ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
+            self, channel_id: Union[str, list[str]], ignore_not_found=False
+    ) -> Union[YoutubeChannel, list[YoutubeChannel], list]:
         """Fetches information on a channel using a channel id.
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
@@ -996,9 +1017,12 @@ class AsyncYoutubeAPI:
 
         Args:
             channel_id (str): The id of the channel to use. e.g. ``UC1VSDiiRQZRTbxNvWhIrJfw``.
+            ignore_not_found (bool): Ignore any channels that were not returned by this method.
+
+                .. versionadded:: 0.4.0
 
         Returns:
-            Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
+            Union[YoutubeChannel, list[YoutubeChannel], list]: The channel object containing data of the channel.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1013,12 +1037,12 @@ class AsyncYoutubeAPI:
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
             ],
-            YoutubeChannel, ChannelNotFound, 50
+            YoutubeChannel, ChannelNotFound, 50, ignore_not_found=ignore_not_found
         )
 
     async def fetch_channel_from_handle(
-            self, handle: Union[str, list[str]]
-    ) -> Union[YoutubeChannel, list[YoutubeChannel]]:
+            self, handle: Union[str, list[str]], ignore_not_found=False
+    ) -> Union[YoutubeChannel, list[YoutubeChannel], list]:
         """Fetches information on a channel using a channel's handle.
 
         Channel metadata is fetched using a GET request which the response is then concentrated into a
@@ -1032,9 +1056,10 @@ class AsyncYoutubeAPI:
 
         Args:
             handle (str): The handle of the channel to use. e.g. **@Revnoplex**.
+            ignore_not_found (bool): Ignore any channels that were not returned by this method.
 
         Returns:
-            Union[YoutubeChannel, list[YoutubeChannel]]: The channel object containing data of the channel.
+            Union[YoutubeChannel, list[YoutubeChannel], list]: The channel object containing data of the channel.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1049,7 +1074,7 @@ class AsyncYoutubeAPI:
                 "snippet", "status", "contentDetails", "statistics", "topicDetails",
                 "brandingSettings", "contentOwnerDetails", "id", "localizations"
             ],
-            YoutubeChannel, ChannelNotFound, 50
+            YoutubeChannel, ChannelNotFound, 50, ignore_not_found=ignore_not_found
         )
 
     async def fetch_video_comments(self, video_id: str, max_comments: Optional[int] = 50) -> list[YoutubeCommentThread]:
@@ -1119,7 +1144,9 @@ class AsyncYoutubeAPI:
             YoutubeCommentThread, ChannelNotFound, 50, max_comments, True
         )
 
-    async def fetch_comment(self, comment_id: Union[str, list[str]]) -> Union[YoutubeComment, list[YoutubeComment]]:
+    async def fetch_comment(
+            self, comment_id: Union[str, list[str]], ignore_not_found=False
+    ) -> Union[YoutubeComment, list[YoutubeComment], list]:
         """Fetches individual comments.
 
         comments are fetched using a GET request which the response is then concentrated into a
@@ -1131,9 +1158,12 @@ class AsyncYoutubeAPI:
 
         Args:
             comment_id (str): The id of the comment to use. e.g. ``UgzuC3zzpRZkjc5Qzsd4AaABAg``.
+            ignore_not_found (bool): Ignore any comments that were not returned by this method.
+
+                .. versionadded:: 0.4.0
 
         Returns:
-            Union[YoutubeComment, list[YoutubeComment]]: The YouTube comment object.
+            Union[YoutubeComment, list[YoutubeComment], list]: The YouTube comment object.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1142,7 +1172,10 @@ class AsyncYoutubeAPI:
             InvalidInput: The input is not a comment id.
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
-        return await self._call_api("comments", "id", comment_id, ["snippet", "id"], YoutubeComment, CommentNotFound)
+        return await self._call_api(
+            "comments", "id", comment_id, ["snippet", "id"], YoutubeComment, CommentNotFound,
+            ignore_not_found=ignore_not_found
+        )
 
     async def fetch_comment_replies(self, comment_id: str, max_comments: Optional[int] = 50) -> list[YoutubeComment]:
         """Fetches a list of replies on a comment.
@@ -1311,8 +1344,8 @@ class AsyncYoutubeAPI:
         )
 
     async def fetch_video_category(
-            self, category_id: Union[str, list[str]]
-    ) -> Union[YoutubeVideoCategory, list[YoutubeVideoCategory]]:
+            self, category_id: Union[str, list[str]], ignore_not_found=False
+    ) -> Union[YoutubeVideoCategory, list[YoutubeVideoCategory], list]:
         """
         Fetches a category that has been or could be associated with uploaded videos.
 
@@ -1323,7 +1356,8 @@ class AsyncYoutubeAPI:
         .. versionadded:: 0.4.0
 
         Args:
-            category_id (Union[str, list[str]]): The video category ID/s to fetch
+            category_id (Union[str, list[str], list]): The video category ID/s to fetch.
+            ignore_not_found (bool): Ignore any categories that were not returned by this method.
 
         Returns:
             Union[YoutubeVideoCategory, list[YoutubeVideoCategory]]: The video category/ies
@@ -1336,7 +1370,8 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         return await self._call_api(
-            "videoCategories", "id", category_id, ["snippet"], YoutubeVideoCategory, VideoCategoryNotFound, 50
+            "videoCategories", "id", category_id, ["snippet"], YoutubeVideoCategory, VideoCategoryNotFound, 50,
+            ignore_not_found=ignore_not_found
         )
 
     async def fetch_youtube_regions(self, language: str = None) -> dict[str, str]:

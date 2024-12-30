@@ -1352,7 +1352,7 @@ class YoutubePlaylist:
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist_items(self.id)
 
-    async def fetch_videos(self, exclude: list[str] = None) -> list[YoutubeVideo]:
+    async def fetch_videos(self, exclude: list[str] = None, ignore_not_found=False) -> Union[list[YoutubeVideo], list]:
         """
         Fetches a list of the videos in the playlist.
 
@@ -1364,10 +1364,13 @@ class YoutubePlaylist:
             A call to this method has a quota cost of **2** units per call or **per 50 videos fetched**.
 
         Args:
-            exclude (Optional[list[str]]): A list of videos to not fetch in the playlist
+            exclude (Optional[list[str]]): A list of videos to not fetch in the playlist.
+            ignore_not_found (bool): Ignore any videos that were not returned by this method.
+
+                .. versionadded:: 0.4.0
 
         Returns:
-            list[YoutubeVideo]: A list containing videos from the playlist.
+            Union[list[YoutubeVideo], list]: A list containing videos from the playlist.
 
         Raises:
             HTTPException: Fetching the metadata failed.
@@ -1378,7 +1381,7 @@ class YoutubePlaylist:
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.fetch_playlist_videos(self.id, exclude)
+        return await self._call_data.fetch_playlist_videos(self.id, exclude, ignore_not_found)
 
     async def fetch_channel(self) -> Optional[YoutubeChannel]:
         """Fetches the channel associated with the playlist.
