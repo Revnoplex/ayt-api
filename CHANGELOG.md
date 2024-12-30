@@ -114,6 +114,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([a5bcc67](https://github.com/Revnoplex/ayt-api/commit/a5bcc6701cefe94fd471ba577d7c1d9855568da2))
 - Methods and classes for metadata on custom playlist cover images. 
 ([554ec4d](https://github.com/Revnoplex/ayt-api/commit/554ec4d05761b8d4eacf09fd3cbe625dc88f60a8))
+- Parameter `ignore_not_found` to methods that can take multiple items. 
+([4ae024c](https://github.com/Revnoplex/ayt-api/commit/4ae024c1614ccf01ef8f6021b5b9f73fc737a8ab))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
