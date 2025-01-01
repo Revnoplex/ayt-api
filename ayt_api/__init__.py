@@ -9,7 +9,7 @@ from .enums import *
 __title__ = "ayt-api"
 __author__ = "Revnoplex"
 __license__ = "MIT"
-__copyright__ = "Copyright (c) 2022-2023 Revnoplex"
+__copyright__ = "Copyright (c) 2022-2025 Revnoplex"
 __version__ = "0.4.0"
 
 
