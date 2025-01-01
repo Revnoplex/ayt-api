@@ -1444,6 +1444,43 @@ class YoutubePlaylist:
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist_image_metadata(self.id)
 
+    async def add_video(self, video: Union[BaseVideo, str], position: int = None, note: str = None) -> PlaylistItem:
+        """
+        Add a video to the playlist.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Args:
+            video (Union[BaseVideo, str]): The video or video ID to add to the playlist.
+            position (Optional[int]): The position in the playlist to add the video. Defaults to the end.
+            note (Optional[str]): A user-generated note for this item. The note has a maximum character limit of 280
+                and the API is meant to throw a 400 error if this limit is exceeded.
+
+                Important:
+                    This property might be deprecated by the API as it seems to ignore any set value even if it is
+                    over the said character limit in its documentation.
+
+        Returns:
+            PlaylistItem: The metadata for the item in the playlist related to the video.
+
+        Raises:
+            HTTPException: Adding the video to the playlist failed or an invalid playlist position was set.
+            PlaylistNotFound: The playlist does not exist or is not accessable.
+            VideoNotFound: The video does not exist or is not accessable.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        item = await self._call_data.add_video_to_playlist(video, self, position=position, note=note)
+        self.item_count += 1
+        return item
+
 
 class AuthorisedYoutubeVideo(YoutubeVideo):
     """

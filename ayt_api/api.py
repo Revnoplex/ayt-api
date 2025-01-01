@@ -496,7 +496,6 @@ class AsyncYoutubeAPI:
                             if "error" in res_data:
                                 error_data = res_data["error"]
                                 error_reasons = [error.get("reason") for error in error_data["errors"] if error]
-                                print(error_reasons)
                                 not_found_check = [
                                     reason for reason in error_reasons if reason.lower().endswith("notfound")
                                 ]
@@ -958,7 +957,6 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         if exclude is not None:
-            print("why no warning")
             warnings.warn(
                 "exclude is deprecated since 0.4.0 and is scheduled "
                 "for removal in a later release. Use ignore_not_found instead.",
@@ -2101,3 +2099,94 @@ class AsyncYoutubeAPI:
             PlaylistNotFound, multi_resp=True
         )
         return found_image[0] if found_image else None
+
+    async def add_video_to_playlist(
+            self, video: Union[BaseVideo, str], playlist: Union[YoutubePlaylist, str], *, position: int = None, note: str = None
+    ) -> PlaylistItem:
+        """
+        Add a video to a playlist.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Args:
+            video (Union[BaseVideo, str]): The video or video ID to add to the playlist.
+            playlist (Union[YoutubePlaylist, str]): The playlist or playlist ID to add the video to.
+            position (Optional[int]): The position in the playlist to add the video. Defaults to the end.
+            note (Optional[str]): A user-generated note for this item. The note has a maximum character limit of 280
+                and the API is meant to throw a 400 error if this limit is exceeded.
+
+                Important:
+                    This property might be deprecated by the API as it seems to ignore any set value even if it is
+                    over the said character limit in its documentation.
+
+        Returns:
+            PlaylistItem: The metadata for the item in the playlist related to the video.
+
+        Raises:
+            HTTPException: Adding the video to the playlist failed or an invalid playlist position was set.
+            PlaylistNotFound: The playlist does not exist or is not accessable.
+            VideoNotFound: The video does not exist or is not accessable.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a playlist id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        video_id = video if isinstance(video, str) else video.id
+        playlist_id = playlist if isinstance(playlist, str) else playlist.id
+        insert_data = {
+            "snippet": {
+                "playlistId": playlist_id,
+                "resourceId": {"kind": "youtube#video", "videoId": video_id},
+                "position": position
+            },
+            "contentDetails": {
+                "note": note,
+            }
+        }
+        async with aiohttp.ClientSession(
+                connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
+        ) as session:
+            headers = {
+                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "content-type": "application/json"
+            }
+            try:
+                async with session.post(
+                        f"{self.call_url_prefix}/playlistItems?part=snippet,contentDetails,status", headers=headers,
+                        data=json.dumps(insert_data)
+                ) as response:
+                    self.quota_usage += 50
+                    if response.ok:
+                        res_data = await response.json()
+                        if "error" in res_data:
+                            error_reasons = [
+                                error.get("reason") for error in (res_data["error"].get("errors") or []) if error
+                            ]
+                            if "playlistNotFound" in error_reasons:
+                                raise PlaylistNotFound(playlist_id)
+                            if "videoNotFound" in error_reasons:
+                                raise VideoNotFound(video_id)
+                            raise HTTPException(
+                                response, f'{res_data["error"].get("code")}: {res_data["error"].get("message")}')
+                        else:
+                            return PlaylistItem(res_data, str(response.request_info.url), self)
+                    else:
+                        message = f'The youtube API returned the following error code: ' \
+                                  f'{response.status}'
+                        error_data = None
+                        if response.content_type == "application/json":
+                            res_data = await response.json()
+                            if "error" in res_data:
+                                error_data = res_data["error"]
+                                message = error_data.get("message")
+                                error_reasons = [error.get("reason") for error in error_data["errors"] if error]
+                                if "playlistNotFound" in error_reasons:
+                                    raise PlaylistNotFound(playlist_id)
+                                if "videoNotFound" in error_reasons:
+                                    raise VideoNotFound(video_id)
+                        raise HTTPException(response, message, error_data)
+            except asyncio.TimeoutError:
+                raise APITimeout(self.timeout)
