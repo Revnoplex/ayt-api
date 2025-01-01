@@ -1905,7 +1905,7 @@ class AsyncYoutubeAPI:
 
     # noinspection PyIncorrectDocstring
     async def set_channel_watermark(
-        self, channel: YoutubeChannel, image: bytes, timing_type: WatermarkTimingType = None,
+        self, channel_id: str, image: bytes, timing_type: WatermarkTimingType = None,
         timing_offset: datetime.timedelta = None,
         duration: datetime.timedelta = None
     ):
@@ -1919,7 +1919,7 @@ class AsyncYoutubeAPI:
             A call to this method has a quota cost of **50** units per call.
 
         Args:
-            channel (YoutubeChannel): The channel to set the watermark of.
+            channel_id (str): The ID of the channel to set the watermark of.
             image (bytes): The watermark image to upload.
             timing_type (Optional[WatermarkTimingType]): The timing method that determines when the watermark image is
                 displayed during the video playback.
@@ -1953,7 +1953,7 @@ class AsyncYoutubeAPI:
                 "cornerPosition": "topRight"
             },
             "imageBytes": str(len(image)),
-            "targetChannelId": channel.id
+            "targetChannelId": channel_id
         }
         supported_formats = {
             "png": b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
@@ -1980,7 +1980,7 @@ class AsyncYoutubeAPI:
             try:
                 async with session.post(
                         f"https://www.googleapis.com/upload/youtube/v{self.api_version}/watermarks/set"
-                        f"?channelId={channel.id}&uploadType=multipart", headers=headers, data=multipart_body
+                        f"?channelId={channel_id}&uploadType=multipart", headers=headers, data=multipart_body
                 ) as response:
                     self.quota_usage += 50
                     if response.ok:
@@ -2004,7 +2004,7 @@ class AsyncYoutubeAPI:
                 raise APITimeout(self.timeout)
 
     async def unset_channel_watermark(
-        self, channel: YoutubeChannel
+        self, channel_id: str
     ):
         """
         Unset the watermark for a channel.
@@ -2020,7 +2020,7 @@ class AsyncYoutubeAPI:
             as the API throws a 404 error.
 
         Args:
-            channel (YoutubeChannel): The channel to unset the watermark of.
+            channel_id (str): The ID of the channel to unset the watermark of.
 
         Raises:
             HTTPException: Unsetting the watermark failed.
@@ -2036,7 +2036,7 @@ class AsyncYoutubeAPI:
             }
             try:
                 async with session.post(
-                        f"{self.call_url_prefix}/watermarks/unset?channelId={channel.id}", headers=headers
+                        f"{self.call_url_prefix}/watermarks/unset?channelId={channel_id}", headers=headers
                 ) as response:
                     self.quota_usage += 50
                     if response.ok:
@@ -2101,7 +2101,7 @@ class AsyncYoutubeAPI:
         return found_image[0] if found_image else None
 
     async def add_video_to_playlist(
-            self, video: Union[BaseVideo, str], playlist: Union[YoutubePlaylist, str], *, position: int = None, note: str = None
+            self, video: Union[BaseVideo, str], playlist_id: str, *, position: int = None, note: str = None
     ) -> PlaylistItem:
         """
         Add a video to a playlist.
@@ -2113,8 +2113,8 @@ class AsyncYoutubeAPI:
             A call to this method has a quota cost of **50** units per call.
 
         Args:
-            video (Union[BaseVideo, str]): The video or video ID to add to the playlist.
-            playlist (Union[YoutubePlaylist, str]): The playlist or playlist ID to add the video to.
+            video (Union[BaseVideo, str]): The video or ID of the video to add to the playlist.
+            playlist_id (str): The ID of the to add the video to.
             position (Optional[int]): The position in the playlist to add the video. Defaults to the end.
             note (Optional[str]): A user-generated note for this item. The note has a maximum character limit of 280
                 and the API is meant to throw a 400 error if this limit is exceeded.
@@ -2135,7 +2135,6 @@ class AsyncYoutubeAPI:
             APITimeout: The YouTube api did not respond within the timeout period set.
         """
         video_id = video if isinstance(video, str) else video.id
-        playlist_id = playlist if isinstance(playlist, str) else playlist.id
         insert_data = {
             "snippet": {
                 "playlistId": playlist_id,
