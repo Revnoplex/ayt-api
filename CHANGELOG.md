@@ -116,6 +116,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([554ec4d](https://github.com/Revnoplex/ayt-api/commit/554ec4d05761b8d4eacf09fd3cbe625dc88f60a8))
 - Parameter `ignore_not_found` to methods that can take multiple items. 
 ([4ae024c](https://github.com/Revnoplex/ayt-api/commit/4ae024c1614ccf01ef8f6021b5b9f73fc737a8ab))
+- Methods to add items to playlists.
+([a307789](https://github.com/Revnoplex/ayt-api/commit/a30778914a34a8e3931a0e58315eed82f08dd5e8))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
