@@ -963,7 +963,7 @@ class AsyncYoutubeAPI:
                 DeprecationWarning
             )
         plist_items = await self.fetch_playlist_items(playlist_id)
-        video_ids = [item.id for item in plist_items if item.id not in (exclude or [])]
+        video_ids = [item.video_id for item in plist_items if item.video_id not in (exclude or [])]
         return await self.fetch_video(video_ids, ignore_not_found=ignore_not_found)
 
     async def fetch_video(

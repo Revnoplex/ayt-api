@@ -982,7 +982,8 @@ class PlaylistItem(BaseVideo):
         metadata (dict): The raw metadata from the API call used to construct this class.
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
         etag (str): The Etag of this resource.
-        id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
+        id (str): The id that represents the playlist item resource.
+        video_id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
         position (int): The position in the playlist the video is in.
         url (str): The URL of the video.
@@ -1017,13 +1018,14 @@ class PlaylistItem(BaseVideo):
             self.call_url = call_url
             self._call_data = call_data
             self.etag: str = metadata['etag']
+            self.id: str = metadata["id"]
             self.snippet: dict = metadata["snippet"]
             self.content_details: dict = metadata["contentDetails"]
             self.status: dict = metadata["status"]
             self.added_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.position: int = self.snippet["position"]
-            self.id: str = self.content_details["videoId"]
-            self.url = VIDEO_URL.format(self.id)
+            self.video_id: str = self.content_details["videoId"]
+            self.url = VIDEO_URL.format(self.video_id)
             self.title: str = self.snippet.get("title")
             self.description: str = self.snippet.get('description')
             self.thumbnails = YoutubeThumbnailMetadata(self.snippet["thumbnails"], self._call_data)
@@ -1066,7 +1068,7 @@ class PlaylistItem(BaseVideo):
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.fetch_video(self.id)
+        return await self._call_data.fetch_video(self.video_id)
 
     async def fetch_playlist(self) -> YoutubePlaylist:
         """Fetches the playlist associated with the video.
@@ -1139,7 +1141,7 @@ class PlaylistItem(BaseVideo):
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.fetch_video_comments(self.id, max_comments)
+        return await self._call_data.fetch_video_comments(self.video_id, max_comments)
 
     async def fetch_captions(self) -> list[VideoCaption]:
         """Fetches a list of comments on the video.
@@ -1163,7 +1165,7 @@ class PlaylistItem(BaseVideo):
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        return await self._call_data.fetch_video_captions(self.id)
+        return await self._call_data.fetch_video_captions(self.video_id)
 
 
 class PlaylistImageMetadata:
