@@ -2120,16 +2120,16 @@ class AsyncYoutubeAPI:
                 and the API is meant to throw a 400 error if this limit is exceeded.
 
                 Important:
-                    This property might be deprecated by the API as it seems to ignore any set value even if it is
-                    over the said character limit in its documentation.
+                    This property appears to be broken in this method as the API seems to ignore its value.
+                    Consider using :func:`update_playlist_item` if you want to set this value.
 
         Returns:
             PlaylistItem: The metadata for the item in the playlist related to the video.
 
         Raises:
             HTTPException: Adding the video to the playlist failed or an invalid playlist position was set.
-            PlaylistNotFound: The playlist does not exist or is not accessable.
-            VideoNotFound: The video does not exist or is not accessable.
+            PlaylistNotFound: The playlist does not exist or is not accessible.
+            VideoNotFound: The video does not exist or is not accessible.
             aiohttp.ClientError: There was a problem sending the request to the api.
             InvalidInput: The input is not a playlist id.
             APITimeout: The YouTube api did not respond within the timeout period set.
@@ -2189,3 +2189,58 @@ class AsyncYoutubeAPI:
                         raise HTTPException(response, message, error_data)
             except asyncio.TimeoutError:
                 raise APITimeout(self.timeout)
+
+    async def update_playlist_item(
+            self, item: PlaylistItem, *, position: Union[int, EXISTING, None] = EXISTING,
+            note: Union[str, EXISTING, None] = EXISTING
+    ) -> PlaylistItem:
+        """
+        Update the metadata for the item.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            item (PlaylistItem): The playlist item to edit.
+            position (Union[int, EXISTING, None]): The position in the playlist the item should be.
+            note (Union[str, EXISTING, None]): A user-generated note for this item. The note has a maximum character
+                limit of 280 and the API will throw a 400 error if this limit is exceeded.
+
+        Returns:
+            PlaylistItem: The updated metadata for the item in the playlist related to the video.
+
+        Raises:
+            HTTPException: Editing the item in the playlist failed or an invalid playlist position or note was set.
+            ResourceNotFound: The playlist item does not exist or is not accessible.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        edit_mapping = {
+            "id": item.id,
+            "snippet": {
+                "playlistId": item.playlist_id,
+                "resourceId": item.resource_id,
+                "position": use_existing(item.position, position)
+            },
+            "contentDetails": {
+                "note": use_existing(item.note, note)
+            }
+        }
+        updated_metadata = item.metadata.copy()
+        updated_metadata.update(edit_mapping)
+        return await self._update_api(
+            "playlistItems", "id", item.id,
+            [
+                "snippet", "status", "contentDetails", "id"
+            ],
+            PlaylistItem, updated_metadata, ResourceNotFound,
+        )

@@ -1170,6 +1170,42 @@ class PlaylistItem(BaseVideo):
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_video_captions(self.video_id)
 
+    async def update(
+            self, *, position: Union[int, EXISTING, None] = EXISTING, note: Union[str, EXISTING, None] = EXISTING
+    ) -> PlaylistItem:
+        """
+        Update the metadata for an item in a playlist.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            position (Union[int, EXISTING, None]): The position in the playlist the item should be.
+            note (Union[str, EXISTING, None]): A user-generated note for this item. The note has a maximum character
+                limit of 280 and the API will throw a 400 error if this limit is exceeded.
+
+        Returns:
+            PlaylistItem: The updated metadata for the item in the playlist related to the video.
+
+        Raises:
+            HTTPException: Editing the item in the playlist failed or an invalid playlist position or note was set.
+            ResourceNotFound: The playlist item does not exist or is not accessible.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.update_playlist_item(self, position=position, note=note)
+
 
 class PlaylistImageMetadata:
     """
@@ -1449,7 +1485,7 @@ class YoutubePlaylist:
         self._call_data: AsyncYoutubeAPI
         return await self._call_data.fetch_playlist_image_metadata(self.id)
 
-    async def add_video(self, video: Union[BaseVideo, str], position: int = None, note: str = None) -> PlaylistItem:
+    async def add_video(self, video: Union[BaseVideo, str], *, position: int = None, note: str = None) -> PlaylistItem:
         """
         Add a video to the playlist.
 
@@ -1482,7 +1518,7 @@ class YoutubePlaylist:
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        item = await self._call_data.add_video_to_playlist(video, self, position=position, note=note)
+        item = await self._call_data.add_video_to_playlist(video, self.id, position=position, note=note)
         self.item_count += 1
         return item
 
@@ -2167,7 +2203,7 @@ class YoutubeChannel:
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        await self._call_data.set_channel_watermark(self, image, timing_type, timing_offset, duration)
+        await self._call_data.set_channel_watermark(self.id, image, timing_type, timing_offset, duration)
 
     async def unset_watermark(self):
         """
@@ -2191,7 +2227,7 @@ class YoutubeChannel:
         """
         from .api import AsyncYoutubeAPI
         self._call_data: AsyncYoutubeAPI
-        await self._call_data.unset_channel_watermark(self)
+        await self._call_data.unset_channel_watermark(self.id)
 
 
 REFERENCE_TABLE = {
