@@ -168,6 +168,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ### Changed
 - **Breaking**: Renamed attribute `_type` to `kind` in `filters.SearchFilter`. 
 ([7a60e71](https://github.com/Revnoplex/ayt-api/commit/7a60e71289bafe78a9a44516f852d4a1553da009))
+- **Breaking**: `PlaylistItem.id` is now the actual item ID and the video ID is now `PlaylistItem.video_id`. 
+([d50d852](https://github.com/Revnoplex/ayt-api/commit/d50d8529e3d4162255f4f5c512de568d0da79dbc))
 - `AsyncYoutubeAPI` can now raise `NoAuth` if no API key or OAuth token is provided. 
 ([b7a188d#diff-cbbc953-R47](https://github.com/Revnoplex/ayt-api/commit/b7a188de98f9d5f1667f5ff63a0c3d52d5818374#diff-cbbc9533070ebb35c5c5d3abc0167a4019be28b3906a0fa2ff36eba0f64b01f1R47))
 - `fetch_video()` can now return a superclass of `YoutubeVideo`: `AuthorisedYoutubeVideo`. 
