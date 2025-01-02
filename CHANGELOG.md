@@ -120,6 +120,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([a307789](https://github.com/Revnoplex/ayt-api/commit/a30778914a34a8e3931a0e58315eed82f08dd5e8))
 - Attribute `resource_id` to `PlaylistItem`. 
 ([a6becbd](https://github.com/Revnoplex/ayt-api/commit/a6becbd0b6f64a151e3248d5de10629c74d77ebb))
+- Update method for `PlaylistItem`s. 
+([99c854f](https://github.com/Revnoplex/ayt-api/commit/99c854ff6f7c7bb8c63db3d0a36a4a18155d983b))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
