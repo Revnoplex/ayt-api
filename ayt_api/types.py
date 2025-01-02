@@ -983,6 +983,8 @@ class PlaylistItem(BaseVideo):
         call_url (str): The url used to call the API. Intended use is for debugging purposes.
         etag (str): The Etag of this resource.
         id (str): The id that represents the playlist item resource.
+        resource_id (dict): Contains information that can be used to uniquely identify the resource that is included
+            in the playlist as the playlist item.
         video_id (str): The ID of the video in the playlist. Example: "dQw4w9WgXcQ" from the url:
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ". Look familiar?
         position (int): The position in the playlist the video is in.
@@ -1022,6 +1024,7 @@ class PlaylistItem(BaseVideo):
             self.snippet: dict = metadata["snippet"]
             self.content_details: dict = metadata["contentDetails"]
             self.status: dict = metadata["status"]
+            self.resource_id: dict = self.snippet["resourceId"]
             self.added_at = isodate.parse_datetime(self.snippet["publishedAt"])
             self.position: int = self.snippet["position"]
             self.video_id: str = self.content_details["videoId"]
