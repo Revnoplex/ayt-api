@@ -22,7 +22,7 @@ from .types import (
     YoutubeSubscription, YoutubeVideoCategory, OAuth2Session, EXISTING, LocalName,
     YoutubeThumbnailMetadata, BaseVideo, YoutubeBanner, PlaylistImageMetadata
 )
-from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat, WatermarkTimingType
+from .enums import OAuth2Scope, License, PrivacyStatus, CaptionFormat, WatermarkTimingType, PodcastStatus
 from .filters import SearchFilter
 from .utils import censor_key, snake_to_camel, basic_html_page, use_existing, ensure_missing_keys
 
@@ -2243,4 +2243,89 @@ class AsyncYoutubeAPI:
                 "snippet", "status", "contentDetails", "id"
             ],
             PlaylistItem, updated_metadata, ResourceNotFound,
+        )
+
+    # noinspection PyIncorrectDocstring
+    async def update_playlist(
+            self, playlist: YoutubePlaylist, *,
+            title: Union[str, EXISTING] = EXISTING, description: Union[str, EXISTING, None] = EXISTING,
+            default_language: Union[str, EXISTING, None] = EXISTING,
+            visibility: Union[PrivacyStatus, EXISTING, None] = EXISTING,
+            podcast_status: Union[PodcastStatus, EXISTING, None] = EXISTING,
+            localisations: Union[list[LocalName], EXISTING, None] = EXISTING
+    ) -> YoutubePlaylist:
+        """
+        Updates metadata for a playlist.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            playlist (YoutubePlaylist): The YouTube video instance to be updated.
+            title (Union[str, EXISTING]): The title of the playlist to set.
+
+                Note:
+                    This value cannot be set to ``None`` or an empty string as YouTube forbids this.
+
+            default_language (Union[str, EXISTING, None]): The default language the playlist should be set in.
+                The value should be a BCP-47 language code.
+            description (Union[str, EXISTING, None]): The description of the playlist to set.
+            visibility (Union[PrivacyStatus, EXISTING, None]): Set the playlist's privacy status.
+            podcast_status (Union[PodcastStatus, EXISTING, None]): Set the playlist's podcast status.
+            localisations (Union[list[LocalName], EXISTING, None]): Specify translations of the playlist's metadata.
+
+        Returns:
+            YoutubePlaylist:
+                The updated playlist object.
+
+        Raises:
+            HTTPException: Updating the playlist failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        edit_mapping = {
+            "id": playlist.id,
+            "snippet": {
+                "title": title or playlist.title,
+                "defaultLanguage": use_existing(playlist.default_language, default_language),
+                "description": use_existing(playlist.description, description),
+            },
+            "status": {
+                "privacyStatus": use_existing(
+                    snake_to_camel(playlist.visibility.__str__()),
+                    snake_to_camel(visibility.__str__()) if visibility else visibility
+                ),
+                "podcastStatus": use_existing(
+                    snake_to_camel(
+                        playlist.podcast_status.__str__()
+                    ) if playlist.podcast_status else playlist.podcast_status,
+                    snake_to_camel(podcast_status.__str__()) if podcast_status else podcast_status
+                ),
+            },
+            "localizations": {
+                local_name.language: {
+                    "title": local_name.title,
+                    "description": local_name.description
+                } for local_name in use_existing(playlist.localisations, localisations) if local_name.language
+            } if use_existing(playlist.localisations, localisations) else {}
+        }
+        updated_metadata = playlist.metadata.copy()
+        updated_metadata.update(edit_mapping)
+        return await self._update_api(
+            "playlists", "id", playlist.id,
+            [
+                "snippet", "status", "contentDetails",
+                "player", "id"
+            ] + (["localizations"] if use_existing(playlist.localisations, localisations) else []),
+            YoutubePlaylist, updated_metadata, PlaylistNotFound
         )

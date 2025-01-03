@@ -1522,6 +1522,61 @@ class YoutubePlaylist:
         self.item_count += 1
         return item
 
+    # noinspection PyIncorrectDocstring
+    async def update(
+            self, *,
+            title: Union[str, EXISTING] = EXISTING, description: Union[str, EXISTING, None] = EXISTING,
+            default_language: Union[str, EXISTING, None] = EXISTING,
+            visibility: Union[PrivacyStatus, EXISTING, None] = EXISTING,
+            podcast_status: Union[PodcastStatus, EXISTING, None] = EXISTING,
+            localisations: Union[list[LocalName], EXISTING, None] = EXISTING
+    ) -> YoutubePlaylist:
+        """
+        Updates metadata for the playlist.
+
+        .. versionadded:: 0.4.0
+
+        Values default to a special constant called ``EXISTING`` which is from the class
+        :class:`ayt_api.types.UseExisting`. Specify any other value in order to edit the property you want.
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **50** units per call.
+
+        Important:
+            Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Args:
+            title (Union[str, EXISTING]): The title of the playlist to set.
+
+                Note:
+                    This value cannot be set to ``None`` or an empty string as YouTube forbids this.
+
+            default_language (Union[str, EXISTING, None]): The default language the playlist should be set in.
+                The value should be a BCP-47 language code.
+            description (Union[str, EXISTING, None]): The description of the playlist to set.
+            visibility (Union[PrivacyStatus, EXISTING, None]): Set the playlist's privacy status.
+            podcast_status (Union[PodcastStatus, EXISTING, None]): Set the playlist's podcast status.
+            localisations (Union[list[LocalName], EXISTING, None]): Specify translations of the playlist's metadata.
+
+        Returns:
+            YoutubePlaylist:
+                The updated playlist object.
+
+        Raises:
+            HTTPException: Updating the playlist failed.
+            PlaylistNotFound: The playlist does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the API.
+            APITimeout: The YouTube API did not respond within the timeout period set.
+        """
+        from .api import AsyncYoutubeAPI
+        self._call_data: AsyncYoutubeAPI
+        return await self._call_data.update_playlist(
+            self, title=title, default_language=default_language, description=description,
+            visibility=visibility, podcast_status=podcast_status,
+            localisations=localisations
+        )
+
 
 class AuthorisedYoutubeVideo(YoutubeVideo):
     """
