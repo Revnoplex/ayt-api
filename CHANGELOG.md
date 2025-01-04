@@ -130,6 +130,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([f38d271](https://github.com/Revnoplex/ayt-api/commit/f38d2719d2d475da57ffaca735696c0796610450))
 - Method to fetch playlists owned by an authenticated user.
 ([ba2b44c](https://github.com/Revnoplex/ayt-api/commit/ba2b44c31dae9e9118db4f9ae701afe6ff320fc0))
+- Method to fetch the channel owned by an authenticated user.
+([0f34669](https://github.com/Revnoplex/ayt-api/commit/0f34669513317c413bd6b69397f3dfa7b1aa74dd))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
