@@ -124,6 +124,8 @@ with `with_authcode_receiver` after giving the user the consent url.
 ([99c854f](https://github.com/Revnoplex/ayt-api/commit/99c854ff6f7c7bb8c63db3d0a36a4a18155d983b))
 - Update method for `Playlist`s.
 ([ea250b6](https://github.com/Revnoplex/ayt-api/commit/ea250b62e4e372a262f14aaa389dcdf325862bcb)) 
+- Method to specify OAuth token type. 
+([5f53155](https://github.com/Revnoplex/ayt-api/commit/5f53155a240b14d4a1cb76b2b92b1a1b213bc16f))
 - *Documentation*: New homepage added to pypi links. 
 ([601e763](https://github.com/Revnoplex/ayt-api/commit/601e7633514fb6dfa397d45d6a3ec4e6beff23cf))
 - *Documentation*: Changelog added to pypi links.
