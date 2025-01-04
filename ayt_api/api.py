@@ -45,7 +45,7 @@ class AsyncYoutubeAPI:
 
     def __init__(
             self, yt_api_key: str = None, api_version: str = '3', timeout: float = 5, ignore_ssl: bool = False,
-            session: OAuth2Session = None, oauth_token: str = None, use_oauth=False
+            session: OAuth2Session = None, oauth_token: str = None, use_oauth=False, oauth_token_type: str = "Bearer"
     ):
         """
         Args:
@@ -74,6 +74,7 @@ class AsyncYoutubeAPI:
         self._token = session.access_token if session else oauth_token
         if (not self._key) and (not self._token):
             raise NoAuth()
+        self._token_type = session.token_type if session else oauth_token_type.lower().capitalize()
         self.call_url_prefix = self.URL_PREFIX.format(version=self.api_version)
         self._skeleton_url = self.call_url_prefix + "/{kind}?part={parts}{queries}"
         self._skeleton_url_with_key = self._skeleton_url + "&key=" + (self._key or "")
@@ -437,7 +438,7 @@ class AsyncYoutubeAPI:
                 headers = {}
                 if oauth:
                     headers = {
-                        "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}"
+                        "Authorization": f"{self._token_type} {self._token}"
                     }
                 async with yt_api_session.get(call_url, headers=headers) as yt_api_response:
                     self.quota_usage += quota_rate
@@ -575,7 +576,7 @@ class AsyncYoutubeAPI:
             )
             try:
                 headers = {
-                    "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                    "Authorization": f"{self._token_type} {self._token}",
                     "content-type": "application/json"
                 }
                 async with yt_api_session.put(
@@ -792,7 +793,7 @@ class AsyncYoutubeAPI:
         async with (aiohttp.ClientSession(connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout)
                     as thumbnail_session):
             headers = {
-                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}"
+                "Authorization": f"{self._token_type} {self._token}"
             }
             async with thumbnail_session.get(url, headers=headers) as thumbnail_response:
                 self.quota_usage += 200
@@ -1606,7 +1607,7 @@ class AsyncYoutubeAPI:
                 connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
         ) as session:
             headers = {
-                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Authorization": f"{self._token_type} {self._token}",
                 "Content-Type": content_type,
                 "Content-Length": str(len(image))
             }
@@ -1844,7 +1845,7 @@ class AsyncYoutubeAPI:
                 connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
         ) as session:
             headers = {
-                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Authorization": f"{self._token_type} {self._token}",
                 "Content-Type": content_type,
                 "Content-Length": str(len(image))
             }
@@ -1973,7 +1974,7 @@ class AsyncYoutubeAPI:
                 connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
         ) as session:
             headers = {
-                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Authorization": f"{self._token_type} {self._token}",
                 "Content-Type": f"multipart/related; boundary={multipart_boundary}",
                 "Content-Length": str(multipart_body.size)
             }
@@ -2032,7 +2033,7 @@ class AsyncYoutubeAPI:
                 connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
         ) as session:
             headers = {
-                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Authorization": f"{self._token_type} {self._token}",
             }
             try:
                 async with session.post(
@@ -2149,7 +2150,7 @@ class AsyncYoutubeAPI:
                 connector=TCPConnector(verify_ssl=not self.ignore_ssl), timeout=self.timeout
         ) as session:
             headers = {
-                "Authorization": f"{self.session.token_type if self.session else 'Bearer'} {self._token}",
+                "Authorization": f"{self._token_type} {self._token}",
                 "content-type": "application/json"
             }
             try:
