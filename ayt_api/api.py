@@ -2330,3 +2330,34 @@ class AsyncYoutubeAPI:
             ] + (["localizations"] if use_existing(playlist.localisations, localisations) else []),
             YoutubePlaylist, updated_metadata, PlaylistNotFound
         )
+
+    async def fetch_playlists_from_channel(self, channel_id: str) -> list[YoutubePlaylist]:
+        """Fetches playlists created by a channel.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **1** unit per call or **per 50 playlists fetched**.
+
+        Note:
+            Only playlists marked as public will be returned if the request is made without OAuth2 authorisation using
+            the associated channel.
+
+        Args:
+            channel_id (str): The id of the channel to fetch the playlists related to
+
+        Returns:
+            list[YoutubePlaylist]: The playlists created by the channel.
+
+        Raises:
+            HTTPException: Fetching the metadata failed.
+            ChannelNotFound: The channel does not exist.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        return await self._call_api(
+            "playlists", "channelId", channel_id, ["snippet", "status", "contentDetails", "player", "localizations"],
+            YoutubePlaylist, ChannelNotFound, max_results=50, multi_resp=True
+        )
