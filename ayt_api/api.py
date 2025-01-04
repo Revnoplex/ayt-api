@@ -2361,3 +2361,30 @@ class AsyncYoutubeAPI:
             "playlists", "channelId", channel_id, ["snippet", "status", "contentDetails", "player", "localizations"],
             YoutubePlaylist, ChannelNotFound, max_results=50, multi_resp=True
         )
+
+    async def fetch_user_playlists(self) -> list[YoutubePlaylist]:
+        """Fetches playlists owned by the authenticated user.
+
+        .. versionadded:: 0.4.0
+
+        .. admonition:: Quota Impact
+
+            A call to this method has a quota cost of **1** unit per call or **per 50 playlists fetched**.
+
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
+        Returns:
+            list[YoutubePlaylist]: The playlists owned by the authenticated user.
+
+        Raises:
+            HTTPException: Fetching the metadata failed or this method was run without OAuth2 authentication.
+            ResourceNotFound: There the authenticated user does not have a channel.
+            aiohttp.ClientError: There was a problem sending the request to the api.
+            InvalidInput: The input is not a channel id.
+            APITimeout: The YouTube api did not respond within the timeout period set.
+        """
+        return await self._call_api(
+            "playlists", "mine", "true", ["snippet", "status", "contentDetails", "player", "localizations"],
+            YoutubePlaylist, ResourceNotFound, max_results=50, multi_resp=True
+        )
