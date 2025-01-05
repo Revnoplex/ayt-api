@@ -1188,6 +1188,9 @@ class PlaylistItem(BaseVideo):
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             position (Union[int, EXISTING, None]): The position in the playlist the item should be.
             note (Union[str, EXISTING, None]): A user-generated note for this item. The note has a maximum character
@@ -1495,6 +1498,9 @@ class YoutubePlaylist:
 
             A call to this method has a quota cost of **50** units per call.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             video (Union[BaseVideo, str]): The video or video ID to add to the playlist.
             position (Optional[int]): The position in the playlist to add the video. Defaults to the end.
@@ -1545,6 +1551,9 @@ class YoutubePlaylist:
 
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
 
         Args:
             title (Union[str, EXISTING]): The title of the playlist to set.
@@ -2151,6 +2160,9 @@ class YoutubeChannel:
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             country (Union[str, EXISTING, None]): The country to set which the channel is associated.
             description (Union[str, EXISTING, None]): The description of the channel to set.
@@ -2207,6 +2219,9 @@ class YoutubeChannel:
 
             A call to this method has a quota cost of **100** units per call.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             image (bytes): The banner image to upload.
 
@@ -2237,6 +2252,9 @@ class YoutubeChannel:
         .. admonition:: Quota Impact
 
             A call to this method has a quota cost of **50** units per call.
+
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
 
         Args:
             image (bytes): The watermark image to upload.
@@ -2273,6 +2291,9 @@ class YoutubeChannel:
         Warning:
             If the channel currently has no watermark set, this function will raise :class:`WatermarkNotFound`
             as the API throws a 404 error.
+
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
 
         Raises:
             HTTPException: Unsetting the watermark failed.

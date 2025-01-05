@@ -1473,6 +1473,9 @@ class AsyncYoutubeAPI:
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             video (Union[YoutubeVideo, list[YoutubeVideo]]): The YouTube video instance to be updated.
             title (Union[str, EXISTING]): The title of the video to set.
@@ -1582,6 +1585,9 @@ class AsyncYoutubeAPI:
 
             A call to this method has a quota cost of **50** units per call.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             video_id (str): The ID of the video to set the thumbnail of.
             image (bytes): The thumbnail image to upload.
@@ -1673,6 +1679,9 @@ class AsyncYoutubeAPI:
 
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
 
         Args:
             channel (Union[YoutubeVideo, list[YoutubeVideo]]): The YouTube channel instance to be updated.
@@ -1815,6 +1824,9 @@ class AsyncYoutubeAPI:
 
             A call to this method has a quota cost of **100** units per call.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             channel (YoutubeChannel): The channel to set the banner of.
             image (bytes): The banner image to upload.
@@ -1919,6 +1931,9 @@ class AsyncYoutubeAPI:
 
             A call to this method has a quota cost of **50** units per call.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             channel_id (str): The ID of the channel to set the watermark of.
             image (bytes): The watermark image to upload.
@@ -2020,6 +2035,9 @@ class AsyncYoutubeAPI:
             If the channel currently has no watermark set, this function will raise :class:`WatermarkNotFound`
             as the API throws a 404 error.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             channel_id (str): The ID of the channel to unset the watermark of.
 
@@ -2080,7 +2098,6 @@ class AsyncYoutubeAPI:
         Note:
             This method will not fetch the actual image asset due to YouTube limitations.
 
-
         Args:
             playlist_id (str): The ID of the playlist to get the custom image information of.
 
@@ -2112,6 +2129,9 @@ class AsyncYoutubeAPI:
         .. admonition:: Quota Impact
 
             A call to this method has a quota cost of **50** units per call.
+
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
 
         Args:
             video (Union[BaseVideo, str]): The video or ID of the video to add to the playlist.
@@ -2210,6 +2230,9 @@ class AsyncYoutubeAPI:
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
 
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
+
         Args:
             item (PlaylistItem): The playlist item to edit.
             position (Union[int, EXISTING, None]): The position in the playlist the item should be.
@@ -2269,6 +2292,9 @@ class AsyncYoutubeAPI:
 
         Important:
             Specifying ``None`` for a parameter will wipe it or set it to YouTube's default value.
+
+        Note:
+            This method requires OAuth2 authentication with at least the default scope.
 
         Args:
             playlist (YoutubePlaylist): The YouTube video instance to be updated.
