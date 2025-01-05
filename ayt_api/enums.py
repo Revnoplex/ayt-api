@@ -121,10 +121,10 @@ class UploadStatus(Enum):
     The status of the uploaded video.
 
     Attributes:
-        deleted
-        failed
-        rejected
-        uploaded
+        deleted: The upload was deleted.
+        failed: The upload process failed.
+        rejected: The upload has been rejected by YouTube.
+        uploaded: The upload was successful.
     """
 
     deleted = "deleted"
@@ -142,12 +142,12 @@ class UploadFailureReason(Enum):
     Explains why a video failed to upload.
 
     Attributes:
-         codec
-        conversion
-        empty_file
-        invalid_file
-        too_small
-        upload_aborted
+        codec: The upload has an unsupported codec.
+        conversion: Converting the upload failed.
+        empty_file: The upload file is empty.
+        invalid_file: The upload file is an invalid file type.
+        too_small: The upload file is too small.
+        upload_aborted: The upload process was aborted.
     """
 
     codec = "codec"
@@ -166,16 +166,16 @@ class UploadRejectionReason(Enum):
     Explains why YouTube rejected an uploaded video.
 
     Attributes:
-        claim
-        copyright
-        duplicate
-        inappropriate
-        legal
-        length
-        terms_of_use
-        trademark
-        uploader_account_closed
-        uploader_account_suspended
+        claim: The upload has a copyright claim.
+        copyright: The upload was rejected due to a copyright takedown request.
+        duplicate: The upload is a duplicate of an existing upload.
+        inappropriate: The upload contains inappropriate material not suitable for YouTube.
+        legal: The upload was rejected for legal reasons.
+        length: The upload is too long
+        terms_of_use: The upload violates YouTube's terms of use.
+        trademark: The upload was rejected due to trademark reasons.
+        uploader_account_closed: The account of the uploader is deleted or terminated.
+        uploader_account_suspended: The account of the uploader is suspended.
     """
 
     claim = "claim"
@@ -195,13 +195,13 @@ class UploadRejectionReason(Enum):
 
 class PrivacyStatus(Enum):
     """
-    The video's privacy status. Can be :attr:`private`, :attr:`public` or :attr:`unlisted`.
+    The video or playlist's privacy status. Can be :attr:`private`, :attr:`public` or :attr:`unlisted`.
 
     Attributes:
-        private
-        public
-        unlisted
-        privacy_status_unspecified
+        private: The video or playlist is only available to the uploader/owner and people granted access.
+        public: The video or playlist is visible to everyone.
+        unlisted: The video or playlist is accessible to anyone with its link.
+        privacy_status_unspecified: The privacy status of the video is unknown.
     """
 
     private = "private"
@@ -220,9 +220,9 @@ class PodcastStatus(Enum):
     .. versionadded:: 0.4.0
 
     Attributes:
-        enabled
-        disabled
-        unspecified
+        enabled: The playlist is marked as a podcast show
+        disabled: the playlist is not marked as a podcast show
+        unspecified: The podcast status is unspecified.
     """
 
     enabled = "enabled"
@@ -238,8 +238,8 @@ class License(Enum):
     The video's license.
 
     Attributes:
-        creative_common
-        youtube
+        creative_common: The video uses a creative commons license.
+        youtube: The video uses YouTube's standard license.
     """
 
     creative_common = "creative_common"
@@ -254,9 +254,9 @@ class CaptionStatus(Enum):
     The caption track's status.
 
     Attributes:
-        failed
-        serving
-        syncing
+        failed: Processing the caption track failed.
+        serving: The caption track is currently serving.
+        syncing: The caption track is currently being synced.
     """
 
     failed = "failed"
@@ -335,8 +335,8 @@ class SubscriptionActivityType(Enum):
     .. versionadded:: 0.4.0
 
     Attributes:
-        all
-        uploads
+        all: This subscription is for everything
+        uploads: This subscription is specifically for uploads.
     """
 
     all = "all"
