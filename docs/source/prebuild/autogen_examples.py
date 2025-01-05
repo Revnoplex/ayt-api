@@ -23,6 +23,10 @@ def main():
                 )
                 if example_name.startswith("update"):
                     example_title = f"Updating Metadata for a {suffix}"
+                if example_name.startswith("user"):
+                    example_title = (
+                        f"Fetching {'a ' if not suffix.endswith('s') else ''}{suffix} Owned by an Authenticated User"
+                    )
                 if example_name.startswith("set") and len(example_name.split('-')) > 1:
                     example_title = (
                         f"Set a {example_name.split('-')[1].title()}'s {example_name.split('-')[-1].title()}"
