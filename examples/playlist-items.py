@@ -18,5 +18,4 @@ async def playlist_video_example():
     print(video_data.playlist_url)
     print(video_data.added_at)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(playlist_video_example())
+asyncio.run(playlist_video_example())

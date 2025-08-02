@@ -15,5 +15,4 @@ async def channel_example():
     print(channel.banner_external.url)
     print(channel.url)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(channel_example())
+asyncio.run(channel_example())

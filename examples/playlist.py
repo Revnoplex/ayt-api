@@ -17,5 +17,4 @@ async def playlist_example():
     print(playlist_data.embed_html)
     print(playlist_data.item_count)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(playlist_example())
+asyncio.run(playlist_example())

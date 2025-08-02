@@ -20,5 +20,4 @@ async def video_example():
     print(video_data.description)
     print(video_data.age_restricted)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(video_example())
+asyncio.run(video_example())

@@ -14,6 +14,5 @@ async def video_comments_example():
     print(len(video_comments_data))
     print(video_comments_data[0].call_url)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(video_comments_example())
+asyncio.run(video_comments_example())
 

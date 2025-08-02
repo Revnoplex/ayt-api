@@ -17,5 +17,4 @@ async def playlist_video_example():
     print(video.description)
     print(video.duration)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(playlist_video_example())
+asyncio.run(playlist_video_example())

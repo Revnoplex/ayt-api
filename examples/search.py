@@ -18,5 +18,4 @@ async def search_example():
         print(result.live_broadcast_content)
         print(result.thumbnails.default)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(search_example())
+asyncio.run(search_example())

@@ -74,8 +74,7 @@ async def video_example():
     print(video_data.description)
     print(video_data.age_restricted)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(video_example())
+asyncio.run(video_example())
 ```
 
 ### Basic playlist data fetching:
@@ -99,8 +98,7 @@ async def playlist_example():
     print(playlist_data.embed_html)
     print(playlist_data.item_count)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(playlist_example())
+asyncio.run(playlist_example())
 ```
 
 ### Basic playlist video fetching:
@@ -124,8 +122,7 @@ async def playlist_video_example():
     print(video.description)
     print(video.duration)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(playlist_video_example())
+asyncio.run(playlist_video_example())
 ```
 
 More examples are listed [here](https://github.com/Revnoplex/ayt-api/tree/main/examples)

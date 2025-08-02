@@ -10,5 +10,4 @@ async def video_captions_example():
     print(captions[0].language)
     print(captions[0].is_cc)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(video_captions_example())
+asyncio.run(video_captions_example())
