@@ -8,9 +8,8 @@ from setup import get_version
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information
-
 project = 'AYT API'
-copyright = '2024-2025 Revnoplex'
+copyright = '2024-2026 Revnoplex'
 author = 'Revnoplex'
 
 version = get_version('ayt_api/__init__.py')
