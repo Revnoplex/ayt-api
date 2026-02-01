@@ -50,10 +50,8 @@ class AsyncYoutubeAPI:
         """
         Args:
             yt_api_key (str): The API key used to access the YouTube API. to get an API key.
-                See [Obtaining An API Key]
-                (https://ayt-api-docs.revnoplex.xyz/en/stable/usage/obtaining-credentials.html#obtaining-an-api-key)
-                under [Obtaining Credentials]
-                (https://ayt-api-docs.revnoplex.xyz/en/stable/usage/obtaining-credentials.html) for instructions.
+                See `Obtaining An API Key <https://ayt-api-docs.revnoplex.xyz/en/stable/usage/obtaining-credentials.html#obtaining-an-api-key>`_
+                under `Obtaining Credentials <https://ayt-api-docs.revnoplex.xyz/en/stable/usage/obtaining-credentials.html>`_ for instructions.
             api_version (str): The API version to use. Defaults to 3.
             timeout (float): The timeout if the api does not respond.
             ignore_ssl (bool): Whether to ignore any verification errors with the ssl certificate.
