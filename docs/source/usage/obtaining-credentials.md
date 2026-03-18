@@ -5,8 +5,8 @@ these credentials.
 ## Prerequisites 
 1. To access the Google API Console, you will need a [Google Account](https://www.google.com/accounts/NewAccount).
 2. Go to [console.developers.google.com](https://console.developers.google.com) and [create a new project](https://console.cloud.google.com/projectcreate). 
-Call it whatever you want, optionally set an organisation and click **Create**.
-3. Find the "APIs" panel and click [**Go to APIs overview**](https://console.cloud.google.com/apis/enabled?project=turorial-walkthrough&show=all). 
+Call it anything, optionally set an organisation and click **Create**.
+3. Find the "APIs" panel and click [**Go to APIs overview**](https://console.cloud.google.com/apis/enabled?show=all). 
 4. Find and click the **ENABLE APIS AND SERVICES** button. Search for "youtube data api v3" and press enter. 
 One result should be called **YouTube Data API v3**, click on it and then click the **ENABLE** button. 
 You will be taken back to the "APIs and services" page.
