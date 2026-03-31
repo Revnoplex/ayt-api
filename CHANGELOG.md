@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Official Python 3.14 Support.
+([9dfabc6](https://github.com/Revnoplex/ayt-api/commit/9dfabc68d9fce43bc8855f826efe074945054101))
 
 ### Removed
 
